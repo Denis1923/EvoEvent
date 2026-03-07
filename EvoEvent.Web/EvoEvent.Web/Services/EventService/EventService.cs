@@ -4,7 +4,7 @@ namespace EvoEvent.Web.Services
 {
 	public class EventService : IEventService
 	{
-		private List<Event> _events = new();
+		private static readonly List<Event> _events = new();
 
 		public IEnumerable<Event> GetAll() 
 			=> _events;

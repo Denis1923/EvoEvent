@@ -21,7 +21,7 @@ namespace EvoEvent.Web.Controllers
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet("events")]
-		public ResultResponse<IEnumerable<Event>> GetAll()
+		public IActionResult GetAll()
 		{
 			var events = _eventService.GetAll();
 			bool isEvents = events.Any();
@@ -34,7 +34,7 @@ namespace EvoEvent.Web.Controllers
 				Data = events
 			};
 
-			return response;
+			return isEvents ? Ok(response) : NotFound(response);
 		}
 
 		/// <summary>
@@ -43,7 +43,7 @@ namespace EvoEvent.Web.Controllers
 		/// <param name="id">Индентификатор события</param>
 		/// <returns></returns>
 		[HttpGet("events/{id:guid}")]
-		public ResultResponse<Event> GetById(Guid id)
+		public IActionResult GetById(Guid id)
 		{
 			var extEvent = _eventService.GetById(id);
 			bool isEvent = extEvent != null;
@@ -56,7 +56,7 @@ namespace EvoEvent.Web.Controllers
 				Data = extEvent
 			};
 
-			return response;
+			return isEvent ? Ok(response) : NotFound(response);
 		}
 
 		/// <summary>
@@ -65,9 +65,8 @@ namespace EvoEvent.Web.Controllers
 		/// <param name="eventDto">Модель нового события</param>
 		/// <returns></returns>
 		[HttpPost("events")]
-		public ResponseBase Create([FromBody] EventDto eventDto)
+		public IActionResult Create([FromBody] EventDto eventDto)
 		{
-			var response = new ResponseBase();
 			try
 			{
 				Event newEvent = new Event(
@@ -78,18 +77,18 @@ namespace EvoEvent.Web.Controllers
 
 				_eventService.AddEvent(newEvent);
 
-				response.IsSuccess = true;
-				response.StatusCode = HttpStatusCode.Created;
-				
+				return Created();
 			}
 			catch (Exception ex)
 			{
-				response.IsSuccess = false;
-				response.StatusCode = HttpStatusCode.BadRequest;
-				response.Message = ex.Message;
+				var response = new ResponseBase
+				{
+					IsSuccess = false,
+					StatusCode = HttpStatusCode.BadRequest,
+					Message = ex.Message
+				};
+				return BadRequest(response);
 			}
-
-			return response;
 		}
 
 		/// <summary>
@@ -99,20 +98,22 @@ namespace EvoEvent.Web.Controllers
 		/// <param name="eventDto">Модель измененного события</param>
 		/// <returns></returns>
 		[HttpPut("events/{id:guid}")]
-		public ResponseBase Update(Guid id, [FromBody] EventDto eventDto)
+		public IActionResult Update(Guid id, [FromBody] EventDto eventDto)
 		{
-			var response = new ResponseBase();
 			try
 			{
 				var extEvent = _eventService.GetById(id);
 
 				if (extEvent is null)
-					return new ResponseBase
+				{
+					var response = new ResponseBase
 					{
 						IsSuccess = false,
 						StatusCode = HttpStatusCode.NotFound
 					};
 
+					return NotFound(response);
+				}
 
 				Event updEvent = new Event(
 					eventDto.Title,
@@ -122,17 +123,18 @@ namespace EvoEvent.Web.Controllers
 
 				_eventService.Save(extEvent, updEvent);
 
-				response.IsSuccess = true;
-				response.StatusCode = HttpStatusCode.NoContent;
+				return NoContent();
 			}
 			catch (Exception ex)
 			{
-				response.IsSuccess = false;
-				response.StatusCode = HttpStatusCode.BadRequest;
-				response.Message = ex.Message;
+				var response = new ResponseBase
+				{
+					IsSuccess = false,
+					StatusCode = HttpStatusCode.BadRequest,
+					Message = ex.Message
+				};
+				return BadRequest(response);
 			}
-
-			return response;
 		}
 
 		/// <summary>
@@ -141,29 +143,33 @@ namespace EvoEvent.Web.Controllers
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[HttpDelete("events/{id:guid}")]
-		public ResponseBase Delete(Guid id)
+		public IActionResult Delete(Guid id)
 		{
-			var response = new ResponseBase();
 			try
 			{
 				if (!_eventService.DeleteById(id))
-					return new ResponseBase
+				{
+					var response = new ResponseBase
 					{
 						IsSuccess = false,
 						StatusCode = HttpStatusCode.NotFound
 					};
 
-				response.IsSuccess = true;
-				response.StatusCode = HttpStatusCode.NoContent;
+					return NotFound(response);
+				}
+
+				return NoContent();
 			}
 			catch (Exception ex)
 			{
-				response.IsSuccess = false;
-				response.StatusCode = HttpStatusCode.BadRequest;
-				response.Message = ex.Message;
+				var response = new ResponseBase
+				{
+					IsSuccess = false,
+					StatusCode = HttpStatusCode.BadRequest,
+					Message = ex.Message
+				};
+				return BadRequest(response);
 			}
-
-			return response;
 		}
 	}
 }
