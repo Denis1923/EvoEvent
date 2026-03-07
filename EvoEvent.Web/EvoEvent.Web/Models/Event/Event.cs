@@ -1,6 +1,4 @@
-﻿using static System.Net.WebRequestMethods;
-
-namespace EvoEvent.Web.Models;
+﻿namespace EvoEvent.Web.Models;
 
 public class Event
 {
