@@ -1,8 +1,11 @@
+using EvoEvent.Web.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IEventService, EventService>();
 
 var app = builder.Build();
 
