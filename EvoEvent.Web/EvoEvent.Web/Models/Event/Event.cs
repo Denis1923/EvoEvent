@@ -22,4 +22,12 @@ public class Event
 		_startAt = startAt;
 		_endAt = endAt;		
 	}
+
+	public void Update(string title, string description, DateTime startAt, DateTime endAt)
+	{
+		_title = title;
+		_description = description;
+		_startAt = startAt;
+		_endAt = endAt;
+	}
 }
