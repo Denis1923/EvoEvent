@@ -12,7 +12,7 @@ public class EventDto
 	/// Наименование события
 	/// </summary>
 	[Required(ErrorMessage = "Заполните наименования события (\"Title\": \"\")")]
-	public string Title { get; set; }
+	public required string Title { get; set; }
 
 	/// <summary>
 	/// Описание события
@@ -23,12 +23,12 @@ public class EventDto
 	/// Стартовая дата события 
 	/// </summary>
 	[Required(ErrorMessage = "Заполните стартовую дату события (\"StartAt\": \"YYYY-mm-DD\")")]
-	public DateTime StartAt { get; set; }
+	public required DateTime StartAt { get; set; }
 
 	/// <summary>
 	/// Дата окончания события
 	/// </summary>
 	[Required(ErrorMessage = "Заполните дату окончания события (\"EndAt\": \"YYYY-mm-DD\")")]
 	[EndDateLaterThanStart]
-	public DateTime EndAt { get; set; }
+	public required DateTime EndAt { get; set; }
 }

@@ -2,6 +2,6 @@
 {
 	public class ResultResponse<T> : ResponseBase
 	{
-		public T Data { get; set; }
+		public T? Data { get; set; }
 	}
 }

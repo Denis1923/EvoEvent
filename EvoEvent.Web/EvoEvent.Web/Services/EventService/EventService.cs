@@ -28,6 +28,10 @@ namespace EvoEvent.Web.Services
 		public bool DeleteById(Guid id)
 		{
 			var extEvt = _events.FirstOrDefault(e => e.Id == id);
+
+			if (extEvt is null)
+				return false;
+
 			return _events.Remove(extEvt);
 		}
 	}

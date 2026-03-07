@@ -8,6 +8,6 @@ namespace EvoEvent.Web.Models
 
 		public HttpStatusCode StatusCode { get; set; }
 
-		public string Message { get; set; }
+		public string? Message { get; set; }
 	}
 }
