@@ -6,7 +6,7 @@ using System.Net;
 namespace EvoEvent.Web.Controllers
 {
 	[ApiController]
-	[Route("api/[controller]")]
+	[Route("events")]
 	public class EventController : ControllerBase
 	{
 		private readonly IEventService _eventService;
@@ -20,7 +20,7 @@ namespace EvoEvent.Web.Controllers
 		/// Получить список всех событий
 		/// </summary>
 		/// <returns></returns>
-		[HttpGet("events")]
+		[HttpGet]
 		public IActionResult GetAll()
 		{
 			var events = _eventService.GetAll();
@@ -42,7 +42,7 @@ namespace EvoEvent.Web.Controllers
 		/// </summary>
 		/// <param name="id">Индентификатор события</param>
 		/// <returns></returns>
-		[HttpGet("events/{id:guid}")]
+		[HttpGet("{id:guid}")]
 		public IActionResult GetById(Guid id)
 		{
 			var extEvent = _eventService.GetById(id);
@@ -64,7 +64,7 @@ namespace EvoEvent.Web.Controllers
 		/// </summary>
 		/// <param name="eventDto">Модель нового события</param>
 		/// <returns></returns>
-		[HttpPost("events")]
+		[HttpPost]
 		public IActionResult Create([FromBody] EventDto eventDto)
 		{
 			try
@@ -97,7 +97,7 @@ namespace EvoEvent.Web.Controllers
 		/// <param name="id">Индентификатор события</param>
 		/// <param name="eventDto">Модель измененного события</param>
 		/// <returns></returns>
-		[HttpPut("events/{id:guid}")]
+		[HttpPut("{id:guid}")]
 		public IActionResult Update(Guid id, [FromBody] EventDto eventDto)
 		{
 			try
@@ -142,7 +142,7 @@ namespace EvoEvent.Web.Controllers
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		[HttpDelete("events/{id:guid}")]
+		[HttpDelete("{id:guid}")]
 		public IActionResult Delete(Guid id)
 		{
 			try
