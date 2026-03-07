@@ -8,9 +8,9 @@ namespace EvoEvent.Web.Services
 
 		Event? GetById(Guid id);
 
-		void AddEvent(EventDto evt);
+		void AddEvent(Event evt);
 
-		void Save(Guid id, EventDto evt);
+		void Save(Event extUpd, Event updEvt);
 
 		bool DeleteById(Guid id);
 	}

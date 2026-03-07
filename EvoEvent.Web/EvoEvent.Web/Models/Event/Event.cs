@@ -3,29 +3,25 @@
 public class Event
 {
 	public Guid Id { get; private set; }
+	public string Title { get; private set; }
+	public string? Description { get; private set; }
+	public DateTime StartAt { get; private set; }
+	public DateTime EndAt { get; private set; }
 
-	private string _title;
-
-	private string _description;
-
-	private DateTime _startAt;
-
-	private DateTime _endAt;
-
-	public Event(string title, string description, DateTime startAt, DateTime endAt)
+	public Event(string title, string? description, DateTime startAt, DateTime endAt)
 	{
 		Id = Guid.NewGuid();
-		_title = title;
-		_description = description;
-		_startAt = startAt;
-		_endAt = endAt;		
+		Title = title;
+		Description = description;
+		StartAt = startAt;
+		EndAt = endAt;		
 	}
 
-	public void Update(string title, string description, DateTime startAt, DateTime endAt)
+	public void Update(string title, string? description, DateTime startAt, DateTime endAt)
 	{
-		_title = title;
-		_description = description;
-		_startAt = startAt;
-		_endAt = endAt;
+		Title = title;
+		Description = description;
+		StartAt = startAt;
+		EndAt = endAt;
 	}
 }

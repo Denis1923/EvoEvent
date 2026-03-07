@@ -16,6 +16,10 @@ namespace EvoEvent.Web.Controllers
 			_eventService = eventService;
 		}
 
+		/// <summary>
+		/// Получить список всех событий
+		/// </summary>
+		/// <returns></returns>
 		[HttpGet("events")]
 		public ResultResponse<IEnumerable<Event>> GetAll()
 		{
@@ -33,6 +37,11 @@ namespace EvoEvent.Web.Controllers
 			return response;
 		}
 
+		/// <summary>
+		/// получить событие по id
+		/// </summary>
+		/// <param name="id">Индентификатор события</param>
+		/// <returns></returns>
 		[HttpGet("events/{id:guid}")]
 		public ResultResponse<Event> GetById(Guid id)
 		{
@@ -50,13 +59,25 @@ namespace EvoEvent.Web.Controllers
 			return response;
 		}
 
+		/// <summary>
+		/// создать событие
+		/// </summary>
+		/// <param name="eventDto">Модель нового события</param>
+		/// <returns></returns>
 		[HttpPost("events")]
 		public ResponseBase Create([FromBody] EventDto eventDto)
 		{
 			var response = new ResponseBase();
 			try
 			{
-				_eventService.AddEvent(eventDto);
+				Event newEvent = new Event(
+					eventDto.Title,
+					eventDto.Description,
+					eventDto.StartAt,
+					eventDto.EndAt);
+
+				_eventService.AddEvent(newEvent);
+
 				response.IsSuccess = true;
 				response.StatusCode = HttpStatusCode.Created;
 				
@@ -71,6 +92,12 @@ namespace EvoEvent.Web.Controllers
 			return response;
 		}
 
+		/// <summary>
+		/// Обновить событие целиком
+		/// </summary>
+		/// <param name="id">Индентификатор события</param>
+		/// <param name="eventDto">Модель измененного события</param>
+		/// <returns></returns>
 		[HttpPut("events/{id:guid}")]
 		public ResponseBase Update(Guid id, [FromBody] EventDto eventDto)
 		{
@@ -86,7 +113,14 @@ namespace EvoEvent.Web.Controllers
 						StatusCode = HttpStatusCode.NotFound
 					};
 
-				_eventService.Save(id, eventDto);
+
+				Event updEvent = new Event(
+					eventDto.Title,
+					eventDto.Description,
+					eventDto.StartAt,
+					eventDto.EndAt);
+
+				_eventService.Save(extEvent, updEvent);
 
 				response.IsSuccess = true;
 				response.StatusCode = HttpStatusCode.NoContent;
@@ -101,6 +135,11 @@ namespace EvoEvent.Web.Controllers
 			return response;
 		}
 
+		/// <summary>
+		/// Удалить событие
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		[HttpDelete("events/{id:guid}")]
 		public ResponseBase Delete(Guid id)
 		{

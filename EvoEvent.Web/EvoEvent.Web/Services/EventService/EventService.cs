@@ -6,30 +6,22 @@ namespace EvoEvent.Web.Services
 	{
 		private List<Event> _events = new();
 
-		public IEnumerable<Event> GetAll() => _events;
+		public IEnumerable<Event> GetAll() 
+			=> _events;
 
 		public Event? GetById(Guid id)
 			=> _events.FirstOrDefault(e => e.Id == id);
 
-		public void AddEvent(EventDto evt)
-		{
-			Event newEvent = new Event(
-				evt.Title, 
-				evt.Description, 
-				evt.StartAt, 
-				evt.EndAt);
+		public void AddEvent(Event newEvt) 
+			=> _events.Add(newEvt);
 
-			_events.Add(newEvent);
-		}
-
-		public void Save(Guid id, EventDto evt)
+		public void Save(Event extEvt, Event updEvt)
 		{
-			var extEvt = _events.FirstOrDefault(e => e.Id == id);
 			extEvt.Update(
-				evt.Title,
-				evt.Description,
-				evt.StartAt,
-				evt.EndAt
+				updEvt.Title,
+				updEvt.Description,
+				updEvt.StartAt,
+				updEvt.EndAt
 				);
 		}
 
