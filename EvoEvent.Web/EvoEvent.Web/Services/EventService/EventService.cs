@@ -12,8 +12,11 @@ namespace EvoEvent.Web.Services
 		public Event? GetById(Guid id)
 			=> _events.FirstOrDefault(e => e.Id == id);
 
-		public void AddEvent(Event newEvt) 
-			=> _events.Add(newEvt);
+		public Guid AddEvent(Event newEvt)
+		{
+			_events.Add(newEvt);
+			return newEvt.Id;
+		}
 
 		public void Save(Event extEvt, Event updEvt)
 		{
