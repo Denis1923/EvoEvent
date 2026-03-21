@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="EvoEvent.Web.Tests/EvoEvent.Web.Tests.csproj" Id="fcb14367-6d67-44a7-af54-ecee7658c4aa" />
   <Project Path="EvoEvent.Web/EvoEvent.Web.csproj" />
 </Solution>
