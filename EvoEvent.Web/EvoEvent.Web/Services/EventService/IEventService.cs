@@ -8,9 +8,9 @@ namespace EvoEvent.Web.Services
 
 		IEnumerable<Event> GetAllAboutWhen(
 			IEnumerable<Event> events, 
-			string? title, 
-			DateTime? from, 
-			DateTime? to, 
+			string? title = null, 
+			DateTime? from = null, 
+			DateTime? to = null, 
 			int page = 1, 
 			int pageSize = 10);
 

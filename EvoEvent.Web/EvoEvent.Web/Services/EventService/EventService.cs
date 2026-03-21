@@ -6,15 +6,26 @@ namespace EvoEvent.Web.Services
 	{
 		private static readonly List<Event> _events = new();
 
+		public EventService()
+		{
+			for (int i = 1; i < 22; i++)
+			{
+				if (i % 2 == 0)
+					_events.Add(new Event($"{i}. Концерт #{i}", $"Описание: Концерт #{i}", DateTime.Now.AddDays(i), DateTime.Now.AddDays(i+2)));
+				else
+					_events.Add(new Event($"{i}. Концерт #{i}", $"Описание: Концерт #{i}", DateTime.Now.AddDays(-i), DateTime.Now.AddDays(i + 4)));
+			}
+		}
+
 		public IEnumerable<Event> GetAll() 
 			=> _events;
 
 		public IEnumerable<Event> GetAllAboutWhen(
-			IEnumerable<Event> events, 
-			string? title, 
-			DateTime? from, 
-			DateTime? to, 
-			int page = 1, 
+			IEnumerable<Event> events,
+			string? title = null,
+			DateTime? from = null,
+			DateTime? to = null,
+			int page = 1,
 			int pageSize = 10)
 		{
 			if (!string.IsNullOrEmpty(title))
