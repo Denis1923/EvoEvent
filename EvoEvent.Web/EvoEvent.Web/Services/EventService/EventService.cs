@@ -9,6 +9,28 @@ namespace EvoEvent.Web.Services
 		public IEnumerable<Event> GetAll() 
 			=> _events;
 
+		public IEnumerable<Event> GetAllAboutWhen(
+			IEnumerable<Event> events, 
+			string? title, 
+			DateTime? from, 
+			DateTime? to, 
+			int page = 1, 
+			int pageSize = 10)
+		{
+			if (!string.IsNullOrEmpty(title))
+				events = events.Where(evt => evt.Title.Contains(title, StringComparison.CurrentCultureIgnoreCase));
+
+			if (from.HasValue)
+				events = events.Where(evt => from < evt.StartAt);
+
+			if (to.HasValue)
+				events = events.Where(evt => to > evt.EndAt);
+
+			return events
+					.Skip((page - 1) * pageSize)
+					.Take(pageSize);
+		}
+
 		public Event? GetById(Guid id)
 			=> _events.FirstOrDefault(e => e.Id == id);
 

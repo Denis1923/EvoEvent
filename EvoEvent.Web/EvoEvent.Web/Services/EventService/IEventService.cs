@@ -6,6 +6,14 @@ namespace EvoEvent.Web.Services
 	{
 		IEnumerable<Event> GetAll();
 
+		IEnumerable<Event> GetAllAboutWhen(
+			IEnumerable<Event> events, 
+			string? title, 
+			DateTime? from, 
+			DateTime? to, 
+			int page = 1, 
+			int pageSize = 10);
+
 		Event? GetById(Guid id);
 
 		Guid AddEvent(Event evt);

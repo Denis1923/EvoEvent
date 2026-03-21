@@ -1,4 +1,5 @@
 ﻿using EvoEvent.Web.Models;
+using EvoEvent.Web.Models.Response;
 using EvoEvent.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -21,38 +22,38 @@ namespace EvoEvent.Web.Controllers
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult GetAll(string? title, DateTime? from, DateTime? to)
+		public IActionResult GetAll(string? title, DateTime? from, DateTime? to, int? page = 1, int? pageSize = 10)
 		{
 			var events = _eventService.GetAll();
-
-			if (!string.IsNullOrEmpty(title))
-				events = events.Where(evt => evt.Title.Contains(title, StringComparison.CurrentCultureIgnoreCase));
-
-			if (from != null)
-				events = events.Where(evt => from < evt.StartAt);
-
-			if (to != null)
-				events = events.Where(evt => to > evt.EndAt);
-
-			bool isEvents = events.Any();
+			var eventsMod = _eventService.GetAllAboutWhen(events, title, from, to, page.Value, pageSize.Value);
+			bool isEvents = eventsMod.Any();
 
 			var evtResponse = isEvents 
-				?  events.Select(e => new EventResponseDto
-				{
-					Id = e.Id,
-					Title = e.Title, 
-					Description	= e.Description, 	 
-					StartAt	= e.StartAt,
-					EndAt = e.EndAt,
-				}) 
+				? eventsMod
+					.Select(e => new EventResponseDto
+					{
+						Id = e.Id,
+						Title = e.Title, 
+						Description	= e.Description, 	 
+						StartAt	= e.StartAt,
+						EndAt = e.EndAt
+					}) 
 				: [];
 
-			var response = new ResultResponse<IEnumerable<EventResponseDto>>()
+			var paginatedResultEvent = new PaginatedResultEvent()
+			{
+				CurrentPage = page.Value,
+				CurrentPageSize = eventsMod.Count(),
+				FullCountEvents = events.Count(),
+				Events = evtResponse
+			};
+
+			var response = new ResultResponse<PaginatedResultEvent>()
 			{
 				IsSuccess = isEvents,
 				Message = isEvents ? "" : "Событий нет",
 				StatusCode = isEvents ? HttpStatusCode.OK : HttpStatusCode.NotFound,
-				Data = evtResponse
+				Data = paginatedResultEvent
 			};
 
 			return isEvents ? Ok(response) : NotFound(response);
