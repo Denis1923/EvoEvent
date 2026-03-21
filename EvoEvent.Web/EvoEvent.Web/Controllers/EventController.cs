@@ -21,9 +21,19 @@ namespace EvoEvent.Web.Controllers
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult GetAll()
+		public IActionResult GetAll(string? title, DateTime? from, DateTime? to)
 		{
 			var events = _eventService.GetAll();
+
+			if (!string.IsNullOrEmpty(title))
+				events = events.Where(evt => evt.Title.Contains(title, StringComparison.CurrentCultureIgnoreCase));
+
+			if (from != null)
+				events = events.Where(evt => from < evt.StartAt);
+
+			if (to != null)
+				events = events.Where(evt => to > evt.EndAt);
+
 			bool isEvents = events.Any();
 
 			var evtResponse = isEvents 
