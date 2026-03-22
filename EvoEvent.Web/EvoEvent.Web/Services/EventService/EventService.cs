@@ -65,7 +65,7 @@ namespace EvoEvent.Web.Services
 
 		public Guid AddEvent(Event newEvt)
 		{
-			if (newEvt.StartAt <= newEvt.EndAt)
+			if (newEvt.StartAt >= newEvt.EndAt)
 				throw new ValidationException("Дата окончания должна быть позже Даты начала");
 
 			_events.Add(newEvt);
