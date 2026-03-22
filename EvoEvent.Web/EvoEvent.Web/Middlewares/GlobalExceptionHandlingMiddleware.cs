@@ -1,4 +1,5 @@
-﻿using EvoEvent.Web.Models;
+﻿using EvoEvent.Web.Exceptions;
+using EvoEvent.Web.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 
@@ -27,11 +28,11 @@ namespace EvoEvent.Web.Middlewares
 			}
 			catch (Exception ex)
 			{
-				await HandleExeption(context, ex);
+				await HandleException(context, ex);
 			}
 		}
 
-		private async Task HandleExeption(HttpContext context, Exception ex)
+		private async Task HandleException(HttpContext context, Exception ex)
 		{
 			_logger.LogError(ex, $"Exception: {context.Request.Method}: {context.Request.Path}");
 
@@ -57,8 +58,8 @@ namespace EvoEvent.Web.Middlewares
 		{
 			return ex switch
 			{
-				ValidationException valEx => StatusCodes.Status400BadRequest,
-				HttpRequestException reqExc => StatusCodes.Status404NotFound,
+				ValidationException validationEx => StatusCodes.Status400BadRequest,
+				NotFoundException notFoundEx => StatusCodes.Status404NotFound,
 				_ => StatusCodes.Status500InternalServerError
 			};
 		}

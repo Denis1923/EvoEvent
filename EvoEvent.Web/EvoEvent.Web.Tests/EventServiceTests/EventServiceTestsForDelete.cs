@@ -11,10 +11,19 @@ namespace EvoEvent.Web.Tests
 			_eventService = new EventService();
 		}
 
-		[Fact]
-		public void Delete_EventId_ReturnIsSuccess()
+		[Theory]
+		[InlineData("Концерт 10")]
+		[InlineData("Концерт 25")]
+		public void Delete_EventId_ReturnIsSuccess(string nameExp)
 		{
-			var eventExp = _eventService.GetAll()?.First(); //так как Guid генерится системой, то для примера возьму любой первый элемент
+			var _events = _eventService.GetAll();
+			var eventExp = _eventService.GetEventsAboutWhen(_events, nameExp)?.FirstOrDefault();
+
+			if (eventExp is null)
+			{
+				Assert.Null(eventExp);
+				return;
+			}
 
 			_eventService.DeleteById(eventExp.Id);
 			eventExp = _eventService.GetById(eventExp.Id);

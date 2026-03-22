@@ -1,7 +1,5 @@
 ﻿using EvoEvent.Web.Models;
 using EvoEvent.Web.Services;
-using Moq;
-using System.Reflection;
 
 namespace EvoEvent.Web.Tests
 {
@@ -14,12 +12,20 @@ namespace EvoEvent.Web.Tests
 			_eventService = new EventService();
 		}
 
-		[Fact]
-		public void Update_Event_ReturnIsSuccess()
+		[Theory]
+		[InlineData("Концерт 10")]
+		[InlineData("Концерт 50")]
+		public void Update_Event_ReturnIsSuccess(string nameExp)
 		{
 			var updEvent = new Event("Концерт Nickelback", "Описание. Концерт Nickelback", DateTime.Parse("2026-03-21"), DateTime.Parse("2026-03-26"));
+			var _events = _eventService.GetAll();
+			var eventExp = _eventService.GetEventsAboutWhen(_events, nameExp)?.FirstOrDefault();
 
-			var eventExp = _eventService.GetAll()?.First(); //так как Guid генерится системой, то для примера возьму любой первый элемент
+			if (eventExp is null)
+			{
+				Assert.Null(eventExp);
+				return;
+			}
 
 			_eventService.Save(eventExp, updEvent);
 

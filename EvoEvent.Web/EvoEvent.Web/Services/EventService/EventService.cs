@@ -8,35 +8,35 @@ namespace EvoEvent.Web.Services
 
 		public EventService()
 		{
-			for (int i = 1; i < 22; i++)
-			{
-				if (i % 2 == 0)
-					_events.Add(new Event($"{i}. Концерт #{i}", $"Описание: Концерт #{i}", DateTime.Now.AddDays(i), DateTime.Now.AddDays(i+2)));
-				else
-					_events.Add(new Event($"{i}. Концерт #{i}", $"Описание: Концерт #{i}", DateTime.Now.AddDays(-i), DateTime.Now.AddDays(i + 4)));
-			}
+			
 		}
 
 		public IEnumerable<Event> GetAll() 
 			=> _events;
 
-		public IEnumerable<Event> GetAllAboutWhen(
+		public IEnumerable<Event> GetEventsAboutWhen(
 			IEnumerable<Event> events,
 			string? title = null,
 			DateTime? from = null,
-			DateTime? to = null,
-			int page = 1,
-			int pageSize = 10)
+			DateTime? to = null)
 		{
 			if (!string.IsNullOrEmpty(title))
 				events = events.Where(evt => evt.Title.Contains(title, StringComparison.CurrentCultureIgnoreCase));
 
 			if (from.HasValue)
-				events = events.Where(evt => from < evt.StartAt);
+				events = events.Where(evt => from <= evt.StartAt);
 
 			if (to.HasValue)
-				events = events.Where(evt => to > evt.EndAt);
+				events = events.Where(evt => to >= evt.EndAt);
 
+			return events;
+		}
+
+		public IEnumerable<Event> GetEventsAboutPaginated(
+			IEnumerable<Event> events,
+			int page = 1,
+			int pageSize = 10)
+		{
 			return events
 					.Skip((page - 1) * pageSize)
 					.Take(pageSize);

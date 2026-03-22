@@ -1,4 +1,5 @@
-﻿using EvoEvent.Web.Models;
+﻿using EvoEvent.Web.Exceptions;
+using EvoEvent.Web.Models;
 using EvoEvent.Web.Models.Response;
 using EvoEvent.Web.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -25,38 +26,41 @@ namespace EvoEvent.Web.Controllers
 		public IActionResult GetAll(string? title, DateTime? from, DateTime? to, int? page = 1, int? pageSize = 10)
 		{
 			var events = _eventService.GetAll();
-			var eventsMod = _eventService.GetAllAboutWhen(events, title, from, to, page.Value, pageSize.Value);
+			var eventsMod = _eventService.GetEventsAboutWhen(events, title, from, to);			
 			bool isEvents = eventsMod.Any();
 
-			var evtResponse = isEvents 
-				? eventsMod
+			if (!isEvents)
+				throw new NotFoundException($"Событий нет");
+
+			var fullFilterCount = eventsMod.Count();
+			eventsMod = _eventService.GetEventsAboutPaginated(eventsMod, page.Value, pageSize.Value);
+
+			var evtResponse = eventsMod
 					.Select(e => new EventResponseDto
 					{
 						Id = e.Id,
-						Title = e.Title, 
-						Description	= e.Description, 	 
-						StartAt	= e.StartAt,
+						Title = e.Title,
+						Description = e.Description,
+						StartAt = e.StartAt,
 						EndAt = e.EndAt
-					}) 
-				: [];
+					});
 
 			var paginatedResultEvent = new PaginatedResultEvent()
 			{
 				CurrentPage = page.Value,
 				CurrentPageSize = eventsMod.Count(),
-				FullCountEvents = events.Count(),
+				FullCountEvents = fullFilterCount,
 				Events = evtResponse
 			};
 
 			var response = new ResultResponse<PaginatedResultEvent>()
 			{
-				IsSuccess = isEvents,
-				Message = isEvents ? "" : "Событий нет",
-				StatusCode = isEvents ? HttpStatusCode.OK : HttpStatusCode.NotFound,
+				IsSuccess = true,
+				StatusCode = HttpStatusCode.OK,
 				Data = paginatedResultEvent
 			};
 
-			return isEvents ? Ok(response) : NotFound(response);
+			return Ok(response);
 		}
 
 		/// <summary>
@@ -70,26 +74,26 @@ namespace EvoEvent.Web.Controllers
 			var extEvent = _eventService.GetById(id);
 			bool isEvent = extEvent != null;
 
-			var evtResponse = isEvent
-				? new EventResponseDto
-				{
-					Id = extEvent.Id,
-					Title = extEvent.Title,
-					Description = extEvent.Description,
-					StartAt = extEvent.StartAt,
-					EndAt = extEvent.EndAt
-				}
-				: new();
+			if (!isEvent)
+				throw new NotFoundException($"Не найдено событие с таким ИД {id}");
+
+			var evtResponse = new EventResponseDto
+			{
+				Id = extEvent.Id,
+				Title = extEvent.Title,
+				Description = extEvent.Description,
+				StartAt = extEvent.StartAt,
+				EndAt = extEvent.EndAt
+			};
 
 			var response = new ResultResponse<EventResponseDto>()
 			{
-				IsSuccess = isEvent,
-				Message = isEvent ? "" : $"События с таким id: {id}, нет",
-				StatusCode = isEvent ? HttpStatusCode.OK : HttpStatusCode.NotFound,
+				IsSuccess = true,
+				StatusCode = HttpStatusCode.OK,
 				Data = evtResponse
 			};
 
-			return isEvent ? Ok(response) : NotFound(response);
+			return Ok(response);
 		}
 
 		/// <summary>
@@ -119,7 +123,7 @@ namespace EvoEvent.Web.Controllers
 			var response = new ResultResponse<EventResponseDto>
 			{
 				IsSuccess = true,
-				StatusCode= HttpStatusCode.OK,
+				StatusCode= HttpStatusCode.Created,
 				Data = evtResponse
 			};
 
@@ -138,15 +142,7 @@ namespace EvoEvent.Web.Controllers
 			var extEvent = _eventService.GetById(id);
 
 			if (extEvent is null)
-			{
-				var response = new ResponseBase
-				{
-					IsSuccess = false,
-					StatusCode = HttpStatusCode.NotFound
-				};
-
-				return NotFound(response);
-			}
+				throw new NotFoundException($"Не найдено событие с таким ИД {id}");
 
 			Event updEvent = new Event(
 				eventDto.Title,
@@ -168,15 +164,7 @@ namespace EvoEvent.Web.Controllers
 		public IActionResult Delete(Guid id)
 		{
 			if (!_eventService.DeleteById(id))
-			{
-				var response = new ResponseBase
-				{
-					IsSuccess = false,
-					StatusCode = HttpStatusCode.NotFound
-				};
-
-				return NotFound(response);
-			}
+				throw new NotFoundException($"Не было удалено событие.ИД {id}"); 
 
 			return NoContent();
 		}

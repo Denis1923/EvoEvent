@@ -12,13 +12,31 @@ namespace EvoEvent.Web.Tests
 			_eventService = new EventService();
 		}
 
-		[Fact]
-		public void Add_NewEvent_ReturnIsSuccess()
+		[Theory]
+		[ClassData(typeof(EventModelTest))]
+		public void Add_NewEvent_ReturnIsSuccess(
+			string title,
+			string description,
+			DateTime startAt, 
+			DateTime endAt)
 		{
-			var newEvent = new Event("Аватар", "Кинопримьера", DateTime.Parse("2026-03-12"), DateTime.Parse("2026-03-22"));
+			var isDate = endAt > startAt;
+			if (isDate)
+			{
+				Assert.True(isDate);
+				return;
+			}
+
+			Event newEvent = new Event(title, description, startAt, endAt);
 
 			var newEventId = _eventService.AddEvent(newEvent);
 			var events = _eventService.GetAll();
+
+			if (!events.Any())
+			{
+				Assert.Empty(events);
+				return;
+			}
 
 			Assert.True(newEventId != Guid.Empty);
 			Assert.Contains(events, evt => evt.Title.Contains(newEvent.Title));

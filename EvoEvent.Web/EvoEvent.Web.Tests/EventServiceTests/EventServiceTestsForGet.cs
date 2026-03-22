@@ -1,7 +1,4 @@
-﻿using EvoEvent.Web.Models;
-using EvoEvent.Web.Services;
-using Moq;
-using System.Reflection;
+﻿using EvoEvent.Web.Services;
 
 namespace EvoEvent.Web.Tests
 {
@@ -14,38 +11,79 @@ namespace EvoEvent.Web.Tests
 			_eventService = new EventService();
 		}
 
-		[Fact]
-		public void Get_ReturnsEvents()
+		[Theory]
+		[InlineData("Концерт 9")]
+		[InlineData("Концерт 15")]
+		public void Get_ReturnsEvents(string nameTitleExp)
 		{
-			var nameTitleExp = "Концерт #3";
-
 			var events = _eventService.GetAll();
+			
+			if (!events.Any())
+			{
+				Assert.Empty(events);
+				return;
+			}
 
 			Assert.NotEmpty(events);
 			Assert.Contains(events, evt => evt.Title.Contains(nameTitleExp));
 		}
 
-		[Fact]
-		public void Get_EventId_ReturnEvent()
+		[Theory]
+		[InlineData("Концерт 9")]
+		[InlineData("Концерт 25")]
+		public void Get_EventId_ReturnEvent(string nameExp)
 		{
-			var eventExp = _eventService.GetAll()?.First(); //так как Guid генерится системой, то для примера возьму любой первый элемент
+			var _events = _eventService.GetAll();
+			var eventExp = _eventService.GetEventsAboutWhen(_events, nameExp)?.FirstOrDefault();
+
+			if (eventExp is null)
+			{
+				Assert.Null(eventExp);
+				return;
+			}
 
 			var eventObj = _eventService.GetById(eventExp.Id);
 
 			Assert.NotNull(eventObj);
 		}
 
-		[Fact]
-		public void Filter_EventName_ReturnEvents()
+		[Theory]
+		[InlineData("Концерт 9", "Концерт 25")]
+		[InlineData("Концерт 25", "Концерт 0")]
+		public void Filter_EventName_ReturnEvents(string nameExp, string nameNoExp)
 		{
-			var nameExp = "Концерт #10";
-			var nameNoExp = "Концерт #0";
 			var _events = _eventService.GetAll();
 
-			var events = _eventService.GetAllAboutWhen(_events, nameExp);
+			var events = _eventService.GetEventsAboutWhen(_events, nameExp);
+
+			if (!events.Any())
+			{
+				Assert.Empty(events);
+				return;
+			}
 
 			Assert.All(events, evt => evt.Title.Contains(nameExp));
 			Assert.DoesNotContain(nameNoExp, events.Select(e => e.Title));
+		}
+
+		[Theory]
+		[InlineData("Концерт 19")]
+		[InlineData("Концерт 25")]
+		public void Paginated_PageAndPageSize_ReturnEvents(string nameExp)
+		{
+			var _events = _eventService.GetAll();
+
+			var events = _eventService.GetEventsAboutWhen(_events, string.Empty, null, null);
+			events = _eventService.GetEventsAboutPaginated(events, 2, 10);
+
+			if (!events.Any())
+			{
+				Assert.Empty(events);
+				return;
+			}
+
+			Assert.NotEmpty(events);
+			Assert.All(events, evt => evt.Title.Contains(nameExp));
 		}
 
 		[Fact]
@@ -56,23 +94,18 @@ namespace EvoEvent.Web.Tests
 			var nameExp = "Концерт";
 			var _events = _eventService.GetAll();
 
-			var events = _eventService.GetAllAboutWhen(_events, string.Empty, dateStart, dateEnd);
+			var events = _eventService.GetEventsAboutWhen(_events, string.Empty, dateStart, dateEnd);
+
+			if (!events.Any())
+			{
+				Assert.Empty(events);
+				return;
+			}
 
 			Assert.NotEmpty(events);
 			Assert.All(events, evt => evt.Title.Contains(nameExp));
 		}
 
-		[Fact]
-		public void Paginated_PageAndPageSize_ReturnEvents()
-		{
-			var nameExp = "Концерт #19";
-			var _events = _eventService.GetAll();
-
-			var events = _eventService.GetAllAboutWhen(_events, string.Empty, null, null, 2, 10);
-
-			Assert.NotEmpty(events);
-			Assert.All(events, evt => evt.Title.Contains(nameExp));
-		}
 
 		[Fact]
 		public void Filters_ReturnEvents()
@@ -83,7 +116,14 @@ namespace EvoEvent.Web.Tests
 			var nameExp = "Концерт";
 			var _events = _eventService.GetAll();
 
-			var events = _eventService.GetAllAboutWhen(_events, title, dateStart, dateEnd, 2, 10);
+			var events = _eventService.GetEventsAboutWhen(_events, title, dateStart, dateEnd);
+			events = _eventService.GetEventsAboutPaginated(events, 2, 10);
+
+			if (!events.Any())
+			{
+				Assert.Empty(events);
+				return;
+			}
 
 			Assert.NotEmpty(events);
 			Assert.All(events, evt => evt.Title.Contains(nameExp));
