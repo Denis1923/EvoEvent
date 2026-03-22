@@ -1,5 +1,7 @@
-﻿using EvoEvent.Web.Models;
+﻿using EvoEvent.Web.Exceptions;
+using EvoEvent.Web.Models;
 using EvoEvent.Web.Services;
+using System.ComponentModel.DataAnnotations;
 
 namespace EvoEvent.Web.Tests
 {
@@ -20,26 +22,22 @@ namespace EvoEvent.Web.Tests
 			DateTime startAt, 
 			DateTime endAt)
 		{
-			var isDate = endAt > startAt;
-			if (isDate)
+			Event newEvent = new Event(title, description, startAt, endAt);
+
+			var exc = Assert.Throws<ValidationException>(
+				() => _eventService.AddEvent(newEvent));
+
+			if (exc != null)
 			{
-				Assert.True(isDate);
+				Assert.Equal($"Дата окончания должна быть позже Даты начала", exc.Message);
 				return;
 			}
-
-			Event newEvent = new Event(title, description, startAt, endAt);
 
 			var newEventId = _eventService.AddEvent(newEvent);
 			var events = _eventService.GetAll();
 
-			if (!events.Any())
-			{
-				Assert.Empty(events);
-				return;
-			}
-
 			Assert.True(newEventId != Guid.Empty);
-			Assert.Contains(events, evt => evt.Title.Contains(newEvent.Title));
+			Assert.Contains(events, evt => evt.Id == newEventId);
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using EvoEvent.Web.Services;
+﻿using EvoEvent.Web.Exceptions;
+using EvoEvent.Web.Services;
 
 namespace EvoEvent.Web.Tests
 {
@@ -12,23 +13,22 @@ namespace EvoEvent.Web.Tests
 		}
 
 		[Theory]
-		[InlineData("Концерт 10")]
-		[InlineData("Концерт 25")]
-		public void Delete_EventId_ReturnIsSuccess(string nameExp)
-		{
-			var _events = _eventService.GetAll();
-			var eventExp = _eventService.GetEventsAboutWhen(_events, nameExp)?.FirstOrDefault();
+		[InlineData("57577abb-0603-45a0-9c51-498dbfd9a340")]
+		public void Delete_EventId_ReturnIsSuccess(string entityIdstr)
+		{			
+			if (!Guid.TryParse(entityIdstr, out Guid entityId))
+				Assert.True(entityId == Guid.Empty);
 
-			if (eventExp is null)
+			var exc = Assert.Throws<NotFoundException>(
+				() => _eventService.GetById(entityId));
+
+			if (exc != null)
 			{
-				Assert.Null(eventExp);
+				Assert.Equal($"Не найдено событие с таким ИД {entityId}", exc?.Message);
 				return;
 			}
 
-			_eventService.DeleteById(eventExp.Id);
-			eventExp = _eventService.GetById(eventExp.Id);
-
-			Assert.Null(eventExp);
+			Assert.True(_eventService.DeleteById(entityId));
 		}
 	}
 }

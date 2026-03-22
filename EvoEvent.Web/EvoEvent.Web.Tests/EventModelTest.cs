@@ -13,7 +13,7 @@ namespace EvoEvent.Web.Tests
 					{ 
 						$"{i}. Концерт {i}", 
 						$"Описание: Концерт {i}", 
-						DateTime.Now.AddDays(i), 
+						DateTime.Now.AddDays(i+1), 
 						DateTime.Now.AddDays(i + 2) 
 					};
 				else

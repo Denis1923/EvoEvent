@@ -27,11 +27,6 @@ namespace EvoEvent.Web.Controllers
 		{
 			var events = _eventService.GetAll();
 			var eventsMod = _eventService.GetEventsAboutWhen(events, title, from, to);			
-			bool isEvents = eventsMod.Any();
-
-			if (!isEvents)
-				throw new NotFoundException($"Событий нет");
-
 			var fullFilterCount = eventsMod.Count();
 			eventsMod = _eventService.GetEventsAboutPaginated(eventsMod, page.Value, pageSize.Value);
 
@@ -72,10 +67,6 @@ namespace EvoEvent.Web.Controllers
 		public IActionResult GetById(Guid id)
 		{
 			var extEvent = _eventService.GetById(id);
-			bool isEvent = extEvent != null;
-
-			if (!isEvent)
-				throw new NotFoundException($"Не найдено событие с таким ИД {id}");
 
 			var evtResponse = new EventResponseDto
 			{
@@ -141,9 +132,6 @@ namespace EvoEvent.Web.Controllers
 		{
 			var extEvent = _eventService.GetById(id);
 
-			if (extEvent is null)
-				throw new NotFoundException($"Не найдено событие с таким ИД {id}");
-
 			Event updEvent = new Event(
 				eventDto.Title,
 				eventDto.Description,
@@ -163,9 +151,7 @@ namespace EvoEvent.Web.Controllers
 		[HttpDelete("{id:guid}")]
 		public IActionResult Delete(Guid id)
 		{
-			if (!_eventService.DeleteById(id))
-				throw new NotFoundException($"Не было удалено событие.ИД {id}"); 
-
+			_eventService.DeleteById(id);
 			return NoContent();
 		}
 	}
