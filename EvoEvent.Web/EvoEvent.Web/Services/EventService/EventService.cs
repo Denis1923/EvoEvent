@@ -32,10 +32,10 @@ namespace EvoEvent.Web.Services
 				events = events.Where(evt => evt.Title.Contains(title, StringComparison.CurrentCultureIgnoreCase));
 
 			if (from.HasValue)
-				events = events.Where(evt => from <= evt.StartAt);
+				events = events.Where(evt => from.Value.Date <= evt.StartAt.Date);
 
 			if (to.HasValue)
-				events = events.Where(evt => to >= evt.EndAt);
+				events = events.Where(evt => to.Value.Date >= evt.EndAt.Date);
 
 			if (!events.Any())
 				throw new NotFoundException($"Событий нет");

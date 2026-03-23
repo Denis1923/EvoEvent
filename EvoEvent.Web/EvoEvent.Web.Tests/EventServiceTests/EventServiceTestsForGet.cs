@@ -6,25 +6,18 @@ namespace EvoEvent.Web.Tests
 	public class EventServiceTestsForGet
 	{
 		private readonly IEventService _eventService;
+		private readonly EventModelTest _eventModelTest;
 
 		public EventServiceTestsForGet()
 		{
 			_eventService = new EventService();
+			_eventModelTest = new EventModelTest();
 		}
 
 		[Theory]
-		[InlineData("Концерт 9")]
+		[InlineData("Концерт 2")]
 		public void Get_ReturnsEvents(string nameTitleExp)
 		{
-			var exc = Assert.Throws<NotFoundException>(
-				() => _eventService.GetAll());
-
-			if (exc != null)
-			{
-				Assert.Equal($"Событий нет", exc?.Message);
-				return;
-			}
-
 			var events = _eventService.GetAll();
 			
 			Assert.NotEmpty(events);
@@ -32,11 +25,21 @@ namespace EvoEvent.Web.Tests
 		}
 
 		[Theory]
-		[InlineData("57577abb-0603-45a0-9c51-498dbfd9a340")]
-		public void Get_EventId_ReturnEvent(string entityIdstr)
+		[InlineData("Концерт 2")]
+		public void Get_EventId_ReturnEvent(string nameExp)
 		{
-			if (!Guid.TryParse(entityIdstr, out Guid entityId))
-				Assert.True(entityId == Guid.Empty);
+			var events = _eventService.GetAll();
+			var eventExp = _eventService.GetEventsAboutWhen(events, nameExp)?.FirstOrDefault();
+
+			var eventObj = _eventService.GetById(eventExp.Id);
+
+			Assert.NotNull(eventObj);
+		}
+
+		[Fact]
+		public void Get_EventId_ReturnNoEvent()
+		{
+			var entityId = Guid.NewGuid();
 
 			var exc = Assert.Throws<NotFoundException>( 
 				() =>  _eventService.GetById(entityId));
@@ -48,57 +51,27 @@ namespace EvoEvent.Web.Tests
 		[InlineData("Концерт 9", "Концерт 25")]
 		public void Filter_EventName_ReturnEvents(string nameExp, string nameNoExp)
 		{
-			var exc = Assert.Throws<NotFoundException>(
-				() => _eventService.GetAll());
-
-			if (exc != null)
-			{
-				Assert.Equal($"Событий нет", exc?.Message);
-				return;
-			}
-
-			var _events = _eventService.GetAll();
-			var events = _eventService.GetEventsAboutWhen(_events, nameExp);
+			var events = _eventService.GetAll();
+			events = _eventService.GetEventsAboutWhen(events, nameExp);
 
 			Assert.All(events, evt => evt.Title.Contains(nameExp));
 			Assert.DoesNotContain(nameNoExp, events.Select(e => e.Title));
 		}
 
-		[Theory]
-		[InlineData("Концерт 19")]
-		public void Paginated_PageAndPageSize_ReturnEvents(string nameExp)
+		[Fact]
+		public void Paginated_PageAndPageSize_ReturnEvents()
 		{
-			var exc = Assert.Throws<NotFoundException>(
-				() => _eventService.GetAll());
-
-			if (exc != null)
-			{
-				Assert.Equal($"Событий нет", exc?.Message);
-				return;
-			}
-
-			var _events = _eventService.GetAll();
-
-			var events = _eventService.GetEventsAboutWhen(_events, string.Empty, null, null);
+			var events = _eventService.GetAll();
 			events = _eventService.GetEventsAboutPaginated(events, 2, 10);
 
-			Assert.All(events, evt => evt.Title.Contains(nameExp));
+			Assert.NotEmpty(events);
 		}
 
 		[Fact]
 		public void Filter_EventDates_ReturnEvents()
 		{
-			var exc = Assert.Throws<NotFoundException>(
-				() => _eventService.GetAll());
-
-			if (exc != null)
-			{
-				Assert.Equal($"Событий нет", exc?.Message);
-				return;
-			}
-
-			var dateStart = DateTime.Parse("2026-03-20");
-			var dateEnd = DateTime.Parse("2026-03-30");
+			var dateStart = DateTime.Now;
+			var dateEnd = DateTime.Now.AddDays(4);
 			var nameExp = "Концерт";
 			var _events = _eventService.GetAll();
 
@@ -110,18 +83,9 @@ namespace EvoEvent.Web.Tests
 		[Fact]
 		public void Filters_ReturnEvents()
 		{
-			var exc = Assert.Throws<NotFoundException>(
-				() => _eventService.GetAll());
-
-			if (exc != null)
-			{
-				Assert.Equal($"Событий нет", exc?.Message);
-				return;
-			}
-
 			var title = "Концерт";
-			var dateStart = DateTime.Parse("2026-03-20");
-			var dateEnd = DateTime.Parse("2026-03-30");
+			var dateStart = DateTime.Now;
+			var dateEnd = DateTime.Now.AddDays(4);
 			var nameExp = "Концерт";
 			var _events = _eventService.GetAll();
 

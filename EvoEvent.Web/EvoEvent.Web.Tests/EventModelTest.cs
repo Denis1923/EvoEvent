@@ -1,32 +1,36 @@
-﻿using System.Collections;
+﻿using EvoEvent.Web.Models;
+using EvoEvent.Web.Services;
+using System.Collections;
 
 namespace EvoEvent.Web.Tests
 {
-	public class EventModelTest : IEnumerable<object[]>
+	public class EventModelTest
 	{
-		public IEnumerator<object[]> GetEnumerator()
+		private readonly IEventService _eventService;
+
+		public EventModelTest()
 		{
-			for (int i = 1; i < 22; i++)
-			{
-				if (i % 2 == 0)
-					yield return new object[] 
-					{ 
-						$"{i}. Концерт {i}", 
-						$"Описание: Концерт {i}", 
-						DateTime.Now.AddDays(i+1), 
-						DateTime.Now.AddDays(i + 2) 
-					};
-				else
-					yield return new object[] 
-					{ 
-						$"{i}. Концерт {i}", 
-						$"Описание: Концерт {i}", 
-						DateTime.Now.AddDays(-i), 
-						DateTime.Now.AddDays(i + 4) 
-					};
-			}
+			_eventService = new EventService();
+			InitializeDefaultData();
 		}
 
-		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+		private void InitializeDefaultData()
+		{
+			for (int i = 1; i < 12; i++)
+			{
+				if (i % 2 == 0)
+					_eventService.AddEvent(new Event(
+									$"{i}. Концерт {i}",
+									$"Описание: Концерт {i}",
+									DateTime.Now.AddDays(i),
+									DateTime.Now.AddDays(i + 2)));
+				else
+					_eventService.AddEvent(new Event(
+						$"{i}. Концерт {i}",
+						$"Описание: Концерт {i}",
+						DateTime.Now.AddDays(-i),
+						DateTime.Now.AddDays(i + 4)));
+			}
+		}
 	}
 }

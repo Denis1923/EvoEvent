@@ -8,30 +8,39 @@ namespace EvoEvent.Web.Tests
 	public class EventServiceTestsForCreate
 	{
 		private readonly IEventService _eventService;
+		private readonly EventModelTest _eventModelTest;
 
 		public EventServiceTestsForCreate()
 		{
 			_eventService = new EventService();
+			_eventModelTest = new EventModelTest();
 		}
 
 		[Theory]
-		[ClassData(typeof(EventModelTest))]
-		public void Add_NewEvent_ReturnIsSuccess(
+		[InlineData("Концерт", "Концерт в Москве", "2026-10-23", "2026-10-22")]		
+		public void Add_NewEvent_ReturnValidationException(
 			string title,
 			string description,
-			DateTime startAt, 
-			DateTime endAt)
+			string startAt,
+			string endAt)
 		{
-			Event newEvent = new Event(title, description, startAt, endAt);
+			Event newEvent = new Event(title, description, DateTime.Parse(startAt), DateTime.Parse(endAt));
 
 			var exc = Assert.Throws<ValidationException>(
 				() => _eventService.AddEvent(newEvent));
 
-			if (exc != null)
-			{
-				Assert.Equal($"Дата окончания должна быть позже Даты начала", exc.Message);
-				return;
-			}
+			Assert.Equal($"Дата окончания должна быть позже Даты начала", exc.Message);
+		}
+
+		[Theory]
+		[InlineData("Концерт", "Концерт в Москве", "2026-10-22", "2026-10-26")]
+		public void Add_NewEvent_ReturnIsSuccess(
+			string title,
+			string description,
+			string startAt,
+			string endAt)
+		{
+			Event newEvent = new Event(title, description, DateTime.Parse(startAt), DateTime.Parse(endAt));
 
 			var newEventId = _eventService.AddEvent(newEvent);
 			var events = _eventService.GetAll();

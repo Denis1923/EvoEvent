@@ -6,29 +6,34 @@ namespace EvoEvent.Web.Tests
 	public class EventServiceTestsForDelete
 	{
 		private readonly IEventService _eventService;
+		private readonly EventModelTest _eventModelTest;
 
 		public EventServiceTestsForDelete()
 		{
 			_eventService = new EventService();
+			_eventModelTest = new EventModelTest();
 		}
 
 		[Theory]
-		[InlineData("57577abb-0603-45a0-9c51-498dbfd9a340")]
-		public void Delete_EventId_ReturnIsSuccess(string entityIdstr)
-		{			
-			if (!Guid.TryParse(entityIdstr, out Guid entityId))
-				Assert.True(entityId == Guid.Empty);
+		[InlineData("Концерт 10")]
+		public void Delete_EventId_ReturnIsSuccess(string nameExp)
+		{
+			var _events = _eventService.GetAll();
+			var eventExp = _eventService.GetEventsAboutWhen(_events, nameExp)?.FirstOrDefault();
 
+			var isDelete = _eventService.DeleteById(eventExp.Id);
+
+			Assert.True(isDelete);
+		}
+
+		[Fact]
+		public void Delete_EventId_ReturnIsNoSuccess()
+		{			
+			var entityId = Guid.NewGuid();
 			var exc = Assert.Throws<NotFoundException>(
 				() => _eventService.GetById(entityId));
 
-			if (exc != null)
-			{
-				Assert.Equal($"Не найдено событие с таким ИД {entityId}", exc?.Message);
-				return;
-			}
-
-			Assert.True(_eventService.DeleteById(entityId));
+			Assert.Equal($"Не найдено событие с таким ИД {entityId}", exc?.Message);
 		}
 	}
 }
