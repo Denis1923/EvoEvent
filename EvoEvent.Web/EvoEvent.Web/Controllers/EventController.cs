@@ -1,4 +1,6 @@
-﻿using EvoEvent.Web.Models;
+﻿using EvoEvent.Web.Exceptions;
+using EvoEvent.Web.Models;
+using EvoEvent.Web.Models.Response;
 using EvoEvent.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -21,31 +23,39 @@ namespace EvoEvent.Web.Controllers
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult GetAll()
+		public IActionResult GetAll(string? title, DateTime? from, DateTime? to, int? page = 1, int? pageSize = 10)
 		{
 			var events = _eventService.GetAll();
-			bool isEvents = events.Any();
+			var eventsMod = _eventService.GetEventsAboutWhen(events, title, from, to);			
+			var fullFilterCount = eventsMod.Count();
+			eventsMod = _eventService.GetEventsAboutPaginated(eventsMod, page.Value, pageSize.Value);
 
-			var evtResponse = isEvents 
-				?  events.Select(e => new EventResponseDto
-				{
-					Id = e.Id,
-					Title = e.Title, 
-					Description	= e.Description, 	 
-					StartAt	= e.StartAt,
-					EndAt = e.EndAt,
-				}) 
-				: [];
+			var evtResponse = eventsMod
+					.Select(e => new EventResponseDto
+					{
+						Id = e.Id,
+						Title = e.Title,
+						Description = e.Description,
+						StartAt = e.StartAt,
+						EndAt = e.EndAt
+					});
 
-			var response = new ResultResponse<IEnumerable<EventResponseDto>>()
+			var paginatedResultEvent = new PaginatedResultEvent()
 			{
-				IsSuccess = isEvents,
-				Message = isEvents ? "" : "Событий нет",
-				StatusCode = isEvents ? HttpStatusCode.OK : HttpStatusCode.NotFound,
-				Data = evtResponse
+				CurrentPage = page.Value,
+				CurrentPageSize = eventsMod.Count(),
+				FullCountEvents = fullFilterCount,
+				Events = evtResponse
 			};
 
-			return isEvents ? Ok(response) : NotFound(response);
+			var response = new ResultResponse<PaginatedResultEvent>()
+			{
+				IsSuccess = true,
+				StatusCode = HttpStatusCode.OK,
+				Data = paginatedResultEvent
+			};
+
+			return Ok(response);
 		}
 
 		/// <summary>
@@ -57,28 +67,24 @@ namespace EvoEvent.Web.Controllers
 		public IActionResult GetById(Guid id)
 		{
 			var extEvent = _eventService.GetById(id);
-			bool isEvent = extEvent != null;
 
-			var evtResponse = isEvent
-				? new EventResponseDto
-				{
-					Id = extEvent.Id,
-					Title = extEvent.Title,
-					Description = extEvent.Description,
-					StartAt = extEvent.StartAt,
-					EndAt = extEvent.EndAt
-				}
-				: new();
+			var evtResponse = new EventResponseDto
+			{
+				Id = extEvent.Id,
+				Title = extEvent.Title,
+				Description = extEvent.Description,
+				StartAt = extEvent.StartAt,
+				EndAt = extEvent.EndAt
+			};
 
 			var response = new ResultResponse<EventResponseDto>()
 			{
-				IsSuccess = isEvent,
-				Message = isEvent ? "" : $"События с таким id: {id}, нет",
-				StatusCode = isEvent ? HttpStatusCode.OK : HttpStatusCode.NotFound,
+				IsSuccess = true,
+				StatusCode = HttpStatusCode.OK,
 				Data = evtResponse
 			};
 
-			return isEvent ? Ok(response) : NotFound(response);
+			return Ok(response);
 		}
 
 		/// <summary>
@@ -108,7 +114,7 @@ namespace EvoEvent.Web.Controllers
 			var response = new ResultResponse<EventResponseDto>
 			{
 				IsSuccess = true,
-				StatusCode= HttpStatusCode.OK,
+				StatusCode= HttpStatusCode.Created,
 				Data = evtResponse
 			};
 
@@ -125,17 +131,6 @@ namespace EvoEvent.Web.Controllers
 		public IActionResult Update(Guid id, [FromBody] EventRequestDto eventDto)
 		{
 			var extEvent = _eventService.GetById(id);
-
-			if (extEvent is null)
-			{
-				var response = new ResponseBase
-				{
-					IsSuccess = false,
-					StatusCode = HttpStatusCode.NotFound
-				};
-
-				return NotFound(response);
-			}
 
 			Event updEvent = new Event(
 				eventDto.Title,
@@ -156,17 +151,7 @@ namespace EvoEvent.Web.Controllers
 		[HttpDelete("{id:guid}")]
 		public IActionResult Delete(Guid id)
 		{
-			if (!_eventService.DeleteById(id))
-			{
-				var response = new ResponseBase
-				{
-					IsSuccess = false,
-					StatusCode = HttpStatusCode.NotFound
-				};
-
-				return NotFound(response);
-			}
-
+			_eventService.DeleteById(id);
 			return NoContent();
 		}
 	}

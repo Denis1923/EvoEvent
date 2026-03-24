@@ -1,3 +1,4 @@
+using EvoEvent.Web.Middlewares;
 using EvoEvent.Web.Models;
 using EvoEvent.Web.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -42,9 +43,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 app.MapControllers();
 
 app.Run();
