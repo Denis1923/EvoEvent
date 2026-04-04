@@ -41,9 +41,9 @@ namespace EvoEvent.Web.Services
 					_logger.LogError("Прервана фоновая обработка брони");
 					break;
 				}
-				catch (Exception)
+				catch (Exception ex)
 				{
-					_logger.LogError("Прервана фоновая обработка брони");
+					_logger.LogError($"Заверна фоновый процесс с ошибкой: {ex.Message}");
 				}
 			}
 
