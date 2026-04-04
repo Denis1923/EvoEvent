@@ -121,6 +121,7 @@ namespace EvoEvent.Web.Controllers
 		public IActionResult Create([FromBody] EventRequestDto eventDto)
 		{
 			Event newEvent = new Event(
+					Guid.NewGuid(),
 					eventDto.Title,
 					eventDto.Description,
 					eventDto.StartAt,
@@ -178,6 +179,7 @@ namespace EvoEvent.Web.Controllers
 			var extEvent = _eventService.GetById(id);
 
 			Event updEvent = new Event(
+				null,
 				eventDto.Title,
 				eventDto.Description,
 				eventDto.StartAt,

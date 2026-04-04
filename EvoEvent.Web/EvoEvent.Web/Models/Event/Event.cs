@@ -2,15 +2,15 @@
 
 public class Event
 {
-	public Guid Id { get; private set; }
+	public Guid Id { get; init; }
 	public string Title { get; private set; }
 	public string? Description { get; private set; }
 	public DateTime StartAt { get; private set; }
 	public DateTime EndAt { get; private set; }
 
-	public Event(string title, string? description, DateTime startAt, DateTime endAt)
+	public Event(Guid? id, string title, string? description, DateTime startAt, DateTime endAt)
 	{
-		Id = Guid.NewGuid();
+		Id = id ?? Guid.NewGuid();
 		Title = title;
 		Description = description;
 		StartAt = startAt;

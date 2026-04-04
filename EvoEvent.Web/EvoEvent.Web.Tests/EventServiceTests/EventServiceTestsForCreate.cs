@@ -24,7 +24,7 @@ namespace EvoEvent.Web.Tests
 			string startAt,
 			string endAt)
 		{
-			Event newEvent = new Event(title, description, DateTime.Parse(startAt), DateTime.Parse(endAt));
+			Event newEvent = new Event(Guid.NewGuid(), title, description, DateTime.Parse(startAt), DateTime.Parse(endAt));
 
 			var exc = Assert.Throws<ValidationException>(
 				() => _eventService.AddEvent(newEvent));
@@ -40,7 +40,7 @@ namespace EvoEvent.Web.Tests
 			string startAt,
 			string endAt)
 		{
-			Event newEvent = new Event(title, description, DateTime.Parse(startAt), DateTime.Parse(endAt));
+			Event newEvent = new Event(Guid.NewGuid(), title, description, DateTime.Parse(startAt), DateTime.Parse(endAt));
 
 			var newEventId = _eventService.AddEvent(newEvent);
 			var events = _eventService.GetAll();

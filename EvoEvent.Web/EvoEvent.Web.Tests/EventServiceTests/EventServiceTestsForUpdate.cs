@@ -16,10 +16,10 @@ namespace EvoEvent.Web.Tests
 		}
 
 		[Theory]
-		[InlineData("Концерт 10")]
+		[InlineData("Квест")]
 		public void Update_Event_ReturnIsSuccess(string nameExp)
 		{
-			var updEvent = new Event("Концерт Nickelback", "Описание. Концерт Nickelback", DateTime.Now, DateTime.Now.AddDays(4));
+			var updEvent = new Event(null, "Концерт Nickelback", "Описание. Концерт Nickelback", DateTime.Now, DateTime.Now.AddDays(4));
 			var _events = _eventService.GetAll();
 			var eventExp = _eventService.GetEventsAboutWhen(_events, nameExp)?.FirstOrDefault();
 
