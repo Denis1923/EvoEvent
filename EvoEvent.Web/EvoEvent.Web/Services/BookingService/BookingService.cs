@@ -1,19 +1,23 @@
 ﻿using EvoEvent.Web.Exceptions;
 using EvoEvent.Web.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace EvoEvent.Web.Services.BookingService
 {
 	public class BookingService : IBookingService
 	{
-		private readonly List<Booking> _bookings = new();
+		private readonly static List<Booking> _bookings = new();
 
 		public BookingService()
 		{
 			
 		}
 
-		public async Task<Guid> CreateBookingAsync(Guid eventId)
+		public async Task<Booking> CreateBookingAsync(Guid eventId)
 		{
+			if (eventId == Guid.Empty)
+				throw new ValidationException($"Передан не валидный параметр eventId = {eventId}");
+
 			var newBooking = new Booking
 			{
 				EventId = eventId
@@ -21,7 +25,7 @@ namespace EvoEvent.Web.Services.BookingService
 
 			_bookings.Add(newBooking);
 
-			return newBooking.Id;
+			return newBooking;
 		}
 
 		public async Task<Booking> GetBookingByIdAsync(Guid bookingId)
