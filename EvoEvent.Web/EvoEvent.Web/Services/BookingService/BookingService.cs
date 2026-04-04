@@ -1,12 +1,13 @@
 ﻿using EvoEvent.Web.Exceptions;
 using EvoEvent.Web.Models;
+using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 
 namespace EvoEvent.Web.Services.BookingService
 {
 	public class BookingService : IBookingService
 	{
-		private readonly static List<Booking> _bookings = new();
+		private readonly ConcurrentQueue<Booking> _queue = new();
 
 		public BookingService()
 		{
@@ -23,20 +24,26 @@ namespace EvoEvent.Web.Services.BookingService
 				EventId = eventId
 			};
 
-			_bookings.Add(newBooking);
+			_queue.Enqueue(newBooking);
 
 			return newBooking;
 		}
 
 		public async Task<Booking> GetBookingByIdAsync(Guid bookingId)
 		{
-			var booking = _bookings.FirstOrDefault(b => b.Id == bookingId);
+			var booking = _queue.FirstOrDefault(b => b.Id == bookingId);
 
 			if (booking == null)
 				throw new NotFoundException($"Не найдена бронь с таким ИД {bookingId}");
 
 			return booking;
 		}
-		
+
+		public bool TryBooking(out Booking booking)
+		{
+			booking = _queue.FirstOrDefault();
+
+			return booking != null;
+		}
 	}
 }

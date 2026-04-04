@@ -7,5 +7,7 @@ namespace EvoEvent.Web.Services.BookingService
 		Task<Booking> CreateBookingAsync(Guid eventId);
 
 		Task<Booking> GetBookingByIdAsync(Guid bookingId);
+
+		bool TryBooking(out Booking booking);
 	}
 }
