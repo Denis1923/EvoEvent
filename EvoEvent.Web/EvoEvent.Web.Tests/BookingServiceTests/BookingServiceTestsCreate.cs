@@ -17,7 +17,6 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 		private readonly Mock<IEventService> _mockEventService;
 		private readonly IEventService _eventService;
 		private readonly BookingService _bookingService;
-		private readonly EventModelTest eventModelTest;
 
 		public BookingServiceTestsCreate()
 		{
@@ -45,7 +44,7 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 
 		[Theory]
 		[InlineData("f47ac10b-58cc-4372-a567-0e02b2c3d479")]
-		public async void CreateBookingByEventId_ReturnIsStatusPending(string eventIdStr)
+		public async Task CreateBookingByEventId_ReturnIsStatusPending(string eventIdStr)
 		{
 			var eventId = Guid.Parse(eventIdStr);
 			var expectedEvent = new Event();
@@ -62,7 +61,7 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 
 		[Theory]
 		[InlineData("a3bb4d2e-8f4d-4d6e-9f5c-3b6f7e8d9a0b")]
-		public async void CreateBookingsByEventId_ReturnIsSuccess(string eventIdStr)
+		public async Task CreateBookingsByEventId_ReturnIsSuccess(string eventIdStr)
 		{
 			var eventId = Guid.Parse(eventIdStr);
 			var countBooking = 5;
@@ -84,7 +83,7 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 		}
 
 		[Fact]
-		public async void Add_NewBooking_ReturnValidationException()
+		public async Task Add_NewBooking_ReturnValidationException()
 		{
 			var eventId = Guid.Empty;
 
@@ -96,7 +95,7 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 
 		[Theory]
 		[InlineData("a3bb4d2e-8f4d-4d6e-9f5c-3b6f7e8d9a9b")]
-		public async void Add_NewBooking_ReturnNotFoundEvent(string eventIdStr)
+		public async Task Add_NewBooking_ReturnNotFoundEvent(string eventIdStr)
 		{
 			var eventId = Guid.Parse(eventIdStr);
 
@@ -108,12 +107,13 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 
 		[Theory]
 		[InlineData("a3bb4d2e-8f4d-4d6e-9f5c-3b6f7e8d9a0b")]
-		public async void Add_NewBooking_ReturnNotFoundDeleteEvent(string eventIdStr)
+		public async Task Add_NewBooking_ReturnNotFoundDeleteEvent(string eventIdStr)
 		{
 			var eventId = Guid.Parse(eventIdStr);
 
-			var eventExc = _eventService.GetById(eventId);
-			_eventService.DeleteById(eventId);
+			_mockEventService
+				.Setup(es => es.GetById(eventId))
+				.Returns((Event)null);
 
 			var exc = await Assert.ThrowsAsync<NotFoundException>(
 				async () => await _bookingService.CreateBookingAsync(eventId));

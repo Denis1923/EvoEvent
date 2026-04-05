@@ -8,16 +8,16 @@
 
 		public BookingStatus Status { get; set; }
 
-		public DateTime CreateAt { get; init; }
+		public DateTime CreatedAt { get; init; }
 
-		public DateTime ProcessedAt { get; set; }
+		public DateTime? ProcessedAt { get; set; }
 
-		public Booking(Guid? id, Guid eventId, BookingStatus status, DateTime createAt)
+		public Booking(Guid? id, Guid eventId, BookingStatus status, DateTime сreatedAt)
 		{
 			Id = id ?? Guid.NewGuid();
 			EventId = eventId;
 			Status = status;
-			CreateAt = createAt;
+			CreatedAt = сreatedAt;
 		}
 	}
 

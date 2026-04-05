@@ -81,10 +81,10 @@ namespace EvoEvent.Web.Tests
 		[Fact]
 		public void Filters_ReturnEvents()
 		{
-			var title = "Квест";
+			var title = "Тренинг";
 			var dateStart = DateTime.Now;
 			var dateEnd = DateTime.Now.AddDays(14);
-			var nameExp = "Квест";
+			var nameExp = "Тренинг";
 			var _events = _eventService.GetAll();
 
 			var events = _eventService.GetEventsAboutWhen(_events, title, dateStart, dateEnd);

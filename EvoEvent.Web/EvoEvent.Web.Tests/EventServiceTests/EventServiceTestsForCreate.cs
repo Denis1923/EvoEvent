@@ -1,5 +1,4 @@
-﻿using EvoEvent.Web.Exceptions;
-using EvoEvent.Web.Models;
+﻿using EvoEvent.Web.Models;
 using EvoEvent.Web.Services;
 using System.ComponentModel.DataAnnotations;
 

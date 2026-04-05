@@ -19,7 +19,7 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 
 		[Theory]
 		[InlineData("4c9e6679-7425-40de-944b-e07fc1f90ae7", "a3bb4d2e-8f4d-4d6e-9f5c-3b6f7e8d9a0b")]
-		public async void Get_BookingId_ReturnBooking(string bookingIdStr, string eventIdStr)
+		public async Task Get_BookingId_ReturnBooking(string bookingIdStr, string eventIdStr)
 		{
 			var bookingId = Guid.Parse(bookingIdStr);
 			var eventId = Guid.Parse(eventIdStr);
@@ -33,7 +33,7 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 		}
 
 		[Fact]
-		public async void Get_BookingId_ReturnNoBooking()
+		public async Task Get_BookingId_ReturnNoBooking()
 		{
 			var bookingId = Guid.NewGuid();
 

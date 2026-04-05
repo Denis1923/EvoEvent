@@ -97,7 +97,7 @@ namespace EvoEvent.Web.Controllers
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		[HttpGet("bookings/{id:guid}", Name = "GetBookingById")]
+		[HttpGet("~/bookings/{id:guid}", Name = "GetBookingById")]
 		public async Task<IActionResult> GetBookingByIdAsync(Guid id)
 		{
 			var booking = await _bookingService.GetBookingByIdAsync(id);

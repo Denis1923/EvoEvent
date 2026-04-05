@@ -19,7 +19,7 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 
 		[Theory]
 		[InlineData("7c9e6679-7425-40de-944b-e07fc1f90ae7")]
-		public async void Update_BookingId_ReturnBooking(string bookingIdStr)
+		public async Task Update_BookingId_ReturnBooking(string bookingIdStr)
 		{
 			var bookingId = Guid.Parse(bookingIdStr);
 			var status = BookingStatus.Confirmed;
