@@ -8,6 +8,7 @@ public class Event
 	public DateTime StartAt { get; private set; }
 	public DateTime EndAt { get; private set; }
 
+	public Event() { }
 	public Event(Guid? id, string title, string? description, DateTime startAt, DateTime endAt)
 	{
 		Id = id ?? Guid.NewGuid();

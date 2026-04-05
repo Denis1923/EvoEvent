@@ -85,7 +85,7 @@ namespace EvoEvent.Web.Tests
 		{
 			var title = "Квест";
 			var dateStart = DateTime.Now;
-			var dateEnd = DateTime.Now.AddDays(4);
+			var dateEnd = DateTime.Now.AddDays(14);
 			var nameExp = "Квест";
 			var _events = _eventService.GetAll();
 
