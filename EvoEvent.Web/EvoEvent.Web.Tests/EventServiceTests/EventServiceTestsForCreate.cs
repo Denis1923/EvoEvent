@@ -8,12 +8,10 @@ namespace EvoEvent.Web.Tests
 	public class EventServiceTestsForCreate
 	{
 		private readonly IEventService _eventService;
-		private readonly EventModelTest _eventModelTest;
 
 		public EventServiceTestsForCreate()
 		{
 			_eventService = new EventService();
-			_eventModelTest = new EventModelTest();
 		}
 
 		[Theory]

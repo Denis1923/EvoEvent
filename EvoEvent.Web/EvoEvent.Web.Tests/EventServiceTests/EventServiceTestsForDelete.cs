@@ -6,12 +6,10 @@ namespace EvoEvent.Web.Tests
 	public class EventServiceTestsForDelete
 	{
 		private readonly IEventService _eventService;
-		private readonly EventModelTest _eventModelTest;
 
 		public EventServiceTestsForDelete()
 		{
 			_eventService = new EventService();
-			_eventModelTest = new EventModelTest();
 		}
 
 		[Theory]
