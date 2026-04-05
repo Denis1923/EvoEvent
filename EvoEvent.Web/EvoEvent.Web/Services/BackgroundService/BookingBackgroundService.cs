@@ -24,14 +24,12 @@ namespace EvoEvent.Web.Services
 			{
 				try
 				{
-					bool isPending = _bookingService.TryBooking(out Booking booking)
-									&& booking.Status == BookingStatus.Pending;
-
-					_logger.LogInformation($"Запущена обработка брони.ИД = {booking.Id}");
-
-					if (isPending)
+					if (_bookingService.TryBooking(out Booking booking))
 					{
+						_logger.LogInformation($"Запущена обработка брони.ИД = {booking.Id}");
+
 						await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
+
 						booking.Status = BookingStatus.Confirmed;
 						booking.ProcessedAt = DateTime.Now;	
 					}
