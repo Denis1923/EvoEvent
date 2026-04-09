@@ -1,5 +1,4 @@
-﻿using EvoEvent.Web.Exceptions;
-using EvoEvent.Web.Models;
+﻿using EvoEvent.Web.Models;
 using EvoEvent.Web.Services;
 using System.ComponentModel.DataAnnotations;
 
@@ -8,12 +7,10 @@ namespace EvoEvent.Web.Tests
 	public class EventServiceTestsForCreate
 	{
 		private readonly IEventService _eventService;
-		private readonly EventModelTest _eventModelTest;
 
 		public EventServiceTestsForCreate()
 		{
 			_eventService = new EventService();
-			_eventModelTest = new EventModelTest();
 		}
 
 		[Theory]
@@ -24,7 +21,7 @@ namespace EvoEvent.Web.Tests
 			string startAt,
 			string endAt)
 		{
-			Event newEvent = new Event(title, description, DateTime.Parse(startAt), DateTime.Parse(endAt));
+			Event newEvent = new Event(Guid.NewGuid(), title, description, DateTime.Parse(startAt), DateTime.Parse(endAt));
 
 			var exc = Assert.Throws<ValidationException>(
 				() => _eventService.AddEvent(newEvent));
@@ -40,7 +37,7 @@ namespace EvoEvent.Web.Tests
 			string startAt,
 			string endAt)
 		{
-			Event newEvent = new Event(title, description, DateTime.Parse(startAt), DateTime.Parse(endAt));
+			Event newEvent = new Event(Guid.NewGuid(), title, description, DateTime.Parse(startAt), DateTime.Parse(endAt));
 
 			var newEventId = _eventService.AddEvent(newEvent);
 			var events = _eventService.GetAll();

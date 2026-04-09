@@ -2,6 +2,7 @@
 using EvoEvent.Web.Models;
 using EvoEvent.Web.Models.Response;
 using EvoEvent.Web.Services;
+using EvoEvent.Web.Services.BookingService;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -12,10 +13,14 @@ namespace EvoEvent.Web.Controllers
 	public class EventController : ControllerBase
 	{
 		private readonly IEventService _eventService;
+		private readonly IBookingService _bookingService;
 
-		public EventController(IEventService eventService)
+		public EventController(
+			IEventService eventService, 
+			IBookingService bookingService)
 		{
 			_eventService = eventService;
+			_bookingService = bookingService;
 		}
 
 		/// <summary>
@@ -88,6 +93,26 @@ namespace EvoEvent.Web.Controllers
 		}
 
 		/// <summary>
+		/// получить бронь по id
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		[HttpGet("~/bookings/{id:guid}", Name = "GetBookingById")]
+		public async Task<IActionResult> GetBookingByIdAsync(Guid id)
+		{
+			var booking = await _bookingService.GetBookingByIdAsync(id);
+
+			var response = new BookingResponseDto
+			{
+				Id = booking.Id,
+				EventId = booking.EventId,
+				Status = BookingResponseDto.MapStatus(booking.Status)
+			};
+
+			return Ok(response);
+		}
+
+		/// <summary>
 		/// создать событие
 		/// </summary>
 		/// <param name="eventDto">Модель нового события</param>
@@ -96,6 +121,7 @@ namespace EvoEvent.Web.Controllers
 		public IActionResult Create([FromBody] EventRequestDto eventDto)
 		{
 			Event newEvent = new Event(
+					Guid.NewGuid(),
 					eventDto.Title,
 					eventDto.Description,
 					eventDto.StartAt,
@@ -122,6 +148,26 @@ namespace EvoEvent.Web.Controllers
 		}
 
 		/// <summary>
+		/// Создание брони
+		/// </summary>
+		/// <param name="id">Ид события</param>
+		/// <returns></returns>
+		[HttpPost("{id:guid}/book")]
+		public async Task<IActionResult> CreateBookingAsync(Guid id)
+		{
+			var newBooking = await _bookingService.CreateBookingAsync(id);
+
+			var response = new BookingResponseDto
+			{
+				Id = newBooking.Id,
+				EventId = newBooking.EventId,
+				Status = BookingResponseDto.MapStatus(newBooking.Status)
+			};
+
+			return AcceptedAtAction("GetBookingById", new { id = response.Id }, response);
+		}
+
+		/// <summary>
 		/// Обновить событие целиком
 		/// </summary>
 		/// <param name="id">Индентификатор события</param>
@@ -133,6 +179,7 @@ namespace EvoEvent.Web.Controllers
 			var extEvent = _eventService.GetById(id);
 
 			Event updEvent = new Event(
+				null,
 				eventDto.Title,
 				eventDto.Description,
 				eventDto.StartAt,

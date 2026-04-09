@@ -6,16 +6,14 @@ namespace EvoEvent.Web.Tests
 	public class EventServiceTestsForDelete
 	{
 		private readonly IEventService _eventService;
-		private readonly EventModelTest _eventModelTest;
 
 		public EventServiceTestsForDelete()
 		{
 			_eventService = new EventService();
-			_eventModelTest = new EventModelTest();
 		}
 
 		[Theory]
-		[InlineData("Концерт 10")]
+		[InlineData("Спектакль")]
 		public void Delete_EventId_ReturnIsSuccess(string nameExp)
 		{
 			var _events = _eventService.GetAll();

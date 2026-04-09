@@ -6,16 +6,14 @@ namespace EvoEvent.Web.Tests
 	public class EventServiceTestsForGet
 	{
 		private readonly IEventService _eventService;
-		private readonly EventModelTest _eventModelTest;
 
 		public EventServiceTestsForGet()
 		{
 			_eventService = new EventService();
-			_eventModelTest = new EventModelTest();
 		}
 
 		[Theory]
-		[InlineData("Концерт 2")]
+		[InlineData("Хакатон")]
 		public void Get_ReturnsEvents(string nameTitleExp)
 		{
 			var events = _eventService.GetAll();
@@ -25,7 +23,7 @@ namespace EvoEvent.Web.Tests
 		}
 
 		[Theory]
-		[InlineData("Концерт 2")]
+		[InlineData("Хакатон")]
 		public void Get_EventId_ReturnEvent(string nameExp)
 		{
 			var events = _eventService.GetAll();
@@ -48,7 +46,7 @@ namespace EvoEvent.Web.Tests
 		}
 
 		[Theory]
-		[InlineData("Концерт 9", "Концерт 25")]
+		[InlineData("Фестиваль", "Концерт 25")]
 		public void Filter_EventName_ReturnEvents(string nameExp, string nameNoExp)
 		{
 			var events = _eventService.GetAll();
@@ -72,7 +70,7 @@ namespace EvoEvent.Web.Tests
 		{
 			var dateStart = DateTime.Now;
 			var dateEnd = DateTime.Now.AddDays(4);
-			var nameExp = "Концерт";
+			var nameExp = "Фестиваль";
 			var _events = _eventService.GetAll();
 
 			var events = _eventService.GetEventsAboutWhen(_events, string.Empty, dateStart, dateEnd);
@@ -83,10 +81,10 @@ namespace EvoEvent.Web.Tests
 		[Fact]
 		public void Filters_ReturnEvents()
 		{
-			var title = "Концерт";
+			var title = "Тренинг";
 			var dateStart = DateTime.Now;
-			var dateEnd = DateTime.Now.AddDays(4);
-			var nameExp = "Концерт";
+			var dateEnd = DateTime.Now.AddDays(14);
+			var nameExp = "Тренинг";
 			var _events = _eventService.GetAll();
 
 			var events = _eventService.GetEventsAboutWhen(_events, title, dateStart, dateEnd);

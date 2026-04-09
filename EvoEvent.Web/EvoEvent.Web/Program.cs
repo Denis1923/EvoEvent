@@ -1,6 +1,7 @@
 using EvoEvent.Web.Middlewares;
 using EvoEvent.Web.Models;
 using EvoEvent.Web.Services;
+using EvoEvent.Web.Services.BookingService;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -32,6 +33,8 @@ builder.Services.AddControllers()
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddSingleton<IBookingService, BookingService>();
+builder.Services.AddHostedService<BookingBackgroundService>();
 
 var app = builder.Build();
 
