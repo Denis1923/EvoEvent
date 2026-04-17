@@ -7,22 +7,48 @@ public class Event
 	public string? Description { get; private set; }
 	public DateTime StartAt { get; private set; }
 	public DateTime EndAt { get; private set; }
+	public int TotalSeats { get; init; }
+	public int AvailableSeats { get; set; }
 
 	public Event() { }
-	public Event(Guid? id, string title, string? description, DateTime startAt, DateTime endAt)
+	public Event(
+		Guid? id, 
+		string title, 
+		string? description, 
+		DateTime startAt, 
+		DateTime endAt,
+		int totalSeats,
+		int? availableSeats = null)
 	{
 		Id = id ?? Guid.NewGuid();
 		Title = title;
 		Description = description;
 		StartAt = startAt;
-		EndAt = endAt;		
+		EndAt = endAt;	
+		TotalSeats = totalSeats;
+		AvailableSeats = availableSeats ?? TotalSeats;
 	}
 
-	public void Update(string title, string? description, DateTime startAt, DateTime endAt)
+	public void Update(Event updEvent)
 	{
-		Title = title;
-		Description = description;
-		StartAt = startAt;
-		EndAt = endAt;
+		Title = updEvent.Title;
+		Description = updEvent.Description;
+		StartAt = updEvent.StartAt;
+		EndAt = updEvent.EndAt;
+	}
+
+	public bool TryReserveSeats(int count = 1)
+	{
+		if (AvailableSeats == 0)
+			return false;
+
+		AvailableSeats -= count;
+		return true;
+	}
+
+	public void ReleaseSeats(int count = 1)
+	{
+		if (AvailableSeats < TotalSeats)
+			AvailableSeats += count;
 	}
 }

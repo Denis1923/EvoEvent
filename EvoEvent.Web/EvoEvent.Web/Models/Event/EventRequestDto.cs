@@ -31,4 +31,11 @@ public class EventRequestDto
 	[Required(ErrorMessage = "Заполните дату окончания события (\"EndAt\": \"YYYY-mm-DD\")")]
 	[EndDateLaterThanStart]
 	public DateTime EndAt { get; set; }
+
+	/// <summary>
+	/// Общее количество мест на событии
+	/// </summary>
+	[Required(ErrorMessage = "Заполните общее количество мест на событии")]
+	[Range(1, int.MaxValue, ErrorMessage = "Значение должно быть больше 0")]
+	public int TotalSeats { get; set; }
 }
