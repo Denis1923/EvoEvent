@@ -60,6 +60,7 @@ namespace EvoEvent.Web.Middlewares
 			{
 				ValidationException validationEx => StatusCodes.Status400BadRequest,
 				NotFoundException notFoundEx => StatusCodes.Status404NotFound,
+				NoAvailableSeatsException noAvailableSeats => StatusCodes.Status409Conflict,
 				_ => StatusCodes.Status500InternalServerError
 			};
 		}
