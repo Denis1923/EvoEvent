@@ -6,17 +6,17 @@ namespace EvoEvent.Web.Services
 	public class BookingBackgroundService : BackgroundService
 	{
 		private readonly IBookingService _bookingService;
-		private readonly IEventService _eventService;
+		private readonly IServiceScopeFactory _scopeFactory;
 		private readonly ILogger<BookingBackgroundService> _logger;
 		private readonly SemaphoreSlim _processingSemaphore = new(1, 1);
 
 		public BookingBackgroundService(
-			IBookingService bookingService, 
-			IEventService eventService,
+			IBookingService bookingService,
+			IServiceScopeFactory scopeFactory,
 			ILogger<BookingBackgroundService> logger)
 		{
 			_bookingService = bookingService;
-			_eventService = eventService;
+			_scopeFactory = scopeFactory;
 			_logger = logger;
 		}
 
@@ -52,13 +52,16 @@ namespace EvoEvent.Web.Services
 
 			await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
 
+			using var scope = _scopeFactory.CreateScope();
+			var eventService = scope.ServiceProvider.GetService<IEventService>();
+
 			await _processingSemaphore.WaitAsync();
 
 			var eventExp = default(Event);
 
 			try
 			{
-				eventExp = _eventService.GetById(booking.EventId);
+				eventExp = eventService.GetById(booking.EventId);
 
 				if (eventExp != null)
 				{
