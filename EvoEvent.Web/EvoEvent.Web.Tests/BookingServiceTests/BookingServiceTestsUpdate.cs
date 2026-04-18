@@ -4,7 +4,6 @@ using EvoEvent.Web.Services;
 using EvoEvent.Web.Services.BookingService;
 using EvoEvent.Web.Tests.Models;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace EvoEvent.Web.Tests.BookingServiceTests
