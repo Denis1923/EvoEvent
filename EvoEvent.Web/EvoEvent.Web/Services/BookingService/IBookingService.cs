@@ -9,5 +9,11 @@ namespace EvoEvent.Web.Services.BookingService
 		Task<Booking> GetBookingByIdAsync(Guid bookingId);
 
 		bool TryBooking(out Booking booking);
+
+		IEnumerable<Booking> GetPending();
+
+		Booking Confirm(Booking booking);
+
+		Booking Reject(Booking booking);
 	}
 }

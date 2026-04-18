@@ -65,5 +65,28 @@ namespace EvoEvent.Web.Services.BookingService
 
 			return booking != null;
 		}
+
+		public IEnumerable<Booking> GetPending()
+			=> _queue.Where(q => q.Status == BookingStatus.Pending);
+
+		public void Update(Booking booking)
+		{
+
+		}
+
+		public Booking Confirm(Booking booking)
+		{
+			booking.Status = BookingStatus.Confirmed;
+			booking.ProcessedAt = DateTime.Now;
+
+			return booking;
+		}
+		public Booking Reject(Booking booking)
+		{
+			booking.Status = BookingStatus.Rejected;
+			booking.ProcessedAt = DateTime.Now;
+		
+			return booking;
+		}
 	}
 }
