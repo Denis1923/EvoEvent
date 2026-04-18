@@ -46,13 +46,19 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 		}
 
 		[Theory]
-		[InlineData("a3bb4d2e-8f4d-4d6e-9f5c-3b6f7e8d9a0b")]
-		public async Task Update_BookingId_ReturnBooking(string eventIdstr)
+		[InlineData("a4bb4d2e-8f4d-4d6e-9f5c-3b6f7e8d9a0b")]
+		public async Task Confirm_BookingId_ReturnBooking(string eventIdstr)
 		{
 			var eventId = Guid.Parse(eventIdstr);
 			var status = BookingStatus.Confirmed;
 
-			var expectedEvent = new Event();
+			var expectedEvent = new Event(
+				eventId,
+				"Концерт 1",
+				"Описание: Рок-концерт",
+				DateTime.Now.AddDays(1),
+				DateTime.Now.AddDays(3),
+				10);
 
 			_mockEventService
 				.Setup(es => es.GetById(eventId))
@@ -60,11 +66,41 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 
 			var newBooking = await _bookingService.CreateBookingAsync(eventId);
 			var booking = await _bookingService.GetBookingByIdAsync(newBooking.Id);
-
-			booking.Status = BookingStatus.Confirmed;
+			_bookingService.Confirm(booking);
 			booking = await _bookingService.GetBookingByIdAsync(booking.Id);
 
 			Assert.True(booking.Status == status);
+			Assert.True(booking.ProcessedAt.HasValue);
+		}
+
+		[Theory]
+		[InlineData("34bb4d2e-8f4d-4d6e-9f5c-3b6f7e8d9a0b")]
+		public async Task Reject_BookingId_ReturnBooking(string eventIdstr)
+		{
+			var eventId = Guid.Parse(eventIdstr);
+			var statusR = BookingStatus.Rejected;
+			var statusP = BookingStatus.Pending;
+
+			var expectedEvent = new Event(
+				eventId,
+				"Концерт 10",
+				"Описание: Рок-концерт",
+				DateTime.Now.AddDays(1),
+				DateTime.Now.AddDays(3),
+				1);
+
+			_mockEventService
+				.Setup(es => es.GetById(eventId))
+				.Returns(expectedEvent);
+
+			var newBooking = await _bookingService.CreateBookingAsync(eventId);
+			_bookingService.Reject(newBooking);
+			expectedEvent.ReleaseSeats(1);
+			var newBooking2 = await _bookingService.CreateBookingAsync(eventId);
+
+			Assert.True(newBooking.Status == statusR);
+			Assert.True(newBooking2.Status == statusP);
+
 		}
 	}
 }

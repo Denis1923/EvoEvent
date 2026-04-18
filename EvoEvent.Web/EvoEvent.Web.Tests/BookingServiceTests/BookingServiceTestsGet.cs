@@ -45,13 +45,19 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 		}
 
 		[Theory]
-		[InlineData("a3bb4d2e-8f4d-4d6e-9f5c-3b6f7e8d9a0b")]
+		[InlineData("63bb4d2e-8f4d-4d6e-9f5c-3b6f7e8d9a0b")]
 		public async Task Get_BookingId_ReturnBooking(string eventIdStr)
 		{
 			var eventId = Guid.Parse(eventIdStr);
 			var status = BookingStatus.Pending;
 
-			var expectedEvent = new Event();
+			var expectedEvent = new Event(
+				eventId,
+				"Концерт 1",
+				"Описание: Рок-концерт",
+				DateTime.Now.AddDays(1),
+				DateTime.Now.AddDays(3),
+				10);
 
 			_mockEventService
 				.Setup(es => es.GetById(eventId))
