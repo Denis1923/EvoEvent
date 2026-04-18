@@ -1,5 +1,6 @@
 ﻿using EvoEvent.Web.Exceptions;
 using EvoEvent.Web.Services;
+using EvoEvent.Web.Tests.Models;
 
 namespace EvoEvent.Web.Tests
 {
@@ -10,14 +11,17 @@ namespace EvoEvent.Web.Tests
 		public EventServiceTestsForDelete()
 		{
 			_eventService = new EventService();
+
+			var events = ModelEventServiceTests.GetEvents();
+			events.ForEach(evt => _eventService.AddEvent(evt));
 		}
 
 		[Theory]
 		[InlineData("Спектакль")]
 		public void Delete_EventId_ReturnIsSuccess(string nameExp)
 		{
-			var _events = _eventService.GetAll();
-			var eventExp = _eventService.GetEventsAboutWhen(_events, nameExp)?.FirstOrDefault();
+			var events = _eventService.GetAll();
+			var eventExp = _eventService.GetEventsAboutWhen(events, nameExp)?.FirstOrDefault();
 
 			var isDelete = _eventService.DeleteById(eventExp.Id);
 

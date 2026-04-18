@@ -1,5 +1,6 @@
 ﻿using EvoEvent.Web.Exceptions;
 using EvoEvent.Web.Services;
+using EvoEvent.Web.Tests.Models;
 
 namespace EvoEvent.Web.Tests
 {
@@ -10,6 +11,9 @@ namespace EvoEvent.Web.Tests
 		public EventServiceTestsForGet()
 		{
 			_eventService = new EventService();
+
+			var events = ModelEventServiceTests.GetEvents();
+			events.ForEach(evt => _eventService.AddEvent(evt));
 		}
 
 		[Theory]

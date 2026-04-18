@@ -1,6 +1,7 @@
 ﻿using EvoEvent.Web.Exceptions;
 using EvoEvent.Web.Models;
 using EvoEvent.Web.Services;
+using EvoEvent.Web.Tests.Models;
 
 namespace EvoEvent.Web.Tests
 {
@@ -11,13 +12,22 @@ namespace EvoEvent.Web.Tests
 		public EventServiceTestsForUpdate()
 		{
 			_eventService = new EventService();
+			var events = ModelEventServiceTests.GetEvents();
+			events.ForEach(evt => _eventService.AddEvent(evt));
 		}
 
 		[Theory]
 		[InlineData("Квест")]
 		public void Update_Event_ReturnIsSuccess(string nameExp)
 		{
-			var updEvent = new Event(null, "Концерт Nickelback", "Описание. Концерт Nickelback", DateTime.Now, DateTime.Now.AddDays(4));
+			var updEvent = new Event(
+				null, 
+				"Концерт Nickelback", 
+				"Описание. Концерт Nickelback", 
+				DateTime.Now, 
+				DateTime.Now.AddDays(4),
+				20);
+
 			var _events = _eventService.GetAll();
 			var eventExp = _eventService.GetEventsAboutWhen(_events, nameExp)?.FirstOrDefault();
 

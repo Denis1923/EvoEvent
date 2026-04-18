@@ -2,6 +2,7 @@
 using EvoEvent.Web.Models;
 using EvoEvent.Web.Services;
 using EvoEvent.Web.Services.BookingService;
+using EvoEvent.Web.Tests.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -40,6 +41,9 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 				.Returns(_mockEventService.Object);
 
 			_bookingService = new BookingService(_mockScopeFactory.Object);
+
+			var events = ModelEventServiceTests.GetEvents();
+			events.ForEach(evt => _eventService.AddEvent(evt));
 		}
 
 		[Theory]
