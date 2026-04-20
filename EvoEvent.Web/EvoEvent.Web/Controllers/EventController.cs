@@ -159,6 +159,10 @@ namespace EvoEvent.Web.Controllers
 		/// <param name="id">Ид события</param>
 		/// <returns></returns>
 		[HttpPost("{id:guid}/book")]
+		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status201Created)]
+		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
 		public async Task<IActionResult> CreateBookingAsync(Guid id)
 		{
 			var newBooking = await _bookingService.CreateBookingAsync(id);
