@@ -1,5 +1,4 @@
-﻿using EvoEvent.Web.Exceptions;
-using EvoEvent.Web.Models;
+﻿using EvoEvent.Web.Models;
 using EvoEvent.Web.Models.Response;
 using EvoEvent.Web.Services;
 using EvoEvent.Web.Services.BookingService;
@@ -42,7 +41,9 @@ namespace EvoEvent.Web.Controllers
 						Title = e.Title,
 						Description = e.Description,
 						StartAt = e.StartAt,
-						EndAt = e.EndAt
+						EndAt = e.EndAt,
+						TotalSeats = e.TotalSeats,
+						AvailableSeats = e.AvailableSeats
 					});
 
 			var paginatedResultEvent = new PaginatedResultEvent()
@@ -79,7 +80,9 @@ namespace EvoEvent.Web.Controllers
 				Title = extEvent.Title,
 				Description = extEvent.Description,
 				StartAt = extEvent.StartAt,
-				EndAt = extEvent.EndAt
+				EndAt = extEvent.EndAt,
+				TotalSeats = extEvent.TotalSeats,
+				AvailableSeats = extEvent.AvailableSeats
 			};
 
 			var response = new ResultResponse<EventResponseDto>()
@@ -125,7 +128,8 @@ namespace EvoEvent.Web.Controllers
 					eventDto.Title,
 					eventDto.Description,
 					eventDto.StartAt,
-					eventDto.EndAt);
+					eventDto.EndAt,
+					eventDto.TotalSeats);
 
 			var id = _eventService.AddEvent(newEvent);
 			var evtResponse = new EventResponseDto
@@ -134,7 +138,9 @@ namespace EvoEvent.Web.Controllers
 				Title = newEvent.Title,
 				Description = newEvent.Description,
 				StartAt = newEvent.StartAt,
-				EndAt = newEvent.EndAt
+				EndAt = newEvent.EndAt,
+				TotalSeats = newEvent.TotalSeats,
+				AvailableSeats = newEvent.AvailableSeats
 			};
 
 			var response = new ResultResponse<EventResponseDto>
@@ -153,6 +159,10 @@ namespace EvoEvent.Web.Controllers
 		/// <param name="id">Ид события</param>
 		/// <returns></returns>
 		[HttpPost("{id:guid}/book")]
+		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status201Created)]
+		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
 		public async Task<IActionResult> CreateBookingAsync(Guid id)
 		{
 			var newBooking = await _bookingService.CreateBookingAsync(id);
@@ -183,7 +193,8 @@ namespace EvoEvent.Web.Controllers
 				eventDto.Title,
 				eventDto.Description,
 				eventDto.StartAt,
-				eventDto.EndAt);
+				eventDto.EndAt,
+				eventDto.TotalSeats);
 
 			_eventService.Save(extEvent, updEvent);
 
