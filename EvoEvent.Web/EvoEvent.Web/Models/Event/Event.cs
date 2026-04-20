@@ -42,13 +42,20 @@ public class Event
 		if (AvailableSeats == 0)
 			return false;
 
+		var checkAvailableSeats = (AvailableSeats - count) < 0;
+		if (checkAvailableSeats)
+			return false;
+
 		AvailableSeats -= count;
 		return true;
 	}
 
 	public void ReleaseSeats(int count = 1)
 	{
-		if (AvailableSeats < TotalSeats)
+		var checkAvailableSeats = (AvailableSeats + count) <= AvailableSeats;
+
+		if (checkAvailableSeats
+			&& AvailableSeats < TotalSeats)
 			AvailableSeats += count;
 	}
 }
