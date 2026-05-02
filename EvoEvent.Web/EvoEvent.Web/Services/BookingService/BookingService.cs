@@ -1,5 +1,7 @@
-﻿using EvoEvent.Web.Exceptions;
+﻿using EvoEvent.Web.DataAccess;
+using EvoEvent.Web.Exceptions;
 using EvoEvent.Web.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 
@@ -8,12 +10,16 @@ namespace EvoEvent.Web.Services.BookingService
 	public class BookingService : IBookingService
 	{
 		private readonly IServiceScopeFactory _scopeFactory;
-		private static readonly ConcurrentQueue<Booking> _queue = new();
 		private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+		private readonly AppDbContext _context;
 
-		public BookingService(IServiceScopeFactory scopeFactory)
+		public BookingService(
+			IServiceScopeFactory scopeFactory,
+			AppDbContext context
+			)
 		{
 			_scopeFactory = scopeFactory;
+			_context = context;
 		}
 
 		public async Task<Booking> CreateBookingAsync(Guid eventId, CancellationToken token)
@@ -29,7 +35,6 @@ namespace EvoEvent.Web.Services.BookingService
 			if (eventExp is null)
 				throw new NotFoundException($"Не найдено событие с таким ИД {eventId}");
 
-
 			await _semaphore.WaitAsync();
 
 			try
@@ -43,15 +48,15 @@ namespace EvoEvent.Web.Services.BookingService
 			}
 
 			var newBooking = new Booking(Guid.NewGuid(), eventId, BookingStatus.Pending, DateTime.Now);
-
-			_queue.Enqueue(newBooking);
+			await _context.Bookings.AddAsync(newBooking, token);
+			await _context.SaveChangesAsync(token);
 
 			return newBooking;
 		}
 
-		public async Task<Booking> GetBookingByIdAsync(Guid bookingId)
+		public async Task<Booking> GetBookingByIdAsync(Guid bookingId, CancellationToken token)
 		{
-			var booking = _queue.FirstOrDefault(b => b.Id == bookingId);
+			var booking = await _context.Bookings.FirstOrDefaultAsync(b => b.Id == bookingId);
 
 			if (booking == null)
 				throw new NotFoundException($"Не найдена бронь с таким ИД {bookingId}");
@@ -59,19 +64,11 @@ namespace EvoEvent.Web.Services.BookingService
 			return booking;
 		}
 
-		public bool TryBooking(out Booking booking)
+		public bool TryBooking(out Booking? booking)
 		{
-			booking = _queue.FirstOrDefault(b => b.Status == BookingStatus.Pending);
+			booking = _context.Bookings.FirstOrDefault(b => b.Status == BookingStatus.Pending);
 
 			return booking != null;
-		}
-
-		public IEnumerable<Booking> GetPending()
-			=> _queue.Where(q => q.Status == BookingStatus.Pending);
-
-		public void Update(Booking booking)
-		{
-
 		}
 
 		public Booking Confirm(Booking booking)

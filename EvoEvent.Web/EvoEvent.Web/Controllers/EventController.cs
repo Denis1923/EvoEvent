@@ -101,9 +101,9 @@ namespace EvoEvent.Web.Controllers
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[HttpGet("~/bookings/{id:guid}", Name = "GetBookingById")]
-		public async Task<IActionResult> GetBookingByIdAsync(Guid id)
+		public async Task<IActionResult> GetBookingByIdAsync(Guid id, CancellationToken token)
 		{
-			var booking = await _bookingService.GetBookingByIdAsync(id);
+			var booking = await _bookingService.GetBookingByIdAsync(id, token);
 
 			var response = new BookingResponseDto
 			{
