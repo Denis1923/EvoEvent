@@ -1,0 +1,27 @@
+﻿using EvoEvent.Web.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace EvoEvent.Web.DataAccess.Configurations
+{
+	public class BookingConfiguration : IEntityTypeConfiguration<Booking>
+	{
+		public void Configure(EntityTypeBuilder<Booking> builder)
+		{
+
+			builder.ToTable("bookings", "catalog");
+
+			builder.HasKey(b => b.Id);
+			builder.Property(b => b.Id)
+				.ValueGeneratedNever();
+
+			builder.Property(b => b.Status)
+				.HasConversion<string>();
+
+
+			builder.HasOne(b => b.Event)
+				.WithMany(e => e.Bookings)
+				.HasForeignKey(b => b.EventId);
+		}
+	}
+}
