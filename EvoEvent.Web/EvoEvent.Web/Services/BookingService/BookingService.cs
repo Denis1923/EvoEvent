@@ -16,7 +16,7 @@ namespace EvoEvent.Web.Services.BookingService
 			_scopeFactory = scopeFactory;
 		}
 
-		public async Task<Booking> CreateBookingAsync(Guid eventId)
+		public async Task<Booking> CreateBookingAsync(Guid eventId, CancellationToken token)
 		{
 			if (eventId == Guid.Empty)
 				throw new ValidationException($"Передан не валидный параметр eventId = {eventId}");
@@ -24,7 +24,7 @@ namespace EvoEvent.Web.Services.BookingService
 			using var scope = _scopeFactory.CreateScope();
 			var eventService = scope.ServiceProvider.GetService<IEventService>();
 
-			var eventExp = eventService.GetById(eventId);
+			var eventExp = await eventService.GetByIdAsync(eventId, token);
 
 			if (eventExp is null)
 				throw new NotFoundException($"Не найдено событие с таким ИД {eventId}");

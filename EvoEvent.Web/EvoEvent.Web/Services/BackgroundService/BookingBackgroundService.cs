@@ -61,7 +61,7 @@ namespace EvoEvent.Web.Services
 
 			try
 			{
-				eventExp = eventService.GetById(booking.EventId);
+				eventExp = await eventService.GetByIdAsync(booking.EventId, stoppingToken);
 
 				if (eventExp != null)
 				{

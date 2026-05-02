@@ -1,23 +1,27 @@
-﻿using EvoEvent.Web.Exceptions;
+﻿using EvoEvent.Web.DataAccess;
+using EvoEvent.Web.Exceptions;
 using EvoEvent.Web.Models;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace EvoEvent.Web.Services
 {
 	public class EventService : IEventService
 	{
-		private static readonly List<Event> _events = new();
+		private readonly AppDbContext _context;
 
-		public EventService()
+		public EventService(AppDbContext context)
 		{
+			_context = context;
 		}
 
 		public IEnumerable<Event> GetAll()
 		{
-			if (!_events.Any())
+			var events = _context.Events.Include(e => e.Bookings);
+			if (!events.Any())
 				throw new NotFoundException($"Событий нет");
 
-			return _events;
+			return events;
 		}
 
 		public IEnumerable<Event> GetEventsAboutWhen(
@@ -51,9 +55,9 @@ namespace EvoEvent.Web.Services
 					.Take(pageSize);
 		}
 
-		public Event? GetById(Guid id)
+		public async Task<Event?> GetByIdAsync(Guid id, CancellationToken token)
 		{
-			var extEvt = _events.FirstOrDefault(e => e.Id == id);
+			var extEvt = await _context.Events.FirstOrDefaultAsync(e => e.Id == id, token);
 
 			if (extEvt is null)
 				throw new NotFoundException($"Не найдено событие с таким ИД {id}");
@@ -61,12 +65,14 @@ namespace EvoEvent.Web.Services
 			return extEvt;
 		}
 
-		public Guid AddEvent(Event newEvt)
+		public async Task<Guid> AddEventAsync(Event newEvt, CancellationToken token)
 		{
 			if (newEvt.StartAt >= newEvt.EndAt)
 				throw new ValidationException("Дата окончания должна быть позже Даты начала");
 
-			_events.Add(newEvt);
+			await _context.Events.AddAsync(newEvt, token);
+			await _context.SaveChangesAsync(token);
+
 			return newEvt.Id;
 		}
 
@@ -75,14 +81,24 @@ namespace EvoEvent.Web.Services
 			extEvt.Update(updEvt);
 		}
 
-		public bool DeleteById(Guid id)
+		public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken token)
 		{
-			var extEvt = _events.FirstOrDefault(e => e.Id == id);
+			var extEvt = await _context.Events.FirstOrDefaultAsync(e => e.Id == id, token);
 
 			if (extEvt is null)
 				throw new NotFoundException($"Не найдено событие с таким ИД {id}");
 
-			return _events.Remove(extEvt);
+			try
+			{
+				_context.Events.Remove(extEvt);
+				await _context.SaveChangesAsync(token);
+			}
+			catch (Exception ex) 
+			{
+				throw new Exception($"Не удалось удалить События.Ид:{id}, по причине:{ex.Message}");
+			}
+
+			return true;
 		}
 	}
 }

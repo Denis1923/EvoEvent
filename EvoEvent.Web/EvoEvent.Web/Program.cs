@@ -1,11 +1,15 @@
+using EvoEvent.Web.DataAccess;
 using EvoEvent.Web.Middlewares;
 using EvoEvent.Web.Models;
 using EvoEvent.Web.Services;
 using EvoEvent.Web.Services.BookingService;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
+var connectionStr = builder.Configuration.GetConnectionString("DefaultConnection");
+
 
 builder.Services.AddControllers()
 	.ConfigureApiBehaviorOptions(options =>
@@ -35,6 +39,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddSingleton<IBookingService, BookingService>();
 builder.Services.AddHostedService<BookingBackgroundService>();
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+	options.UseNpgsql(connectionStr);
+});
 
 var app = builder.Build();
 
