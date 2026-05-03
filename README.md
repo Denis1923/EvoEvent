@@ -32,6 +32,22 @@ Cервис для управления мероприятиями на ASP.NET 
 - выполнить комбинацию клавиш Ctrl+R, Ctrl+A
 - в окне Обозреватель тестов будет статистика о прохождение тестов
 
+## PostgreSQL 
+Для использования PostgreSQL, требуется nuget-пакеты:
+ - Microsoft.EntityFrameworkCore — ядро EF Core;
+ - Npgsql.EntityFrameworkCore.PostgreSQL — провайдер для PostgreSQL.
+В тестовом проекте пакет:
+ - Microsoft.EntityFrameworkCore.InMemory — InMemory-провайдер для юнит-тестов.
+Для подключния требуется в файде appsettings.json поправить значение DefaultConnection объекта ConnectionStrings. Значение должно заполняться по шаблону 
+"Host=<value>;Port=<value>;Database=<value>;Username=<value>;Password=<value>", где:
+ - Host - Адрес сервера БД	
+ - Port - Порт PostgreSQL
+ - Database	- Имя базы данных
+ - Username	- Имя пользователя
+ - Password	- Пароль
+Схема БД создаётся автоматически при запуске через EnsureCreated
+В тестах используется InMemory-провайдера
+
 ## Описание методов 
 
 ### POST /events
