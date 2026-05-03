@@ -17,7 +17,7 @@ namespace EvoEvent.Web.Services
 
 		public IEnumerable<Event> GetAll()
 		{
-			var events = _context.Events.Include(e => e.Bookings);
+			var events = _context.Events;
 			if (!events.Any())
 				throw new NotFoundException($"Событий нет");
 
@@ -55,7 +55,7 @@ namespace EvoEvent.Web.Services
 					.Take(pageSize);
 		}
 
-		public async Task<Event?> GetByIdAsync(Guid id, CancellationToken token)
+		public async Task<Event?> GetByIdAsync(Guid id, CancellationToken token = default)
 		{
 			var extEvt = await _context.Events.FirstOrDefaultAsync(e => e.Id == id, token);
 
@@ -65,7 +65,7 @@ namespace EvoEvent.Web.Services
 			return extEvt;
 		}
 
-		public async Task<Guid> AddEventAsync(Event newEvt, CancellationToken token)
+		public async Task<Guid> AddEventAsync(Event newEvt, CancellationToken token = default)
 		{
 			if (newEvt.StartAt >= newEvt.EndAt)
 				throw new ValidationException("Дата окончания должна быть позже Даты начала");
@@ -81,7 +81,7 @@ namespace EvoEvent.Web.Services
 			extEvt.Update(updEvt);
 		}
 
-		public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken token)
+		public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default)
 		{
 			var extEvt = await _context.Events.FirstOrDefaultAsync(e => e.Id == id, token);
 

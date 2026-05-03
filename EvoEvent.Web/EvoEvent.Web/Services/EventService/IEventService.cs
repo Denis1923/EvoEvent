@@ -17,12 +17,12 @@ namespace EvoEvent.Web.Services
 			int page = 1,
 			int pageSize = 10);
 
-		Task<Event?> GetByIdAsync(Guid id, CancellationToken token);
+		Task<Event?> GetByIdAsync(Guid id, CancellationToken token = default);
 
-		Task<Guid> AddEventAsync(Event evt, CancellationToken token);
+		Task<Guid> AddEventAsync(Event evt, CancellationToken token = default);
 
 		void Save(Event extUpd, Event updEvt);
 
-		Task<bool> DeleteByIdAsync(Guid id, CancellationToken token);
+		Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default);
 	}
 }

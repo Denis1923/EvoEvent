@@ -22,7 +22,7 @@ namespace EvoEvent.Web.Services.BookingService
 			_context = context;
 		}
 
-		public async Task<Booking> CreateBookingAsync(Guid eventId, CancellationToken token)
+		public async Task<Booking> CreateBookingAsync(Guid eventId, CancellationToken token = default)
 		{
 			if (eventId == Guid.Empty)
 				throw new ValidationException($"Передан не валидный параметр eventId = {eventId}");
@@ -50,8 +50,8 @@ namespace EvoEvent.Web.Services.BookingService
 
 			return newBooking;
 		}
-
-		public async Task<Booking> GetBookingByIdAsync(Guid bookingId, CancellationToken token)
+				
+		public async Task<Booking> GetBookingByIdAsync(Guid bookingId, CancellationToken token = default)
 		{
 			var booking = await _context.Bookings.FirstOrDefaultAsync(b => b.Id == bookingId);
 
