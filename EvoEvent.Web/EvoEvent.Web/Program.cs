@@ -34,15 +34,19 @@ builder.Services.AddControllers()
 		return new BadRequestObjectResult(customResponse);
 	};
 });
-builder.Services.AddOpenApi();
-builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IEventService, EventService>();
-builder.Services.AddSingleton<IBookingService, BookingService>();
-builder.Services.AddHostedService<BookingBackgroundService>();
+
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
 	options.UseNpgsql(connectionStr);
 });
+
+builder.Services.AddOpenApi();
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<IBookingService, BookingService>();
+
+builder.Services.AddHostedService<BookingBackgroundService>();
 
 var app = builder.Build();
 
@@ -56,6 +60,16 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+
+using (var scope = app.Services.CreateScope())
+{
+	// Для создания объектов БД используйте метод EnsureCreated —
+	// EF Core автоматически создаст таблицы при первом запуске, если их ещё нет.
+
+	var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+	db.Database.EnsureCreated();
+}
+
 app.MapControllers();
 
 app.Run();

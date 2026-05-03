@@ -29,6 +29,17 @@
 		{
 
 		}
-	}
 
+		public void Confirm()
+		{
+			Status = BookingStatus.Confirmed;
+			ProcessedAt = DateTime.Now.ToUniversalTime();
+		}
+
+		public void Reject()
+		{
+			Status = BookingStatus.Rejected;
+			ProcessedAt = DateTime.Now.ToUniversalTime();
+		}
+	}
 }

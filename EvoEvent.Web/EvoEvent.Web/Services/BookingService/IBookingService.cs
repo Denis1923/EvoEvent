@@ -9,9 +9,5 @@ namespace EvoEvent.Web.Services.BookingService
 		Task<Booking> GetBookingByIdAsync(Guid bookingId, CancellationToken token);
 
 		bool TryBooking(out Booking? booking);
-
-		Booking Confirm(Booking booking);
-
-		Booking Reject(Booking booking);
 	}
 }

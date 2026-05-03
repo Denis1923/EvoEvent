@@ -69,7 +69,7 @@ namespace EvoEvent.Web.Controllers
 		/// </summary>
 		/// <param name="id">Индентификатор события</param>
 		/// <returns></returns>
-		[HttpGet("{id:guid}")]
+		[HttpGet("{id:guid}", Name = "GetById")]
 		public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken token)
 		{
 			var extEvent = await _eventService.GetByIdAsync(id, token);
@@ -150,7 +150,7 @@ namespace EvoEvent.Web.Controllers
 				Data = evtResponse
 			};
 
-			return CreatedAtAction(nameof(GetByIdAsync), new { id = id }, response);
+			return CreatedAtAction("GetById", new { id = id, token = token }, response);
 		}
 
 		/// <summary>
