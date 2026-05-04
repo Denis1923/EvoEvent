@@ -2,7 +2,6 @@
 using EvoEvent.Web.Exceptions;
 using EvoEvent.Web.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 
 namespace EvoEvent.Web.Services.BookingService
@@ -10,7 +9,7 @@ namespace EvoEvent.Web.Services.BookingService
 	public class BookingService : IBookingService
 	{
 		private readonly IEventService _eventService;
-		private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+		private readonly static SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 		private readonly AppDbContext _context;
 
 		public BookingService(
@@ -24,31 +23,33 @@ namespace EvoEvent.Web.Services.BookingService
 
 		public async Task<Booking> CreateBookingAsync(Guid eventId, CancellationToken token = default)
 		{
-			if (eventId == Guid.Empty)
-				throw new ValidationException($"Передан не валидный параметр eventId = {eventId}");
-
-			var eventExp = await _eventService.GetByIdAsync(eventId, token);
-
-			if (eventExp is null)
-				throw new NotFoundException($"Не найдено событие с таким ИД {eventId}");
-
-			await _semaphore.WaitAsync();
+			await _semaphore.WaitAsync(token);
 
 			try
 			{
+				if (eventId == Guid.Empty)
+					throw new ValidationException($"Передан не валидный параметр eventId = {eventId}");
+
+				var eventExp = await _eventService.GetByIdAsync(eventId, token);
+
+				if (eventExp is null)
+					throw new NotFoundException($"Не найдено событие с таким ИД {eventId}");
+
 				if (!eventExp.TryReserveSeats())
 					throw new NoAvailableSeatsException("No available seats for this event");
+
+				_context.Events.Update(eventExp);
+
+				var newBooking = new Booking(Guid.NewGuid(), eventId, BookingStatus.Pending, DateTime.UtcNow);
+				await _context.Bookings.AddAsync(newBooking, token);
+				await _context.SaveChangesAsync(token);
+
+				return newBooking;
 			}
 			finally
 			{
 				_semaphore.Release();
 			}
-
-			var newBooking = new Booking(Guid.NewGuid(), eventId, BookingStatus.Pending, DateTime.Now.ToUniversalTime());
-			await _context.Bookings.AddAsync(newBooking, token);
-			await _context.SaveChangesAsync(token);
-
-			return newBooking;
 		}
 				
 		public async Task<Booking> GetBookingByIdAsync(Guid bookingId, CancellationToken token = default)

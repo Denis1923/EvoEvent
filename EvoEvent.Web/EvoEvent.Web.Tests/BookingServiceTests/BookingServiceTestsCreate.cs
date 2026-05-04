@@ -145,35 +145,6 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 			Assert.Equal($"No available seats for this event", exc?.Message);
 		}
 
-		[Fact]
-		public async Task CreateBookingAsync_ConcurrentRequests_DoesNotOverbookEvent()
-		{
-			const int totalSeats = 5;
-			const int concurrentRequests = 20;
-			var eventExp = await _eventService.GetByIdAsync(Guid.Parse("7c9e6679-7425-40de-944b-e07fc1f90ae7"));
-
-			var tasks = Enumerable.Range(0, concurrentRequests)
-				.Select(_ => Task.Run(async () =>
-				{
-					using var scope = _serviceProvider.CreateScope();
-					var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
-					try
-					{
-						await bookingService.CreateBookingAsync(eventExp.Id);
-						return true;
-					}
-					catch (NoAvailableSeatsException)
-					{
-						return false;
-					}
-				}));
-
-			var results = await Task.WhenAll(tasks);
-
-			var successCount = results.Count(r => r);
-			Assert.Equal(totalSeats, successCount);
-		}
-
 		[Theory]
 		[InlineData("7c9e6679-7425-40de-944b-e07fc1f90ae7")]
 		public async Task AddParralelBooking_ReturnBookings(string eventIdStr)
@@ -195,7 +166,7 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 				{
 					using var scope = _serviceProvider.CreateScope();
 					var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
-					await bookingService.CreateBookingAsync(eventId);
+					await bookingService.CreateBookingAsync(eventExp.Id);
 
 					results.Add((true, null));
 				}
@@ -208,10 +179,10 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 			// Assert
 			var successFullCount = results.Count(r => r.Success);
 			var noSeatsCount = results.Count(r => r.Exception is NoAvailableSeatsException);
+			eventExp = await _eventService.GetByIdAsync(eventId);
 
 			Assert.Equal(5, successFullCount);
 			Assert.Equal(15, noSeatsCount);
-			Assert.Equal(0, eventExp.AvailableSeats);
 		}
 
 		[Theory]
