@@ -1,11 +1,15 @@
+using EvoEvent.Web.DataAccess;
 using EvoEvent.Web.Middlewares;
 using EvoEvent.Web.Models;
 using EvoEvent.Web.Services;
 using EvoEvent.Web.Services.BookingService;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
+var connectionStr = builder.Configuration.GetConnectionString("DefaultConnection");
+
 
 builder.Services.AddControllers()
 	.ConfigureApiBehaviorOptions(options =>
@@ -30,10 +34,18 @@ builder.Services.AddControllers()
 		return new BadRequestObjectResult(customResponse);
 	};
 });
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+	options.UseNpgsql(connectionStr);
+});
+
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
+
 builder.Services.AddScoped<IEventService, EventService>();
-builder.Services.AddSingleton<IBookingService, BookingService>();
+builder.Services.AddScoped<IBookingService, BookingService>();
+
 builder.Services.AddHostedService<BookingBackgroundService>();
 
 var app = builder.Build();
@@ -48,6 +60,16 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+
+using (var scope = app.Services.CreateScope())
+{
+	// Для создания объектов БД используйте метод EnsureCreated —
+	// EF Core автоматически создаст таблицы при первом запуске, если их ещё нет.
+
+	var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+	db.Database.EnsureCreated();
+}
+
 app.MapControllers();
 
 app.Run();

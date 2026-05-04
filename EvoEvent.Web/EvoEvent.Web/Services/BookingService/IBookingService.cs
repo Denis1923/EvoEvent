@@ -4,16 +4,10 @@ namespace EvoEvent.Web.Services.BookingService
 {
 	public interface IBookingService
 	{
-		Task<Booking> CreateBookingAsync(Guid eventId);
+		Task<Booking> CreateBookingAsync(Guid eventId, CancellationToken token = default);
 
-		Task<Booking> GetBookingByIdAsync(Guid bookingId);
+		Task<Booking> GetBookingByIdAsync(Guid bookingId, CancellationToken token = default);
 
-		bool TryBooking(out Booking booking);
-
-		IEnumerable<Booking> GetPending();
-
-		Booking Confirm(Booking booking);
-
-		Booking Reject(Booking booking);
+		bool TryBooking(out Booking? booking);
 	}
 }

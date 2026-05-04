@@ -1,21 +1,20 @@
-﻿using EvoEvent.Web.Models;
+﻿using EvoEvent.Web.DataAccess;
+using EvoEvent.Web.Models;
 using EvoEvent.Web.Services.BookingService;
+using Microsoft.EntityFrameworkCore;
 
 namespace EvoEvent.Web.Services
 {
 	public class BookingBackgroundService : BackgroundService
 	{
-		private readonly IBookingService _bookingService;
 		private readonly IServiceScopeFactory _scopeFactory;
 		private readonly ILogger<BookingBackgroundService> _logger;
 		private readonly SemaphoreSlim _processingSemaphore = new(1, 1);
 
 		public BookingBackgroundService(
-			IBookingService bookingService,
 			IServiceScopeFactory scopeFactory,
 			ILogger<BookingBackgroundService> logger)
 		{
-			_bookingService = bookingService;
 			_scopeFactory = scopeFactory;
 			_logger = logger;
 		}
@@ -28,8 +27,16 @@ namespace EvoEvent.Web.Services
 			{
 				try
 				{
-					var pendingBookings = _bookingService.GetPending().ToList();
-					var tasks = pendingBookings.Select(booking => ProcessBookingAsync(booking, stoppingToken));
+					using var scope = _scopeFactory.CreateScope();
+					var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+					var pendingBookings = await context.Bookings
+														.Where(q => q.Status == BookingStatus.Pending)
+														.Select(b => b.Id)
+														.ToListAsync();
+
+					var tasks = pendingBookings.Select(bookingId => 
+												ProcessBookingAsync(bookingId, stoppingToken));
 					await Task.WhenAll(tasks);
 				}
 				catch (OperationCanceledException)
@@ -46,45 +53,48 @@ namespace EvoEvent.Web.Services
 			_logger.LogInformation("Завершена фоновая обработка брони");
 		}
 
-		private async Task ProcessBookingAsync(Booking booking, CancellationToken stoppingToken)
+		private async Task ProcessBookingAsync(Guid bookingId, CancellationToken stoppingToken)
 		{
-			_logger.LogInformation($"Запущена обработка брони.ИД = {booking.Id}");
+			_logger.LogInformation($"Запущена обработка брони.ИД = {bookingId}");
 
 			await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
 
 			using var scope = _scopeFactory.CreateScope();
-			var eventService = scope.ServiceProvider.GetService<IEventService>();
+			var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+			var bookingService = scope.ServiceProvider.GetService<IBookingService>();
 
 			await _processingSemaphore.WaitAsync();
 
 			var eventExp = default(Event);
 
+			var booking = await context.Bookings.FirstOrDefaultAsync(b => b.Id == bookingId, stoppingToken);
+
+			if (booking == null || booking.Status != BookingStatus.Pending)
+				return;
+
 			try
 			{
-				eventExp = eventService.GetById(booking.EventId);
+				eventExp = await context.Events.FirstOrDefaultAsync(e => e.Id == booking.EventId, stoppingToken);
 
-				if (eventExp != null)
+				if (eventExp is null)
 				{
-					_bookingService.Confirm(booking);
-				}
-				else
-				{
-					_bookingService.Reject(booking);
+					booking.Reject();
 					_logger.LogWarning($"Нет события.ИД ={booking.EventId} для брони.ИД = {booking.Id}, эту бронь отменяем");
 				}
+				else
+					booking.Confirm();
 			}
 			catch (OperationCanceledException)
 			{
-				_bookingService.Reject(booking);
-				eventExp?.ReleaseSeats();
 			}
 			catch (Exception)
 			{
-				_bookingService.Reject(booking);
+				booking.Reject();
 				eventExp?.ReleaseSeats();
 			}
 			finally
 			{
+				await context.SaveChangesAsync();
 				_processingSemaphore.Release();
 			}
 		}

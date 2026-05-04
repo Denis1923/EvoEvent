@@ -21,7 +21,9 @@ namespace EvoEvent.Web.Tests.Models
 				new Event(Guid.Parse("1e2f3a4b-5c6d-4e7f-8a9b-0c1d2e3f4a5b"), "Квест", "Описание: Квест-комната 'Тайны особняка'", DateTime.Now.AddDays(12), DateTime.Now.AddDays(14), 30),
 				new Event(Guid.Parse("9a8b7c6d-5e4f-4a3b-2c1d-0e9f8a7b6c5d"), "Ярмарка", "Описание: Рождественская ярмарка", DateTime.Now.AddDays(13), DateTime.Now.AddDays(15), 34),
 				new Event(Guid.Parse("4f5e6d7c-8b9a-4e0f-1d2c-3a4b5c6d7e8f"), "Хакатон", "Описание: AI-хакатон", DateTime.Now.AddDays(14), DateTime.Now.AddDays(16), 25),
-				new Event(Guid.Parse("7d8e9f0a-1b2c-4d3e-5f6a-7b8c9d0e1f2a"), "Благотворительность", "Описание: Благотворительный забег", DateTime.Now.AddDays(15), DateTime.Now.AddDays(17), 45)
+				new Event(Guid.Parse("7d8e9f0a-1b2c-4d3e-5f6a-7b8c9d0e1f2a"), "Благотворительность", "Описание: Благотворительный забег", DateTime.Now.AddDays(15), DateTime.Now.AddDays(17), 45),
+				new Event(Guid.Parse("8d8e9f0a-1b2c-4d3e-5f6a-7b8c9d0e1f2a"), "Благотворительность 2", "Описание: Благотворительный забег", DateTime.Now.AddDays(15), DateTime.Now.AddDays(17), 0)
+
 			};
 	}
 }

@@ -9,8 +9,10 @@ public class Event
 	public DateTime EndAt { get; private set; }
 	public int TotalSeats { get; init; }
 	public int AvailableSeats { get; set; }
+	public IEnumerable<Booking> Bookings { get; set; }
 
-	public Event() { }
+	public Event() { Title = null!; }
+
 	public Event(
 		Guid? id, 
 		string title, 

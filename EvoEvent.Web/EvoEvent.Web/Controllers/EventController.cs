@@ -69,10 +69,10 @@ namespace EvoEvent.Web.Controllers
 		/// </summary>
 		/// <param name="id">Индентификатор события</param>
 		/// <returns></returns>
-		[HttpGet("{id:guid}")]
-		public IActionResult GetById(Guid id)
+		[HttpGet("{id:guid}", Name = "GetById")]
+		public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken token)
 		{
-			var extEvent = _eventService.GetById(id);
+			var extEvent = await _eventService.GetByIdAsync(id, token);
 
 			var evtResponse = new EventResponseDto
 			{
@@ -101,9 +101,9 @@ namespace EvoEvent.Web.Controllers
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[HttpGet("~/bookings/{id:guid}", Name = "GetBookingById")]
-		public async Task<IActionResult> GetBookingByIdAsync(Guid id)
+		public async Task<IActionResult> GetBookingByIdAsync(Guid id, CancellationToken token)
 		{
-			var booking = await _bookingService.GetBookingByIdAsync(id);
+			var booking = await _bookingService.GetBookingByIdAsync(id, token);
 
 			var response = new BookingResponseDto
 			{
@@ -121,7 +121,7 @@ namespace EvoEvent.Web.Controllers
 		/// <param name="eventDto">Модель нового события</param>
 		/// <returns></returns>
 		[HttpPost]
-		public IActionResult Create([FromBody] EventRequestDto eventDto)
+		public async Task<IActionResult> CreateAsync([FromBody] EventRequestDto eventDto, CancellationToken token)
 		{
 			Event newEvent = new Event(
 					Guid.NewGuid(),
@@ -131,7 +131,7 @@ namespace EvoEvent.Web.Controllers
 					eventDto.EndAt,
 					eventDto.TotalSeats);
 
-			var id = _eventService.AddEvent(newEvent);
+			var id = await _eventService.AddEventAsync(newEvent, token);
 			var evtResponse = new EventResponseDto
 			{
 				Id = id,
@@ -150,7 +150,7 @@ namespace EvoEvent.Web.Controllers
 				Data = evtResponse
 			};
 
-			return CreatedAtAction(nameof(GetById), new { id = id }, response);
+			return CreatedAtAction("GetById", new { id = id, token = token }, response);
 		}
 
 		/// <summary>
@@ -163,9 +163,9 @@ namespace EvoEvent.Web.Controllers
 		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
 		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
-		public async Task<IActionResult> CreateBookingAsync(Guid id)
+		public async Task<IActionResult> CreateBookingAsync(Guid id, CancellationToken token)
 		{
-			var newBooking = await _bookingService.CreateBookingAsync(id);
+			var newBooking = await _bookingService.CreateBookingAsync(id, token);
 
 			var response = new BookingResponseDto
 			{
@@ -184,9 +184,9 @@ namespace EvoEvent.Web.Controllers
 		/// <param name="eventDto">Модель измененного события</param>
 		/// <returns></returns>
 		[HttpPut("{id:guid}")]
-		public IActionResult Update(Guid id, [FromBody] EventRequestDto eventDto)
+		public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] EventRequestDto eventDto, CancellationToken token)
 		{
-			var extEvent = _eventService.GetById(id);
+			var extEvent = await  _eventService.GetByIdAsync(id, token);
 
 			Event updEvent = new Event(
 				null,
@@ -207,9 +207,9 @@ namespace EvoEvent.Web.Controllers
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[HttpDelete("{id:guid}")]
-		public IActionResult Delete(Guid id)
+		public async Task<IActionResult> Delete(Guid id, CancellationToken token)
 		{
-			_eventService.DeleteById(id);
+			await _eventService.DeleteByIdAsync(id, token);
 			return NoContent();
 		}
 	}
