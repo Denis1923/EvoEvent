@@ -38,6 +38,7 @@ Cервис для управления мероприятиями на ASP.NET 
  - Npgsql.EntityFrameworkCore.PostgreSQL — провайдер для PostgreSQL.
 В тестовом проекте пакет:
  - Microsoft.EntityFrameworkCore.InMemory — InMemory-провайдер для юнит-тестов.
+   
 Для подключния требуется в файде appsettings.json поправить значение DefaultConnection объекта ConnectionStrings. Значение должно заполняться по шаблону 
 "Host=<value>;Port=<value>;Database=<value>;Username=<value>;Password=<value>", где:
  - Host - Адрес сервера БД	
