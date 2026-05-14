@@ -1,6 +1,7 @@
 using EvoEvent.Web.DataAccess;
 using EvoEvent.Web.Middlewares;
 using EvoEvent.Web.Models;
+using EvoEvent.Web.Repositories;
 using EvoEvent.Web.Services;
 using EvoEvent.Web.Services.BookingService;
 using Microsoft.AspNetCore.Mvc;
@@ -45,6 +46,9 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
+
+builder.Services.AddScoped<IEventRepository, EventRepository>();
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 
 builder.Services.AddHostedService<BookingBackgroundService>();
 
