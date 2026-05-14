@@ -1,7 +1,6 @@
-﻿using EvoEvent.Web.DataAccess;
-using EvoEvent.Web.Exceptions;
+﻿using EvoEvent.Web.Exceptions;
 using EvoEvent.Web.Models;
-using Microsoft.EntityFrameworkCore;
+using EvoEvent.Web.Repositories;
 using System.ComponentModel.DataAnnotations;
 
 namespace EvoEvent.Web.Services.BookingService
@@ -10,15 +9,15 @@ namespace EvoEvent.Web.Services.BookingService
 	{
 		private readonly IEventService _eventService;
 		private readonly static SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
-		private readonly AppDbContext _context;
+		private readonly IBookingRepository _bookingRepository;
 
 		public BookingService(
 			IEventService eventService,
-			AppDbContext context
+			IBookingRepository bookingRepository
 			)
 		{
 			_eventService = eventService;
-			_context = context;
+			_bookingRepository = bookingRepository;
 		}
 
 		public async Task<Booking> CreateBookingAsync(Guid eventId, CancellationToken token = default)
@@ -38,11 +37,9 @@ namespace EvoEvent.Web.Services.BookingService
 				if (!eventExp.TryReserveSeats())
 					throw new NoAvailableSeatsException("No available seats for this event");
 
-				_context.Events.Update(eventExp);
-
 				var newBooking = new Booking(Guid.NewGuid(), eventId, BookingStatus.Pending, DateTime.UtcNow);
-				await _context.Bookings.AddAsync(newBooking, token);
-				await _context.SaveChangesAsync(token);
+				await _bookingRepository.AddBookingAsync(newBooking, token);
+				await _bookingRepository.SaveChangesAsync(token);
 
 				return newBooking;
 			}
@@ -54,7 +51,7 @@ namespace EvoEvent.Web.Services.BookingService
 				
 		public async Task<Booking> GetBookingByIdAsync(Guid bookingId, CancellationToken token = default)
 		{
-			var booking = await _context.Bookings.FirstOrDefaultAsync(b => b.Id == bookingId);
+			var booking = await _bookingRepository.GetBookingByIdAsync(bookingId, token);
 
 			if (booking == null)
 				throw new NotFoundException($"Не найдена бронь с таким ИД {bookingId}");
@@ -64,8 +61,7 @@ namespace EvoEvent.Web.Services.BookingService
 
 		public bool TryBooking(out Booking? booking)
 		{
-			booking = _context.Bookings.FirstOrDefault(b => b.Status == BookingStatus.Pending);
-
+			booking = _bookingRepository.GetBookingsByStatus(BookingStatus.Pending);
 			return booking != null;
 		}
 

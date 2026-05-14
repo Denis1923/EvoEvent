@@ -1,6 +1,7 @@
 using EvoEvent.Web.DataAccess;
 using EvoEvent.Web.Middlewares;
 using EvoEvent.Web.Models;
+using EvoEvent.Web.Repositories;
 using EvoEvent.Web.Services;
 using EvoEvent.Web.Services.BookingService;
 using Microsoft.AspNetCore.Mvc;
@@ -46,6 +47,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 
+builder.Services.AddScoped<IEventRepository, EventRepository>();
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+
 builder.Services.AddHostedService<BookingBackgroundService>();
 
 var app = builder.Build();
@@ -60,16 +64,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
-
-using (var scope = app.Services.CreateScope())
-{
-	// Для создания объектов БД используйте метод EnsureCreated —
-	// EF Core автоматически создаст таблицы при первом запуске, если их ещё нет.
-
-	var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-	db.Database.EnsureCreated();
-}
-
 app.MapControllers();
 
 app.Run();

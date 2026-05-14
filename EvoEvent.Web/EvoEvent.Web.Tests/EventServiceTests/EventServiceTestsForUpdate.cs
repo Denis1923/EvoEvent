@@ -38,7 +38,7 @@ namespace EvoEvent.Web.Tests
 
 		[Theory]
 		[InlineData("Квест")]
-		public void Update_Event_ReturnIsSuccess(string nameExp)
+		public async Task Update_Event_ReturnIsSuccess(string nameExp)
 		{
 			var updEvent = new Event(
 				null, 
@@ -48,10 +48,10 @@ namespace EvoEvent.Web.Tests
 				DateTime.Now.AddDays(4),
 				20);
 
-			var _events = _eventService.GetAll();
+			var _events = await _eventService.GetAllAsync();
 			var eventExp = _eventService.GetEventsAboutWhen(_events, nameExp)?.FirstOrDefault();
 
-			_eventService.Save(eventExp, updEvent);
+			_eventService.UpdateEvent(eventExp, updEvent);
 
 			Assert.True(eventExp.Title == updEvent.Title);
 			Assert.True(eventExp.Description == updEvent.Description);
