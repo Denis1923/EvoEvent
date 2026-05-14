@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="EvoEvent.IntegrationTests/EvoEvent.IntegrationTests.csproj" Id="05833e91-dbcc-4bbd-a4c3-e1f5dec41bf4" />
   <Project Path="EvoEvent.Web.Tests/EvoEvent.Web.Tests.csproj" Id="fcb14367-6d67-44a7-af54-ecee7658c4aa" />
   <Project Path="EvoEvent.Web/EvoEvent.Web.csproj" />
 </Solution>
