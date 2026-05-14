@@ -60,16 +60,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
-
-using (var scope = app.Services.CreateScope())
-{
-	// Для создания объектов БД используйте метод EnsureCreated —
-	// EF Core автоматически создаст таблицы при первом запуске, если их ещё нет.
-
-	var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-	db.Database.EnsureCreated();
-}
-
 app.MapControllers();
 
 app.Run();
