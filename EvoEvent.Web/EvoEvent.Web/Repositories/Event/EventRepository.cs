@@ -13,10 +13,10 @@ namespace EvoEvent.Web.Repositories
 			_context = context;
 		}
 
-		public async Task AddEventAsync(Event newEvt, CancellationToken token)
+		public async Task AddEventAsync(Event newEvt, CancellationToken token = default)
 			=> await _context.Events.AddAsync(newEvt, token);
 
-		public async Task<Event?> GetEventByIdAsync(Guid id, CancellationToken token)
+		public async Task<Event?> GetEventByIdAsync(Guid id, CancellationToken token = default)
 			=> await _context.Events.FirstOrDefaultAsync(e => e.Id == id, token);
 
 		public async Task<List<Event>> GetEventsAsync()
@@ -25,7 +25,7 @@ namespace EvoEvent.Web.Repositories
 		public void RemoveEvent(Event expEvt)
 			=> _context.Events.Remove(expEvt);
 
-		public async Task SaveChangesAsync(CancellationToken token)
+		public async Task SaveChangesAsync(CancellationToken token = default)
 			=> await _context.SaveChangesAsync();
 	}
 }

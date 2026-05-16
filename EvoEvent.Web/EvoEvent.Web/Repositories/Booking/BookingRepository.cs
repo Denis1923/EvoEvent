@@ -16,16 +16,16 @@ namespace EvoEvent.Web.Repositories
 			_context = context;	
 		}
 
-		public async Task AddBookingAsync(Booking newBooking, CancellationToken token)
+		public async Task AddBookingAsync(Booking newBooking, CancellationToken token = default)
 			=> await _context.Bookings.AddAsync(newBooking, token);
 
-		public async Task<Booking?> GetBookingByIdAsync(Guid bookingId, CancellationToken token)
+		public async Task<Booking?> GetBookingByIdAsync(Guid bookingId, CancellationToken token = default)
 			=> await _context.Bookings.FirstOrDefaultAsync(b => b.Id == bookingId, token);
 
 		public async Task<List<Booking>> GetBookingsByStatusAsync(BookingStatus status)
 			=> await _context.Bookings.Where(b => b.Status == status).ToListAsync();
 
-		public async Task SaveChangesAsync(CancellationToken token)
+		public async Task SaveChangesAsync(CancellationToken token = default)
 			=> await _context.SaveChangesAsync(token);
 	}
 }
