@@ -59,11 +59,5 @@ namespace EvoEvent.Web.Services.BookingService
 			return booking;
 		}
 
-		public bool TryBooking(out Booking? booking)
-		{
-			booking = _bookingRepository.GetBookingsByStatus(BookingStatus.Pending);
-			return booking != null;
-		}
-
 	}
 }

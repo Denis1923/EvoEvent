@@ -1,5 +1,6 @@
 ﻿using EvoEvent.Web.DataAccess;
 using EvoEvent.Web.Models;
+using EvoEvent.Web.Repositories;
 using EvoEvent.Web.Services;
 using EvoEvent.Web.Tests.Models;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,8 @@ namespace EvoEvent.Web.Tests
 			services.AddDbContext<AppDbContext>(options =>
 				options.UseInMemoryDatabase(dbName));
 			services.AddScoped<IEventService, EventService>();
+			services.AddScoped<IEventRepository, EventRepository>();
+
 
 			_serviceProvider = services.BuildServiceProvider();
 			_scope = _serviceProvider.CreateScope();
@@ -75,7 +78,7 @@ namespace EvoEvent.Web.Tests
 				20);
 
 			var newEventId = await _eventService.AddEventAsync(newEvent);
-			var events = _eventService.GetAll();
+			var events = await _eventService.GetAllAsync();
 
 			Assert.True(newEventId != Guid.Empty);
 			Assert.Contains(events, evt => evt.Id == newEventId);

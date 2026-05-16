@@ -6,7 +6,7 @@ namespace EvoEvent.Web.Repositories
 	{
 		Task AddBookingAsync(Booking newBooking, CancellationToken token);
 		Task<Booking?> GetBookingByIdAsync(Guid bookingId, CancellationToken token);
-		Booking? GetBookingsByStatus(BookingStatus pending);
+		Task<List<Booking>> GetBookingsByStatusAsync(BookingStatus status);
 		Task SaveChangesAsync(CancellationToken token);
 	}
 }

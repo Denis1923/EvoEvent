@@ -1,6 +1,7 @@
 ﻿using EvoEvent.Web.DataAccess;
 using EvoEvent.Web.Exceptions;
 using EvoEvent.Web.Models;
+using EvoEvent.Web.Repositories;
 using EvoEvent.Web.Services;
 using EvoEvent.Web.Tests.Models;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ namespace EvoEvent.Web.Tests
 			services.AddDbContext<AppDbContext>(options =>
 				options.UseInMemoryDatabase(dbName));
 			services.AddScoped<IEventService, EventService>();
+			services.AddScoped<IEventRepository, EventRepository>();
 
 			_serviceProvider = services.BuildServiceProvider();
 			_scope = _serviceProvider.CreateScope();

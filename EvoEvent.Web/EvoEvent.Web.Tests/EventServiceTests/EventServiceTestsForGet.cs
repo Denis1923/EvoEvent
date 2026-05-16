@@ -1,5 +1,6 @@
 ﻿using EvoEvent.Web.DataAccess;
 using EvoEvent.Web.Exceptions;
+using EvoEvent.Web.Repositories;
 using EvoEvent.Web.Services;
 using EvoEvent.Web.Tests.Models;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ namespace EvoEvent.Web.Tests
 			services.AddDbContext<AppDbContext>(options =>
 				options.UseInMemoryDatabase(dbName));
 			services.AddScoped<IEventService, EventService>();
+			services.AddScoped<IEventRepository, EventRepository>();
 
 			_serviceProvider = services.BuildServiceProvider();
 			_scope = _serviceProvider.CreateScope();
@@ -37,9 +39,9 @@ namespace EvoEvent.Web.Tests
 
 		[Theory]
 		[InlineData("Хакатон")]
-		public void Get_ReturnsEvents(string nameTitleExp)
+		public async Task Get_ReturnsEvents(string nameTitleExp)
 		{
-			var events = _eventService.GetAll();
+			var events = await _eventService.GetAllAsync();
 			
 			Assert.NotEmpty(events);
 			Assert.Contains(events, evt => evt.Title.Contains(nameTitleExp));
@@ -49,7 +51,7 @@ namespace EvoEvent.Web.Tests
 		[InlineData("Хакатон")]
 		public async Task Get_EventId_ReturnEvent(string nameExp)
 		{
-			var events = _eventService.GetAll();
+			var events = await _eventService.GetAllAsync();
 			var eventExp = _eventService.GetEventsAboutWhen(events, nameExp)?.FirstOrDefault();
 
 			var eventObj = await _eventService.GetByIdAsync(eventExp.Id);
@@ -70,9 +72,9 @@ namespace EvoEvent.Web.Tests
 
 		[Theory]
 		[InlineData("Фестиваль", "Концерт 25")]
-		public void Filter_EventName_ReturnEvents(string nameExp, string nameNoExp)
+		public async Task Filter_EventName_ReturnEvents(string nameExp, string nameNoExp)
 		{
-			var events = _eventService.GetAll();
+			var events = await _eventService.GetAllAsync();
 			events = _eventService.GetEventsAboutWhen(events, nameExp);
 
 			Assert.All(events, evt => evt.Title.Contains(nameExp));
@@ -80,21 +82,21 @@ namespace EvoEvent.Web.Tests
 		}
 
 		[Fact]
-		public void Paginated_PageAndPageSize_ReturnEvents()
+		public async Task Paginated_PageAndPageSize_ReturnEvents()
 		{
-			var events = _eventService.GetAll();
+			var events = await _eventService.GetAllAsync();
 			events = _eventService.GetEventsAboutPaginated(events, 2, 10);
 
 			Assert.NotEmpty(events);
 		}
 
 		[Fact]
-		public void Filter_EventDates_ReturnEvents()
+		public async Task Filter_EventDates_ReturnEvents()
 		{
 			var dateStart = DateTime.Now;
 			var dateEnd = DateTime.Now.AddDays(4);
 			var nameExp = "Фестиваль";
-			var _events = _eventService.GetAll();
+			var _events = await _eventService.GetAllAsync();
 
 			var events = _eventService.GetEventsAboutWhen(_events, string.Empty, dateStart, dateEnd);
 			
@@ -102,13 +104,13 @@ namespace EvoEvent.Web.Tests
 		}
 
 		[Fact]
-		public void Filters_ReturnEvents()
+		public async Task Filters_ReturnEvents()
 		{
 			var title = "Тренинг";
 			var dateStart = DateTime.Now;
 			var dateEnd = DateTime.Now.AddDays(14);
 			var nameExp = "Тренинг";
-			var _events = _eventService.GetAll();
+			var _events = await _eventService.GetAllAsync();
 
 			var events = _eventService.GetEventsAboutWhen(_events, title, dateStart, dateEnd);
 			events = _eventService.GetEventsAboutPaginated(events, 2, 10);
