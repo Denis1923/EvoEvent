@@ -196,7 +196,7 @@ namespace EvoEvent.Web.Controllers
 				eventDto.EndAt,
 				eventDto.TotalSeats);
 
-			_eventService.Save(expEvent, updEvent);
+			_eventService.UpdateEvent(expEvent, updEvent);
 
 			return NoContent();
 		}
