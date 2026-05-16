@@ -54,6 +54,7 @@ namespace EvoEvent.IntegrationTests
 
 			// Act
 			await eventRepository.AddEventAsync(newEvent);
+			await eventRepository.SaveChangesAsync();
 
 			// Assert
 			await using var verifyContext = CreateContext();
@@ -75,6 +76,7 @@ namespace EvoEvent.IntegrationTests
 			await using var context = CreateContext();
 			var eventRepository = new EventRepository(context);
 			var newEvent = new Event(Guid.NewGuid(), "Концерт 2", "Описание: Pop-концерт", DateTime.Now.AddDays(1), DateTime.Now.AddDays(5), 100);
+			await eventRepository.SaveChangesAsync();
 			await eventRepository.AddEventAsync(newEvent);
 
 			// Act
@@ -99,6 +101,7 @@ namespace EvoEvent.IntegrationTests
 			var eventRepository = new EventRepository(context);
 			var newEvent = new Event(Guid.NewGuid(), "Концерт 3", "Описание: Rap-концерт", DateTime.Now.AddDays(1), DateTime.Now.AddDays(15), 200);
 			var updEvent = new Event(null, title: "Rap-концерт", "Описание: Rap-концерт", DateTime.Now.AddDays(2), DateTime.Now.AddDays(25), 100);
+			await eventRepository.SaveChangesAsync();
 			await eventRepository.AddEventAsync(newEvent);
 
 			// Act	
@@ -131,18 +134,19 @@ namespace EvoEvent.IntegrationTests
 			var eventRepository = new EventRepository(context);
 			var newEvent = new Event(Guid.NewGuid(), "Концерт", "Описание: Рок-концерт", DateTime.Now.AddDays(1), DateTime.Now.AddDays(3), 10);
 			await eventRepository.AddEventAsync(newEvent);
+			await eventRepository.SaveChangesAsync();
 
 			// Act
 			await using var actContext = CreateContext();
 			eventRepository = new EventRepository(actContext);
 			eventRepository.RemoveEvent(newEvent);
-
+			await eventRepository.SaveChangesAsync();
 
 			// Assert
 			await using var verifyContext = CreateContext();
-			var delenteEvent = await verifyContext.Events.FirstAsync(e => e.Id == newEvent.Id);
+			var deleteEvent = await verifyContext.Events.FirstAsync(e => e.Id == newEvent.Id);
 
-			Assert.Null(delenteEvent);
+			Assert.Null(deleteEvent);
 		}
 
 		#endregion
