@@ -36,8 +36,10 @@ Cервис для управления мероприятиями на ASP.NET 
 Для использования PostgreSQL, требуется nuget-пакеты:
  - Microsoft.EntityFrameworkCore — ядро EF Core;
  - Npgsql.EntityFrameworkCore.PostgreSQL — провайдер для PostgreSQL.
+
 В тестовом проекте для uNit-тестов пакет:
  - Microsoft.EntityFrameworkCore.InMemory — InMemory-провайдер для юнит-тестов.
+
 В тестовом проекте для интеграционных тестов пакет:
  - Testcontainers.PostgreSql - для запуска Docker-контенйнера под интеграционные тесты
    
@@ -50,6 +52,7 @@ Cервис для управления мероприятиями на ASP.NET 
  - Password	- Пароль
    
 В uNit-тестах используется InMemory-провайдера
+
 В Интеграционных-тестах используется Testcontainers для обращения к БД. Перед использованием требутся наличие Docker Desktop
 
 ## Создание миграций БД
