@@ -1,6 +1,7 @@
 ﻿using EvoEvent.Web.DataAccess;
 using EvoEvent.Web.Exceptions;
 using EvoEvent.Web.Models;
+using EvoEvent.Web.Repositories;
 using EvoEvent.Web.Services;
 using EvoEvent.Web.Services.BookingService;
 using EvoEvent.Web.Tests.Models;
@@ -25,6 +26,8 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 				options.UseInMemoryDatabase(dbName));
 			services.AddScoped<IEventService, EventService>();
 			services.AddScoped<IBookingService, BookingService>();
+			services.AddScoped<IEventRepository, EventRepository>();
+			services.AddScoped<IBookingRepository, BookingRepository>();
 
 			_serviceProvider = services.BuildServiceProvider();
 			_scope = _serviceProvider.CreateScope();

@@ -27,9 +27,9 @@ namespace EvoEvent.Web.Controllers
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult GetAll(string? title, DateTime? from, DateTime? to, int? page = 1, int? pageSize = 10)
+		public async Task<IActionResult> GetAll(string? title, DateTime? from, DateTime? to, int? page = 1, int? pageSize = 10)
 		{
-			var events = _eventService.GetAll();
+			var events = await _eventService.GetAllAsync();
 			var eventsMod = _eventService.GetEventsAboutWhen(events, title, from, to);			
 			var fullFilterCount = eventsMod.Count();
 			eventsMod = _eventService.GetEventsAboutPaginated(eventsMod, page.Value, pageSize.Value);
@@ -72,17 +72,17 @@ namespace EvoEvent.Web.Controllers
 		[HttpGet("{id:guid}", Name = "GetById")]
 		public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken token)
 		{
-			var extEvent = await _eventService.GetByIdAsync(id, token);
+			var expEvent = await _eventService.GetByIdAsync(id, token);
 
 			var evtResponse = new EventResponseDto
 			{
-				Id = extEvent.Id,
-				Title = extEvent.Title,
-				Description = extEvent.Description,
-				StartAt = extEvent.StartAt,
-				EndAt = extEvent.EndAt,
-				TotalSeats = extEvent.TotalSeats,
-				AvailableSeats = extEvent.AvailableSeats
+				Id = expEvent.Id,
+				Title = expEvent.Title,
+				Description = expEvent.Description,
+				StartAt = expEvent.StartAt,
+				EndAt = expEvent.EndAt,
+				TotalSeats = expEvent.TotalSeats,
+				AvailableSeats = expEvent.AvailableSeats
 			};
 
 			var response = new ResultResponse<EventResponseDto>()
@@ -186,7 +186,7 @@ namespace EvoEvent.Web.Controllers
 		[HttpPut("{id:guid}")]
 		public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] EventRequestDto eventDto, CancellationToken token)
 		{
-			var extEvent = await  _eventService.GetByIdAsync(id, token);
+			var expEvent = await  _eventService.GetByIdAsync(id, token);
 
 			Event updEvent = new Event(
 				null,
@@ -196,7 +196,7 @@ namespace EvoEvent.Web.Controllers
 				eventDto.EndAt,
 				eventDto.TotalSeats);
 
-			_eventService.Save(extEvent, updEvent);
+			_eventService.UpdateEvent(expEvent, updEvent);
 
 			return NoContent();
 		}

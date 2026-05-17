@@ -1,7 +1,6 @@
 ﻿using EvoEvent.Web.DataAccess;
 using EvoEvent.Web.Models;
-using EvoEvent.Web.Services.BookingService;
-using Microsoft.EntityFrameworkCore;
+using EvoEvent.Web.Repositories;
 
 namespace EvoEvent.Web.Services
 {
@@ -29,14 +28,12 @@ namespace EvoEvent.Web.Services
 				{
 					using var scope = _scopeFactory.CreateScope();
 					var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+					var bookingRepository = scope.ServiceProvider.GetRequiredService<IBookingRepository>();
 
-					var pendingBookings = await context.Bookings
-														.Where(q => q.Status == BookingStatus.Pending)
-														.Select(b => b.Id)
-														.ToListAsync();
+					var pendingBookings = await bookingRepository.GetBookingsByStatusAsync(BookingStatus.Pending);
 
-					var tasks = pendingBookings.Select(bookingId => 
-												ProcessBookingAsync(bookingId, stoppingToken));
+					var tasks = pendingBookings.Select(booking => 
+												ProcessBookingAsync(booking.Id, stoppingToken));
 					await Task.WhenAll(tasks);
 				}
 				catch (OperationCanceledException)
@@ -60,21 +57,21 @@ namespace EvoEvent.Web.Services
 			await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
 
 			using var scope = _scopeFactory.CreateScope();
-			var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-			var bookingService = scope.ServiceProvider.GetService<IBookingService>();
+			var bookingRepository = scope.ServiceProvider.GetRequiredService<IBookingRepository>();
+			var eventRepository = scope.ServiceProvider.GetRequiredService<IEventRepository>();
 
 			await _processingSemaphore.WaitAsync();
 
 			var eventExp = default(Event);
 
-			var booking = await context.Bookings.FirstOrDefaultAsync(b => b.Id == bookingId, stoppingToken);
+			var booking = await bookingRepository.GetBookingByIdAsync(bookingId, stoppingToken);
 
 			if (booking == null || booking.Status != BookingStatus.Pending)
 				return;
 
 			try
 			{
-				eventExp = await context.Events.FirstOrDefaultAsync(e => e.Id == booking.EventId, stoppingToken);
+				eventExp = await eventRepository.GetEventByIdAsync(booking.EventId, stoppingToken);
 
 				if (eventExp is null)
 				{
@@ -94,7 +91,7 @@ namespace EvoEvent.Web.Services
 			}
 			finally
 			{
-				await context.SaveChangesAsync();
+				await bookingRepository.SaveChangesAsync();
 				_processingSemaphore.Release();
 			}
 		}
