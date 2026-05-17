@@ -6,12 +6,12 @@ Cервис для управления мероприятиями на ASP.NET 
 ### cmd
 1. перейти в директорию проекта .\EvoEvent\EvoEvent.Web
 2. выполнить команду dotnet run --project EvoEvent.Web
-3. перейти по ссылке [https:SwaggerIU](https://localhost:7062/swagger/index.html)
+3. перейти по ссылке [https:SwaggerUI](https://localhost:7062/swagger/index.html)
 
 ### IDE Visual Studio
 1. перейти в проект .\EvoEvent\EvoEvent.Web
 2. нажать F5 
-3. перейти по ссылке [https:SwaggerIU](https://localhost:7062/swagger/index.html)
+3. перейти по ссылке [https:SwaggerUI](https://localhost:7062/swagger/index.html)
 
 ## Остановить приложение
 
@@ -24,7 +24,7 @@ Cервис для управления мероприятиями на ASP.NET 
 ## Запуск тестов
 
 ### cmd
-1. перейти в директорию проекта .\EvoEvent\EvoEvent.Web\EvoEvent.Web.Tests
+1. перейти в директорию проекта .\EvoEvent\EvoEvent.Web\
 2. выполнить команду dotnet test
 
 ### IDE Visual Studio
@@ -36,8 +36,10 @@ Cервис для управления мероприятиями на ASP.NET 
 Для использования PostgreSQL, требуется nuget-пакеты:
  - Microsoft.EntityFrameworkCore — ядро EF Core;
  - Npgsql.EntityFrameworkCore.PostgreSQL — провайдер для PostgreSQL.
-В тестовом проекте пакет:
+В тестовом проекте для uNit-тестов пакет:
  - Microsoft.EntityFrameworkCore.InMemory — InMemory-провайдер для юнит-тестов.
+В тестовом проекте для интеграционных тестов пакет:
+ - Testcontainers.PostgreSql - для запуска Docker-контенйнера под интеграционные тесты
    
 Для подключния требуется в файде appsettings.json поправить значение DefaultConnection объекта ConnectionStrings. Значение должно заполняться по шаблону 
 "Host=<value>;Port=<value>;Database=<value>;Username=<value>;Password=<value>", где:
@@ -47,7 +49,19 @@ Cервис для управления мероприятиями на ASP.NET 
  - Username	- Имя пользователя
  - Password	- Пароль
 Схема БД создаётся автоматически при запуске через EnsureCreated
-В тестах используется InMemory-провайдера
+В uNit-тестах используется InMemory-провайдера
+В Интеграционных-тестах используется Testcontainers для обращения к БД. Перед использованием требутся наличие Docker Desktop
+
+## Создание миграций БД
+- перейти в комнадную строку 
+- перейти в проект .\EvoEvent\EvoEvent.Web
+- выполнить команду dotnet ef migrations add <название миграции>
+- в проекте EvoEvent.Web в Program.cs ьреуется прописать код 
+"using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}"
 
 ## Описание методов 
 
