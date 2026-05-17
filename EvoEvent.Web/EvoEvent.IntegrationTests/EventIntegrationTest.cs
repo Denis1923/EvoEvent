@@ -7,57 +7,61 @@ using Testcontainers.PostgreSql;
 
 namespace EvoEvent.IntegrationTests
 {
-	internal class EventIntegrationTest : IAsyncLifetime
+	public class EventIntegrationTest : IAsyncLifetime
 	{
-		private readonly PostgreSqlContainer _conteiner = new PostgreSqlBuilder().Build();
+		private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder()
+															.WithImage("postgres:16-alpine")
+															.WithDatabase("evoevent")
+															.Build();
 
 		public async Task DisposeAsync()
-		{	
-			await _conteiner.DisposeAsync();
+		{
+			await _postgres.DisposeAsync();
 		}
 
 		public async Task InitializeAsync()
 		{
-			await _conteiner.StartAsync();
+			await _postgres.StartAsync();
 		}
 
-		private AppDbContext CreateContext()
+		private async Task<AppDbContext> CreateContext()
 		{
 			var options = new DbContextOptionsBuilder<AppDbContext>()
-								.UseNpgsql(_conteiner.GetConnectionString())
+								.UseNpgsql(_postgres.GetConnectionString())
 								.Options;
 
 
 			var context = new AppDbContext(options);
-			context.Database.Migrate();
+			await context.Database.MigrateAsync();
 			return context;
 		}
 
 		private async Task ResetDataBaseAsync()
 		{
 			NpgsqlConnection.ClearAllPools();
-			using var context = CreateContext();
+			using var context = await CreateContext();
 			await context.Database.EnsureDeletedAsync();
-			await context.Database.MigrateAsync();	
+			await context.Database.MigrateAsync();
 		}
 
 		#region Create
 
+		[Fact]
 		public async Task CreateEvent_SavesEventToDatabase()
 		{
 			await ResetDataBaseAsync();
 
 			// Arrange
-			await using var context = CreateContext();
+			await using var context = await CreateContext();
 			var eventRepository = new EventRepository(context);
-			var newEvent = new Event(Guid.NewGuid(), "Концерт", "Описание: Рок-концерт", DateTime.Now.AddDays(1), DateTime.Now.AddDays(3), 10);
+			var newEvent = new Event(Guid.NewGuid(), "Концерт", "Описание: Рок-концерт", DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(3), 10);
 
 			// Act
 			await eventRepository.AddEventAsync(newEvent);
 			await eventRepository.SaveChangesAsync();
 
 			// Assert
-			await using var verifyContext = CreateContext();
+			await using var verifyContext = await CreateContext();
 			var expEvent = await verifyContext.Events.FirstAsync(e => e.Id == newEvent.Id);
 
 			Assert.NotNull(expEvent);
@@ -68,19 +72,20 @@ namespace EvoEvent.IntegrationTests
 
 		#region Read
 
+		[Fact]
 		public async Task GetEvents_EventId_ReturnsPagingEventsFromDatabase()
 		{
 			await ResetDataBaseAsync();
 
 			// Arrange
-			await using var context = CreateContext();
+			await using var context = await CreateContext();
 			var eventRepository = new EventRepository(context);
-			var newEvent = new Event(Guid.NewGuid(), "Концерт 2", "Описание: Pop-концерт", DateTime.Now.AddDays(1), DateTime.Now.AddDays(5), 100);
-			await eventRepository.SaveChangesAsync();
+			var newEvent = new Event(Guid.NewGuid(), "Концерт 2", "Описание: Pop-концерт", DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(5), 100);
 			await eventRepository.AddEventAsync(newEvent);
+			await eventRepository.SaveChangesAsync();
 
 			// Act
-			await using var verifyContext = CreateContext();
+			await using var verifyContext = await CreateContext();
 			var expEvent = await verifyContext.Events.FirstAsync(e => e.Id == newEvent.Id);
 
 			// Assert
@@ -92,27 +97,28 @@ namespace EvoEvent.IntegrationTests
 
 		#region Update
 
+		[Fact]
 		public async Task UpdateEvent_Event_UpdateEventsToDatabase()
 		{
 			await ResetDataBaseAsync();
 
 			// Arrange
-			await using var context = CreateContext();
+			await using var context = await CreateContext();
 			var eventRepository = new EventRepository(context);
-			var newEvent = new Event(Guid.NewGuid(), "Концерт 3", "Описание: Rap-концерт", DateTime.Now.AddDays(1), DateTime.Now.AddDays(15), 200);
-			var updEvent = new Event(null, title: "Rap-концерт", "Описание: Rap-концерт", DateTime.Now.AddDays(2), DateTime.Now.AddDays(25), 100);
-			await eventRepository.SaveChangesAsync();
+			var newEvent = new Event(Guid.NewGuid(), "Концерт 3", "Описание: Rap-концерт", DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(15), 200);
+			var updEvent = new Event(null, title: "Rap-концерт", "Описание: Rap-концерт", DateTime.UtcNow.AddDays(2), DateTime.UtcNow.AddDays(25), 100);
 			await eventRepository.AddEventAsync(newEvent);
+			await eventRepository.SaveChangesAsync();
 
 			// Act	
-			await using var actContext = CreateContext();
+			await using var actContext = await CreateContext();
 			eventRepository = new EventRepository(actContext);
 			var expEvent = await eventRepository.GetEventByIdAsync(newEvent.Id);
 			expEvent.Update(updEvent);
 			await actContext.SaveChangesAsync();
 
 			// Assert
-			await using var verifyContext = CreateContext();
+			await using var verifyContext = await CreateContext();
 			var verifyEvent = await verifyContext.Events.FirstAsync(e => e.Id == newEvent.Id);
 
 			// Assert
@@ -125,26 +131,27 @@ namespace EvoEvent.IntegrationTests
 
 		#region Delete
 
+		[Fact]
 		public async Task DeleteEvent_Event_DeleteEventsFromDatabase()
 		{
 			await ResetDataBaseAsync();
 
 			// Arrange
-			await using var context = CreateContext();
+			await using var context = await CreateContext();
 			var eventRepository = new EventRepository(context);
-			var newEvent = new Event(Guid.NewGuid(), "Концерт", "Описание: Рок-концерт", DateTime.Now.AddDays(1), DateTime.Now.AddDays(3), 10);
+			var newEvent = new Event(Guid.NewGuid(), "Концерт", "Описание: Рок-концерт", DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(3), 10);
 			await eventRepository.AddEventAsync(newEvent);
 			await eventRepository.SaveChangesAsync();
 
 			// Act
-			await using var actContext = CreateContext();
+			await using var actContext = await CreateContext();
 			eventRepository = new EventRepository(actContext);
 			eventRepository.RemoveEvent(newEvent);
 			await eventRepository.SaveChangesAsync();
 
 			// Assert
-			await using var verifyContext = CreateContext();
-			var deleteEvent = await verifyContext.Events.FirstAsync(e => e.Id == newEvent.Id);
+			await using var verifyContext = await CreateContext();
+			var deleteEvent = await verifyContext.Events.FirstOrDefaultAsync(e => e.Id == newEvent.Id);
 
 			Assert.Null(deleteEvent);
 		}

@@ -93,8 +93,8 @@ namespace EvoEvent.Web.Tests
 		[Fact]
 		public async Task Filter_EventDates_ReturnEvents()
 		{
-			var dateStart = DateTime.Now;
-			var dateEnd = DateTime.Now.AddDays(4);
+			var dateStart = DateTime.UtcNow;
+			var dateEnd = DateTime.UtcNow.AddDays(4);
 			var nameExp = "Фестиваль";
 			var _events = await _eventService.GetAllAsync();
 
@@ -107,8 +107,8 @@ namespace EvoEvent.Web.Tests
 		public async Task Filters_ReturnEvents()
 		{
 			var title = "Тренинг";
-			var dateStart = DateTime.Now;
-			var dateEnd = DateTime.Now.AddDays(14);
+			var dateStart = DateTime.UtcNow;
+			var dateEnd = DateTime.UtcNow.AddDays(14);
 			var nameExp = "Тренинг";
 			var _events = await _eventService.GetAllAsync();
 

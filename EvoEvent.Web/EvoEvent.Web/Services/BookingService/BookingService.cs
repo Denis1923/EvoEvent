@@ -37,7 +37,7 @@ namespace EvoEvent.Web.Services.BookingService
 				if (!eventExp.TryReserveSeats())
 					throw new NoAvailableSeatsException("No available seats for this event");
 
-				var newBooking = new Booking(Guid.NewGuid(), eventId, BookingStatus.Pending, DateTime.UtcNow);
+				var newBooking = new Booking(eventId, BookingStatus.Pending, DateTime.UtcNow);
 				await _bookingRepository.AddBookingAsync(newBooking, token);
 				await _bookingRepository.SaveChangesAsync(token);
 

@@ -46,8 +46,8 @@ namespace EvoEvent.Web.Tests
 				null, 
 				"Концерт Nickelback", 
 				"Описание. Концерт Nickelback", 
-				DateTime.Now, 
-				DateTime.Now.AddDays(4),
+				DateTime.UtcNow, 
+				DateTime.UtcNow.AddDays(4),
 				20);
 
 			var _events = await _eventService.GetAllAsync();

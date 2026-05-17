@@ -2,8 +2,7 @@
 {
 	public class Booking
 	{
-		public Guid Id { get; init; }
-		
+		public Guid Id { get; init; }		
 
 		public BookingStatus Status { get; set; }
 
@@ -15,7 +14,7 @@
 
 		public Event Event { get; set; }
 
-		public Booking(Guid? id, Guid eventId, BookingStatus status, DateTime сreatedAt)
+		public Booking(Guid eventId, BookingStatus status, DateTime сreatedAt, Guid? id = null)
 		{
 			Id = id ?? Guid.NewGuid();
 			EventId = eventId;
@@ -33,13 +32,13 @@
 		public void Confirm()
 		{
 			Status = BookingStatus.Confirmed;
-			ProcessedAt = DateTime.Now.ToUniversalTime();
+			ProcessedAt = DateTime.UtcNow.ToUniversalTime();
 		}
 
 		public void Reject()
 		{
 			Status = BookingStatus.Rejected;
-			ProcessedAt = DateTime.Now.ToUniversalTime();
+			ProcessedAt = DateTime.UtcNow.ToUniversalTime();
 		}
 	}
 }

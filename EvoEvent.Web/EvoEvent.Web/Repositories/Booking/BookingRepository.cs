@@ -25,6 +25,9 @@ namespace EvoEvent.Web.Repositories
 		public async Task<List<Booking>> GetBookingsByStatusAsync(BookingStatus status)
 			=> await _context.Bookings.Where(b => b.Status == status).ToListAsync();
 
+		public void RemoveBooking(Booking booking)
+			=> _context.Bookings.Remove(booking);
+
 		public async Task SaveChangesAsync(CancellationToken token = default)
 			=> await _context.SaveChangesAsync(token);
 	}
