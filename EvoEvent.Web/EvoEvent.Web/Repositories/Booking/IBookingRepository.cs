@@ -4,10 +4,11 @@ namespace EvoEvent.Web.Repositories
 {
 	public interface IBookingRepository
 	{
-		Task AddBookingAsync(Booking newBooking, CancellationToken token);
-		Task<Booking?> GetBookingByIdAsync(Guid bookingId, CancellationToken token);
-		Task<List<Booking>> GetBookingsByStatusAsync(BookingStatus status);
+		Task AddBookingAsync(Booking newBooking, CancellationToken token = default);
+		Task<Booking?> GetBookingByIdAsync(Guid bookingId, CancellationToken token = default);
+		Task<List<Booking>> GetBookingsByEventIdAsync(Guid eventId, CancellationToken token = default);
+		Task<List<Booking>> GetBookingsByStatusAsync(BookingStatus status, CancellationToken token = default);
 		void RemoveBooking(Booking booking);
-		Task SaveChangesAsync(CancellationToken token);
+		Task SaveChangesAsync(CancellationToken token = default);
 	}
 }

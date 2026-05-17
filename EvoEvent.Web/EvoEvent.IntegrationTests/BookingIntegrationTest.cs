@@ -7,21 +7,13 @@ using Testcontainers.PostgreSql;
 
 namespace EvoEvent.IntegrationTests
 {
-	public class BookingIntegrationTest : IAsyncLifetime
+	public class BookingIntegrationTest : IClassFixture<PostgreSqlFixture>
 	{
-		private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder()
-															.WithImage("postgres:16-alpine")
-															.WithDatabase("evoevent")
-															.Build();
+		private readonly PostgreSqlContainer _postgres;
 
-		public async Task DisposeAsync()
-		{	
-			await _postgres.DisposeAsync();
-		}
-
-		public async Task InitializeAsync()
+		public BookingIntegrationTest(PostgreSqlFixture fixture)
 		{
-			await _postgres.StartAsync();
+			_postgres = fixture.Container;
 		}
 
 		private async Task<AppDbContext> CreateContext()
@@ -68,7 +60,8 @@ namespace EvoEvent.IntegrationTests
 
 			// Assert
 			await using var verifyContext = await CreateContext();
-			var expBooking = await verifyContext.Bookings.FirstAsync(e => e.Id == newBoooking.Id);
+			bookingRepository = new BookingRepository(verifyContext);
+			var expBooking = await bookingRepository.GetBookingByIdAsync(newBoooking.Id);
 
 			Assert.NotNull(expBooking);
 			Assert.Equal(expBooking.EventId, newEvent.Id);
@@ -98,11 +91,49 @@ namespace EvoEvent.IntegrationTests
 
 			// Act
 			await using var verifyContext = await CreateContext();
-			var expBooking = await verifyContext.Bookings.FirstAsync(e => e.Id == newBoooking.Id);
+			bookingRepository = new BookingRepository(verifyContext);
+			var expBooking = await bookingRepository.GetBookingByIdAsync(newBoooking.Id);
 
 			// Assert
 			Assert.NotNull(expBooking);
 			Assert.Equal(expBooking.EventId, newEvent.Id);
+		}
+
+
+		[Fact]
+		public async Task GetBookings_StatusPending_ReturnsBookingFromDatabase()
+		{
+			await ResetDataBaseAsync();
+
+			// Arrange
+			await using var context = await CreateContext();
+			var eventRepository = new EventRepository(context);
+			var bookingRepository = new BookingRepository(context);
+
+			var newEvent = new Event(Guid.NewGuid(), "Концерт", "Описание: Pop-концерт", DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(3), 190);
+			await eventRepository.AddEventAsync(newEvent);
+			await eventRepository.SaveChangesAsync();
+
+			var newBoookings = new List<Booking>
+			{
+				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow),
+				new Booking(newEvent.Id, BookingStatus.Rejected, DateTime.UtcNow),
+				new Booking(newEvent.Id, BookingStatus.Confirmed, DateTime.UtcNow),
+				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow)
+			};
+
+			foreach (var booking in newBoookings)
+				await bookingRepository.AddBookingAsync(booking);
+
+			await bookingRepository.SaveChangesAsync();
+
+			// Act
+			await using var verifyContext = await CreateContext();
+			bookingRepository = new BookingRepository(verifyContext);
+			var bookingsPending = await bookingRepository.GetBookingsByStatusAsync(BookingStatus.Pending);
+
+			// Assert
+			Assert.Equal(2, bookingsPending.Count);
 		}
 
 		#endregion
@@ -137,19 +168,21 @@ namespace EvoEvent.IntegrationTests
 			await bookingRepository.SaveChangesAsync();
 
 			// Act
-			await using var actContext = await CreateContext(); 
-			var updBookings = await actContext.Bookings.Where(e => e.Id == newEvent.Id).ToArrayAsync();
-			
-			foreach (var booking in newBoookings)
+			await using var actContext = await CreateContext();
+			bookingRepository = new BookingRepository(actContext);
+			var updBookings = await bookingRepository.GetBookingsByEventIdAsync(newEvent.Id);
+
+			foreach (var booking in updBookings)
 				booking.Reject();
 
 			await bookingRepository.SaveChangesAsync();
 
 			// Assert
 			await using var verifyContext = await CreateContext();
-			var isAllRejectBookings = await verifyContext.Bookings.Where(e => e.EventId == newEvent.Id).AllAsync(b => b.Status == BookingStatus.Rejected);
-			
-			Assert.True(isAllRejectBookings);
+			bookingRepository = new BookingRepository(verifyContext);
+			var rejectBookings = await bookingRepository.GetBookingsByEventIdAsync(newEvent.Id);
+
+			Assert.True(rejectBookings.All(b => b.Status == BookingStatus.Rejected));
 		}
 
 		#endregion
@@ -185,8 +218,8 @@ namespace EvoEvent.IntegrationTests
 
 			// Act
 			await using var actContext = await CreateContext();
-			var expBookings = await actContext.Bookings.Where(b => b.EventId == newEvent.Id).ToListAsync();
 			bookingRepository = new BookingRepository(actContext);
+			var expBookings = await bookingRepository.GetBookingsByEventIdAsync(newEvent.Id);
 
 			foreach (var booking in expBookings)
 				bookingRepository.RemoveBooking(booking);
@@ -195,9 +228,10 @@ namespace EvoEvent.IntegrationTests
 
 			// Assert
 			await using var verifyContext = await CreateContext();
-			var deletBookings = await verifyContext.Bookings.Where(b => b.EventId == newEvent.Id).ToListAsync();
+			bookingRepository = new BookingRepository(verifyContext);
+			var deleteBookings = await bookingRepository.GetBookingsByEventIdAsync(newEvent.Id);
 
-			Assert.True(!deletBookings.Any());
+			Assert.True(!deleteBookings.Any());
 		}
 
 		#endregion

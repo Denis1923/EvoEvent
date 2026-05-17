@@ -57,7 +57,6 @@ namespace EvoEvent.Web.Services
 			await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
 
 			using var scope = _scopeFactory.CreateScope();
-			var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 			var bookingRepository = scope.ServiceProvider.GetRequiredService<IBookingRepository>();
 			var eventRepository = scope.ServiceProvider.GetRequiredService<IEventRepository>();
 
@@ -92,7 +91,7 @@ namespace EvoEvent.Web.Services
 			}
 			finally
 			{
-				await context.SaveChangesAsync();
+				await bookingRepository.SaveChangesAsync();
 				_processingSemaphore.Release();
 			}
 		}

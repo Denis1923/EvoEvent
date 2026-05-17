@@ -1,9 +1,6 @@
 ﻿using EvoEvent.Web.DataAccess;
 using EvoEvent.Web.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace EvoEvent.Web.Repositories
 {
@@ -22,8 +19,11 @@ namespace EvoEvent.Web.Repositories
 		public async Task<Booking?> GetBookingByIdAsync(Guid bookingId, CancellationToken token = default)
 			=> await _context.Bookings.FirstOrDefaultAsync(b => b.Id == bookingId, token);
 
-		public async Task<List<Booking>> GetBookingsByStatusAsync(BookingStatus status)
-			=> await _context.Bookings.Where(b => b.Status == status).ToListAsync();
+		public async Task<List<Booking>> GetBookingsByEventIdAsync(Guid eventId, CancellationToken token = default)
+			=> await _context.Bookings.Where(b => b.EventId == eventId).ToListAsync(token);
+
+		public async Task<List<Booking>> GetBookingsByStatusAsync(BookingStatus status, CancellationToken token = default)
+			=> await _context.Bookings.Where(b => b.Status == status).ToListAsync(token);
 
 		public void RemoveBooking(Booking booking)
 			=> _context.Bookings.Remove(booking);
