@@ -7,7 +7,7 @@ public class Event
 	public string? Description { get; private set; }
 	public DateTime StartAt { get; private set; }
 	public DateTime EndAt { get; private set; }
-	public int TotalSeats { get; init; }
+	public int TotalSeats { get; private set; }
 	public int AvailableSeats { get; set; }
 	public IEnumerable<Booking> Bookings { get; set; }
 
@@ -37,6 +37,8 @@ public class Event
 		Description = updEvent.Description;
 		StartAt = updEvent.StartAt;
 		EndAt = updEvent.EndAt;
+		TotalSeats = updEvent.TotalSeats;
+		AvailableSeats = updEvent.AvailableSeats;
 	}
 
 	public bool TryReserveSeats(int count = 1)

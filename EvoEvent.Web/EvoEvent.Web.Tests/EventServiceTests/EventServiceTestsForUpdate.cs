@@ -1,6 +1,7 @@
 ﻿using EvoEvent.Web.DataAccess;
 using EvoEvent.Web.Exceptions;
 using EvoEvent.Web.Models;
+using EvoEvent.Web.Repositories;
 using EvoEvent.Web.Services;
 using EvoEvent.Web.Tests.Models;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ namespace EvoEvent.Web.Tests
 			services.AddDbContext<AppDbContext>(options =>
 				options.UseInMemoryDatabase(dbName));
 			services.AddScoped<IEventService, EventService>();
+			services.AddScoped<IEventRepository, EventRepository>();
 
 			_serviceProvider = services.BuildServiceProvider();
 			_scope = _serviceProvider.CreateScope();
@@ -38,20 +40,20 @@ namespace EvoEvent.Web.Tests
 
 		[Theory]
 		[InlineData("Квест")]
-		public void Update_Event_ReturnIsSuccess(string nameExp)
+		public async Task Update_Event_ReturnIsSuccess(string nameExp)
 		{
 			var updEvent = new Event(
 				null, 
 				"Концерт Nickelback", 
 				"Описание. Концерт Nickelback", 
-				DateTime.Now, 
-				DateTime.Now.AddDays(4),
+				DateTime.UtcNow, 
+				DateTime.UtcNow.AddDays(4),
 				20);
 
-			var _events = _eventService.GetAll();
+			var _events = await _eventService.GetAllAsync();
 			var eventExp = _eventService.GetEventsAboutWhen(_events, nameExp)?.FirstOrDefault();
 
-			_eventService.Save(eventExp, updEvent);
+			_eventService.UpdateEvent(eventExp, updEvent);
 
 			Assert.True(eventExp.Title == updEvent.Title);
 			Assert.True(eventExp.Description == updEvent.Description);

@@ -4,16 +4,16 @@ namespace EvoEvent.Web.Services
 {
 	public interface IEventService
 	{
-		IEnumerable<Event> GetAll();
+		Task<List<Event>> GetAllAsync();
 
-		IEnumerable<Event> GetEventsAboutWhen(
-			IEnumerable<Event> events, 
+		List<Event> GetEventsAboutWhen(
+			List<Event> events, 
 			string? title = null, 
 			DateTime? from = null, 
 			DateTime? to = null);
 
-		IEnumerable<Event> GetEventsAboutPaginated(
-			IEnumerable<Event> events,
+		List<Event> GetEventsAboutPaginated(
+			List<Event> events,
 			int page = 1,
 			int pageSize = 10);
 
@@ -21,7 +21,7 @@ namespace EvoEvent.Web.Services
 
 		Task<Guid> AddEventAsync(Event evt, CancellationToken token = default);
 
-		void Save(Event extUpd, Event updEvt);
+		void UpdateEvent(Event extUpd, Event updEvt);
 
 		Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default);
 	}
