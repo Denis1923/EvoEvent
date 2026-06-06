@@ -17,4 +17,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\EvoEvent.Application\EvoEvent.Application.csproj" />
+    <ProjectReference Include="..\EvoEvent.Infrastructure\EvoEvent.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
