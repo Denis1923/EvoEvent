@@ -1,4 +1,5 @@
 ﻿using EvoEvent.Domain.Entities;
+using EvoEvent.Web.Models;
 
 namespace EvoEvent.Application.Services
 {
@@ -19,9 +20,9 @@ namespace EvoEvent.Application.Services
 
 		Task<Event?> GetByIdAsync(Guid id, CancellationToken token = default);
 
-		Task<Guid> AddEventAsync(Event evt, CancellationToken token = default);
+		Task<Guid> AddEventAsync(EventDto evt, CancellationToken token = default);
 
-		void UpdateEvent(Event extUpd, Event updEvt);
+		void UpdateEvent(Event extUpd, EventDto updEvt);
 
 		Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default);
 	}

@@ -1,4 +1,4 @@
-﻿namespace EvoEvent.Domain.Exceptions
+﻿namespace EvoEvent.Application.Exceptions
 {
 	public class NoAvailableSeatsException : Exception
 	{

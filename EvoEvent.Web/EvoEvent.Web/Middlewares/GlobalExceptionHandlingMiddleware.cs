@@ -1,4 +1,4 @@
-﻿using EvoEvent.Web.Exceptions;
+﻿using EvoEvent.Application.Exceptions;
 using EvoEvent.Web.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Net;

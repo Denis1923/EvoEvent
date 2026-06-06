@@ -1,7 +1,6 @@
-﻿using EvoEvent.Web.Models;
+﻿using EvoEvent.Application.Services;
+using EvoEvent.Web.Models;
 using EvoEvent.Web.Models.Response;
-using EvoEvent.Web.Services;
-using EvoEvent.Web.Services.BookingService;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -123,13 +122,15 @@ namespace EvoEvent.Web.Controllers
 		[HttpPost]
 		public async Task<IActionResult> CreateAsync([FromBody] EventRequestDto eventDto, CancellationToken token)
 		{
-			Event newEvent = new Event(
-					Guid.NewGuid(),
-					eventDto.Title,
-					eventDto.Description,
-					eventDto.StartAt,
-					eventDto.EndAt,
-					eventDto.TotalSeats);
+			EventDto newEvent = new EventDto
+			{
+				Id = Guid.NewGuid(),
+				Title = eventDto.Title,
+				Description = eventDto.Description,
+				StartAt = eventDto.StartAt,
+				EndAt = eventDto.EndAt,
+				TotalSeats = eventDto.TotalSeats
+			};
 
 			var id = await _eventService.AddEventAsync(newEvent, token);
 			var evtResponse = new EventResponseDto
@@ -186,15 +187,16 @@ namespace EvoEvent.Web.Controllers
 		[HttpPut("{id:guid}")]
 		public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] EventRequestDto eventDto, CancellationToken token)
 		{
-			var expEvent = await  _eventService.GetByIdAsync(id, token);
+			var expEvent = await _eventService.GetByIdAsync(id, token);
 
-			Event updEvent = new Event(
-				null,
-				eventDto.Title,
-				eventDto.Description,
-				eventDto.StartAt,
-				eventDto.EndAt,
-				eventDto.TotalSeats);
+			EventDto updEvent = new EventDto
+			{
+				Title = eventDto.Title,
+				Description = eventDto.Description,
+				StartAt = eventDto.StartAt,
+				EndAt = eventDto.EndAt,
+				TotalSeats = eventDto.TotalSeats
+			};
 
 			_eventService.UpdateEvent(expEvent, updEvent);
 

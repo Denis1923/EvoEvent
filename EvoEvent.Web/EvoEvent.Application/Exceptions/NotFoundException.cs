@@ -1,4 +1,4 @@
-﻿namespace EvoEvent.Web.Exceptions
+﻿namespace EvoEvent.Application.Exceptions
 {
 	public class NotFoundException : Exception
 	{

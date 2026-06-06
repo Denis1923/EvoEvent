@@ -1,6 +1,7 @@
 ﻿using EvoEvent.Application.Abstractions;
+using EvoEvent.Application.Exceptions;
 using EvoEvent.Domain.Entities;
-using EvoEvent.Domain.Exceptions;
+using EvoEvent.Web.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace EvoEvent.Application.Services
@@ -65,20 +66,36 @@ namespace EvoEvent.Application.Services
 			return expEvt;
 		}
 
-		public async Task<Guid> AddEventAsync(Event newEvt, CancellationToken token = default)
+		public async Task<Guid> AddEventAsync(EventDto newEvtDto, CancellationToken token = default)
 		{
-			if (newEvt.StartAt >= newEvt.EndAt)
+			if (newEvtDto.StartAt >= newEvtDto.EndAt)
 				throw new ValidationException("Дата окончания должна быть позже Даты начала");
 
-			await _eventRepository.AddEventAsync(newEvt, token);
+			Event newEvent = new Event(
+					Guid.NewGuid(),
+					newEvtDto.Title,
+					newEvtDto.Description,
+					newEvtDto.StartAt,
+					newEvtDto.EndAt,
+					newEvtDto.TotalSeats);
+
+			await _eventRepository.AddEventAsync(newEvent, token);
 			await _eventRepository.SaveChangesAsync(token);
 
-			return newEvt.Id;
+			return newEvent.Id;
 		}
 
-		public void UpdateEvent(Event extEvt, Event updEvt)
+		public void UpdateEvent(Event extEvt, EventDto updEvtDto)
 		{
-			extEvt.Update(updEvt);
+			Event updEvent = new Event(
+				null,
+				updEvtDto.Title,
+				updEvtDto.Description,
+				updEvtDto.StartAt,
+				updEvtDto.EndAt,
+				updEvtDto.TotalSeats);
+
+			extEvt.Update(updEvent);
 		}
 
 		public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default)

@@ -1,15 +1,13 @@
-using EvoEvent.Web.DataAccess;
+using EvoEvent.Application;
+using EvoEvent.Infrastructure;
+using EvoEvent.Infrastructure.Persistence.DataAccess;
 using EvoEvent.Web.Middlewares;
 using EvoEvent.Web.Models;
-using EvoEvent.Web.Repositories;
-using EvoEvent.Web.Services;
-using EvoEvent.Web.Services.BookingService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
-var connectionStr = builder.Configuration.GetConnectionString("DefaultConnection");
 
 
 builder.Services.AddControllers()
@@ -36,21 +34,10 @@ builder.Services.AddControllers()
 	};
 });
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-{
-	options.UseNpgsql(connectionStr);
-});
-
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
-
-builder.Services.AddScoped<IEventService, EventService>();
-builder.Services.AddScoped<IBookingService, BookingService>();
-
-builder.Services.AddScoped<IEventRepository, EventRepository>();
-builder.Services.AddScoped<IBookingRepository, BookingRepository>();
-
-builder.Services.AddHostedService<BookingBackgroundService>();
+builder.Services.AddApplicationServices();
+builder.Services.AddInfrastructureServices(builder.Configuration);
 
 var app = builder.Build();
 

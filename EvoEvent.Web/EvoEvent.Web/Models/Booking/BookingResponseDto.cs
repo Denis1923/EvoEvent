@@ -1,4 +1,6 @@
-﻿namespace EvoEvent.Web.Models
+﻿using EvoEvent.Domain.Enums;
+
+namespace EvoEvent.Web.Models
 {
 	public class BookingResponseDto
 	{
