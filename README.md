@@ -63,9 +63,9 @@ Cервис для управления мероприятиями на ASP.NET 
 
 ## Создание миграций БД
 - перейти в комнадную строку 
-- перейти в проект .\EvoEvent\EvoEvent.Web
-- выполнить команду dotnet ef migrations add <название миграции>
-- в проекте EvoEvent.Web в Program.cs ьреуется прописать код 
+- перейти в проект .\EvoEvent\EvoEvent.Presentation
+- выполнить команду dotnet ef migrations add <название миграции> --startup-project ../EvoEvent.Presentation  
+- в проекте EvoEvent.Presentation в Program.cs треуется прописать код 
 "using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
