@@ -1,4 +1,4 @@
-﻿using EvoEvent.Domain.Entities;
+using EvoEvent.Domain.Entities;
 
 namespace EvoEvent.Application.DTOs;
 
@@ -14,5 +14,4 @@ public class EventDto
 	public DateTime EndAt { get; set; }
 	public int TotalSeats { get; set; }
 	public int AvailableSeats { get; set; }
-	public IEnumerable<Booking> Bookings { get; set; }
 }
