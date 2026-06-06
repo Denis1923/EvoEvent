@@ -72,7 +72,7 @@ namespace EvoEvent.Application.Services
 				throw new ValidationException("Дата окончания должна быть позже Даты начала");
 
 			Event newEvent = new Event(
-					Guid.NewGuid(),
+					newEvtDto.Id,
 					newEvtDto.Title,
 					newEvtDto.Description,
 					newEvtDto.StartAt,
@@ -85,7 +85,7 @@ namespace EvoEvent.Application.Services
 			return newEvent.Id;
 		}
 
-		public void UpdateEvent(Event extEvt, EventDto updEvtDto)
+		public async Task UpdateEventAsync(Event extEvt, EventDto updEvtDto, CancellationToken token = default)
 		{
 			Event updEvent = new Event(
 				null,
@@ -96,6 +96,7 @@ namespace EvoEvent.Application.Services
 				updEvtDto.TotalSeats);
 
 			extEvt.Update(updEvent);
+			await _eventRepository.SaveChangesAsync(token);
 		}
 
 		public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default)

@@ -4,5 +4,5 @@
   <Project Path="EvoEvent.Infrastructure/EvoEvent.Infrastructure.csproj" Id="715f61d4-a761-4d40-91e2-cd82f064cc55" />
   <Project Path="EvoEvent.IntegrationTests/EvoEvent.IntegrationTests.csproj" Id="05833e91-dbcc-4bbd-a4c3-e1f5dec41bf4" />
   <Project Path="EvoEvent.Web.Tests/EvoEvent.Web.Tests.csproj" Id="fcb14367-6d67-44a7-af54-ecee7658c4aa" />
-  <Project Path="EvoEvent.Web/EvoEvent.Presentation.csproj" />
+  <Project Path="EvoEvent.Presentation/EvoEvent.Presentation.csproj" />
 </Solution>

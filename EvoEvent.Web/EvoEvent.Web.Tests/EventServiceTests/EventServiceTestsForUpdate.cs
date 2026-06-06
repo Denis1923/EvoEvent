@@ -55,7 +55,7 @@ namespace EvoEvent.Web.Tests
 			var _events = await _eventService.GetAllAsync();
 			var eventExp = _eventService.GetEventsAboutWhen(_events, nameExp)?.FirstOrDefault();
 
-			_eventService.UpdateEvent(eventExp, updEvent);
+			_eventService.UpdateEventAsync(eventExp, updEvent);
 
 			Assert.True(eventExp.Title == updEvent.Title);
 			Assert.True(eventExp.Description == updEvent.Description);

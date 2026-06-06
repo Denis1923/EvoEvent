@@ -22,7 +22,7 @@ namespace EvoEvent.Application.Services
 
 		Task<Guid> AddEventAsync(EventDto evt, CancellationToken token = default);
 
-		void UpdateEvent(Event extUpd, EventDto updEvt);
+		Task UpdateEventAsync(Event extUpd, EventDto updEvt, CancellationToken token = default);
 
 		Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default);
 	}

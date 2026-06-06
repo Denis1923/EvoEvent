@@ -199,7 +199,7 @@ namespace EvoEvent.Web.Controllers
 				TotalSeats = eventDto.TotalSeats
 			};
 
-			_eventService.UpdateEvent(expEvent, updEvent);
+			await _eventService.UpdateEventAsync(expEvent, updEvent, token);
 
 			return NoContent();
 		}
