@@ -1,6 +1,6 @@
 ﻿using EvoEvent.Domain.Entities;
 
-namespace EvoEvent.Web.Models;
+namespace EvoEvent.Application.DTOs;
 
 /// <summary>
 /// Входная модель сущности "Событие"

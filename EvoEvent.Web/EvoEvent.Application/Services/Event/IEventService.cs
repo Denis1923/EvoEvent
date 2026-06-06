@@ -1,5 +1,5 @@
-﻿using EvoEvent.Domain.Entities;
-using EvoEvent.Web.Models;
+﻿using EvoEvent.Application.DTOs;
+using EvoEvent.Domain.Entities;
 
 namespace EvoEvent.Application.Services
 {

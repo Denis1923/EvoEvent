@@ -1,13 +1,12 @@
-﻿using EvoEvent.Web.DataAccess;
-using EvoEvent.Web.Exceptions;
-using EvoEvent.Web.Models;
+﻿using EvoEvent.Application.Abstractions;
+using EvoEvent.Application.Exceptions;
+using EvoEvent.Application.Services;
+using EvoEvent.Domain.Enums;
+using EvoEvent.Infrastructure.Persistence.DataAccess;
 using EvoEvent.Web.Repositories;
-using EvoEvent.Web.Services;
-using EvoEvent.Web.Services.BookingService;
 using EvoEvent.Web.Tests.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 

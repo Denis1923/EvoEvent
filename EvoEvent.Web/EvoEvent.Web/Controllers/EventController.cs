@@ -1,4 +1,5 @@
-﻿using EvoEvent.Application.Services;
+﻿using EvoEvent.Application.DTOs;
+using EvoEvent.Application.Services;
 using EvoEvent.Web.Models;
 using EvoEvent.Web.Models.Response;
 using Microsoft.AspNetCore.Mvc;

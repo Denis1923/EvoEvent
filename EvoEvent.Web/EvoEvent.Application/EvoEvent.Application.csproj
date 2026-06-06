@@ -14,4 +14,8 @@
     <ProjectReference Include="..\EveEvent.Domain\EvoEvent.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DTOs\Booking\" />
+  </ItemGroup>
+
 </Project>

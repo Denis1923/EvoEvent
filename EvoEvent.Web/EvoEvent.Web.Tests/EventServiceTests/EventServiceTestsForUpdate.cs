@@ -1,8 +1,9 @@
-﻿using EvoEvent.Web.DataAccess;
-using EvoEvent.Web.Exceptions;
-using EvoEvent.Web.Models;
+﻿using EvoEvent.Application.Abstractions;
+using EvoEvent.Application.DTOs;
+using EvoEvent.Application.Exceptions;
+using EvoEvent.Application.Services;
+using EvoEvent.Infrastructure.Persistence.DataAccess;
 using EvoEvent.Web.Repositories;
-using EvoEvent.Web.Services;
 using EvoEvent.Web.Tests.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,13 +43,14 @@ namespace EvoEvent.Web.Tests
 		[InlineData("Квест")]
 		public async Task Update_Event_ReturnIsSuccess(string nameExp)
 		{
-			var updEvent = new Event(
-				null, 
-				"Концерт Nickelback", 
-				"Описание. Концерт Nickelback", 
-				DateTime.UtcNow, 
-				DateTime.UtcNow.AddDays(4),
-				20);
+			var updEvent = new EventDto
+			{
+				Title = "Концерт Nickelback\"",
+				Description = "Описание. Концерт Nickelback",
+				StartAt = DateTime.UtcNow,
+				EndAt = DateTime.UtcNow.AddDays(4),
+				TotalSeats = 20
+			};
 
 			var _events = await _eventService.GetAllAsync();
 			var eventExp = _eventService.GetEventsAboutWhen(_events, nameExp)?.FirstOrDefault();

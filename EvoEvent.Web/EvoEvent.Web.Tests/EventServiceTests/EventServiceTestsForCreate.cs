@@ -1,11 +1,12 @@
-﻿using EvoEvent.Web.DataAccess;
-using EvoEvent.Web.Models;
-using EvoEvent.Web.Repositories;
-using EvoEvent.Web.Services;
-using EvoEvent.Web.Tests.Models;
+﻿using EvoEvent.Web.Tests.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel.DataAnnotations;
+using EvoEvent.Application.Abstractions;
+using EvoEvent.Application.Services;
+using EvoEvent.Infrastructure.Persistence.DataAccess;
+using EvoEvent.Web.Repositories;
+using EvoEvent.Application.DTOs;
 
 namespace EvoEvent.Web.Tests
 {
@@ -47,13 +48,15 @@ namespace EvoEvent.Web.Tests
 			string startAt,
 			string endAt)
 		{
-			Event newEvent = new Event(
-				Guid.NewGuid(), 
-				title, 
-				description, 
-				DateTime.Parse(startAt), 
-				DateTime.Parse(endAt),
-				20);
+			var newEvent = new EventDto
+			{
+				Id = Guid.NewGuid(),
+				Title = title,
+				Description = description,
+				StartAt = DateTime.Parse(startAt),
+				EndAt = DateTime.Parse(endAt),
+				TotalSeats = 20
+			};
 
 			var exc = await Assert.ThrowsAsync<ValidationException>(
 				async () => await _eventService.AddEventAsync(newEvent));
@@ -69,13 +72,15 @@ namespace EvoEvent.Web.Tests
 			string startAt,
 			string endAt)
 		{
-			Event newEvent = new Event(
-				Guid.NewGuid(),
-				title,
-				description,
-				DateTime.Parse(startAt),
-				DateTime.Parse(endAt),
-				20);
+			var newEvent = new EventDto
+			{
+				Id = Guid.NewGuid(),
+				Title = title,
+				Description = description,
+				StartAt = DateTime.Parse(startAt),
+				EndAt = DateTime.Parse(endAt),
+				TotalSeats = 20
+			};
 
 			var newEventId = await _eventService.AddEventAsync(newEvent);
 			var events = await _eventService.GetAllAsync();

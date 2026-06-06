@@ -1,7 +1,7 @@
 ﻿using EvoEvent.Application.Abstractions;
+using EvoEvent.Application.DTOs;
 using EvoEvent.Application.Exceptions;
 using EvoEvent.Domain.Entities;
-using EvoEvent.Web.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace EvoEvent.Application.Services
