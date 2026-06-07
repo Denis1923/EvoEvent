@@ -1,7 +1,7 @@
 ﻿using EvoEvent.Application.Abstractions;
 using EvoEvent.Infrastructure.Persistence.DataAccess;
 using EvoEvent.Infrastructure.Services;
-using EvoEvent.Web.Repositories;
+using EvoEvent.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

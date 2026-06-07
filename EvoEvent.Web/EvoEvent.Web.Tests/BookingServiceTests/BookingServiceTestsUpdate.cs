@@ -2,7 +2,7 @@
 using EvoEvent.Application.Services;
 using EvoEvent.Domain.Enums;
 using EvoEvent.Infrastructure.Persistence.DataAccess;
-using EvoEvent.Web.Repositories;
+using EvoEvent.Infrastructure.Persistence.Repositories;
 using EvoEvent.Web.Tests.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

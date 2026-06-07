@@ -1,9 +1,9 @@
-﻿using EvoEvent.Application.Exceptions;
-using EvoEvent.Web.Models;
+﻿using EvoEvent.Domain.Exceptions;
+using EvoEvent.Presentation.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 
-namespace EvoEvent.Web.Middlewares
+namespace EvoEvent.Presentation.Middlewares
 {
 	public class GlobalExceptionHandlingMiddleware
 	{

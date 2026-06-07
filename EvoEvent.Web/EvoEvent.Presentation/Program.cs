@@ -1,8 +1,8 @@
 using EvoEvent.Application;
 using EvoEvent.Infrastructure;
 using EvoEvent.Infrastructure.Persistence.DataAccess;
-using EvoEvent.Web.Middlewares;
-using EvoEvent.Web.Models;
+using EvoEvent.Presentation.Middlewares;
+using EvoEvent.Presentation.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;

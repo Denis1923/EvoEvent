@@ -1,4 +1,4 @@
-﻿namespace EvoEvent.Web.Models.Response
+﻿namespace EvoEvent.Presentation.Models
 {
 	public class PaginatedResultEvent
 	{

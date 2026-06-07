@@ -1,6 +1,6 @@
 ﻿using EvoEvent.Domain.Enums;
 
-namespace EvoEvent.Web.Models
+namespace EvoEvent.Presentation.Models
 {
 	public class BookingResponseDto
 	{

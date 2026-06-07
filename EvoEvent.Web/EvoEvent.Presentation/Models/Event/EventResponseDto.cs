@@ -1,7 +1,7 @@
-﻿using EvoEvent.Web.Validation;
+﻿using EvoEvent.Presentation.Validation;
 using System.ComponentModel.DataAnnotations;
 
-namespace EvoEvent.Web.Models;
+namespace EvoEvent.Presentation.Models;
 
 /// <summary>
 /// Выходная модель сущности "Событие"

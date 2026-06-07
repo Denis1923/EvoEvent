@@ -3,7 +3,7 @@ using EvoEvent.Domain.Entities;
 using EvoEvent.Infrastructure.Persistence.DataAccess;
 using Microsoft.EntityFrameworkCore;
 
-namespace EvoEvent.Web.Repositories
+namespace EvoEvent.Infrastructure.Persistence.Repositories
 {
 	public class EventRepository : IEventRepository
 	{

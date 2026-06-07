@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using EvoEvent.Application.Abstractions;
 using EvoEvent.Application.Services;
 using EvoEvent.Infrastructure.Persistence.DataAccess;
-using EvoEvent.Web.Repositories;
+using EvoEvent.Infrastructure.Persistence.Repositories;
 using EvoEvent.Application.DTOs;
 
 namespace EvoEvent.Web.Tests

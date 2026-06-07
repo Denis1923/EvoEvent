@@ -1,6 +1,6 @@
 ﻿using EvoEvent.Application.Abstractions;
 using EvoEvent.Application.DTOs;
-using EvoEvent.Application.Exceptions;
+using EvoEvent.Domain.Exceptions;
 using EvoEvent.Domain.Entities;
 using System.ComponentModel.DataAnnotations;
 

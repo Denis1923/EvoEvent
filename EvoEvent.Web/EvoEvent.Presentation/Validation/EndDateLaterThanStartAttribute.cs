@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EvoEvent.Web.Validation
+namespace EvoEvent.Presentation.Validation
 {
 	public class EndDateLaterThanStartAttribute : ValidationAttribute
 	{

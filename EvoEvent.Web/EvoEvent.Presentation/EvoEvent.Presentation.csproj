@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EvoEvent.Application\EvoEvent.Application.csproj" />
+    <ProjectReference Include="..\EvoEvent.Domain\EvoEvent.Domain.csproj" />
     <ProjectReference Include="..\EvoEvent.Infrastructure\EvoEvent.Infrastructure.csproj" />
   </ItemGroup>
 

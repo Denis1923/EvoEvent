@@ -4,7 +4,7 @@ using EvoEvent.Domain.Enums;
 using EvoEvent.Infrastructure.Persistence.DataAccess;
 using Microsoft.EntityFrameworkCore;
 
-namespace EvoEvent.Web.Repositories
+namespace EvoEvent.Infrastructure.Persistence.Repositories
 {
 	public class BookingRepository : IBookingRepository
 	{

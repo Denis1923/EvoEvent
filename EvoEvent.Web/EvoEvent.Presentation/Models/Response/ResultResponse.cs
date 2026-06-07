@@ -1,4 +1,4 @@
-﻿namespace EvoEvent.Web.Models
+﻿namespace EvoEvent.Presentation.Models
 {
 	public class ResultResponse<T> : ResponseBase
 	{

@@ -1,5 +1,5 @@
 ﻿using EvoEvent.Application.Abstractions;
-using EvoEvent.Application.Exceptions;
+using EvoEvent.Domain.Exceptions;
 using EvoEvent.Domain.Entities;
 using EvoEvent.Domain.Enums;
 using System.ComponentModel.DataAnnotations;

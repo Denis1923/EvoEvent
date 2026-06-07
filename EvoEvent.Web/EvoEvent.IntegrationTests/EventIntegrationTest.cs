@@ -1,6 +1,6 @@
 ﻿using EvoEvent.Domain.Entities;
 using EvoEvent.Infrastructure.Persistence.DataAccess;
-using EvoEvent.Web.Repositories;
+using EvoEvent.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Testcontainers.PostgreSql;

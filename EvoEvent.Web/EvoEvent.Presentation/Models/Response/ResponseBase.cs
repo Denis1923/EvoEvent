@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace EvoEvent.Web.Models
+namespace EvoEvent.Presentation.Models
 {
 	public class ResponseBase
 	{

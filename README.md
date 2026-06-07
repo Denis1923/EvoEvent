@@ -10,12 +10,12 @@ Cервис для управления мероприятиями на ASP.NET 
 ## Запуск
 
 ### cmd
-1. перейти в директорию проекта .\EvoEvent\EvoEvent.Web
-2. выполнить команду dotnet run --project EvoEvent.Web
+1. перейти в директорию проекта .\EvoEvent\EvoEvent.Presentation
+2. выполнить команду dotnet run --project EvoEvent.Presentation
 3. перейти по ссылке [https:SwaggerUI](https://localhost:7062/swagger/index.html)
 
 ### IDE Visual Studio
-1. перейти в проект .\EvoEvent\EvoEvent.Web
+1. перейти в проект .\EvoEvent\EvoEvent.Presentation
 2. нажать F5 
 3. перейти по ссылке [https:SwaggerUI](https://localhost:7062/swagger/index.html)
 
@@ -30,7 +30,7 @@ Cервис для управления мероприятиями на ASP.NET 
 ## Запуск тестов
 
 ### cmd
-1. перейти в директорию проекта .\EvoEvent\EvoEvent.Web\
+1. перейти в директорию проекта .\EvoEvent\EvoEvent.Presentation\
 2. выполнить команду dotnet test
 
 ### IDE Visual Studio

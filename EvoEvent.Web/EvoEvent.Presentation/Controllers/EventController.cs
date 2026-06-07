@@ -1,11 +1,10 @@
 ﻿using EvoEvent.Application.DTOs;
 using EvoEvent.Application.Services;
-using EvoEvent.Web.Models;
-using EvoEvent.Web.Models.Response;
+using EvoEvent.Presentation.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
-namespace EvoEvent.Web.Controllers
+namespace EvoEvent.Presentation.Controllers
 {
 	[ApiController]
 	[Route("events")]
