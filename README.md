@@ -1,15 +1,21 @@
 # EvoEvent
 Cервис для управления мероприятиями на ASP.NET Core Web API
 
+## Структура проекта
+ - Domain — доменные сущности, value objects, доменные исключения. Не зависит ни от чего внешнего.
+ - Application — use cases, сервисы, интерфейсы портов (репозитории, шлюзы), DTO. Зависит только от Domain.
+ - Infrastructure — реализации портов: репозитории, DbContext, внешние клиенты. Зависит от Application и Domain.
+ - Presentation — контроллеры/Minimal API эндпоинты, HTTP-маппинг, регистрация зависимостей. Зависит от Application и Infrastructure.
+
 ## Запуск
 
 ### cmd
-1. перейти в директорию проекта .\EvoEvent\EvoEvent.Web
-2. выполнить команду dotnet run --project EvoEvent.Web
+1. перейти в директорию проекта .\EvoEvent\EvoEvent.Presentation
+2. выполнить команду dotnet run --project EvoEvent.Presentation
 3. перейти по ссылке [https:SwaggerUI](https://localhost:7062/swagger/index.html)
 
 ### IDE Visual Studio
-1. перейти в проект .\EvoEvent\EvoEvent.Web
+1. перейти в проект .\EvoEvent\EvoEvent.Presentation
 2. нажать F5 
 3. перейти по ссылке [https:SwaggerUI](https://localhost:7062/swagger/index.html)
 
@@ -24,7 +30,7 @@ Cервис для управления мероприятиями на ASP.NET 
 ## Запуск тестов
 
 ### cmd
-1. перейти в директорию проекта .\EvoEvent\EvoEvent.Web\
+1. перейти в директорию проекта .\EvoEvent\EvoEvent.Presentation\
 2. выполнить команду dotnet test
 
 ### IDE Visual Studio
@@ -57,9 +63,9 @@ Cервис для управления мероприятиями на ASP.NET 
 
 ## Создание миграций БД
 - перейти в комнадную строку 
-- перейти в проект .\EvoEvent\EvoEvent.Web
-- выполнить команду dotnet ef migrations add <название миграции>
-- в проекте EvoEvent.Web в Program.cs ьреуется прописать код 
+- перейти в проект .\EvoEvent\EvoEvent.Presentation
+- выполнить команду dotnet ef migrations add <название миграции> --startup-project ../EvoEvent.Presentation  
+- в проекте EvoEvent.Presentation в Program.cs треуется прописать код 
 "using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();

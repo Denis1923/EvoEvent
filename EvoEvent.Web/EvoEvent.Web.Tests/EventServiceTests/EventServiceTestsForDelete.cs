@@ -1,7 +1,8 @@
-﻿using EvoEvent.Web.DataAccess;
-using EvoEvent.Web.Exceptions;
-using EvoEvent.Web.Repositories;
-using EvoEvent.Web.Services;
+﻿using EvoEvent.Application.Abstractions;
+using EvoEvent.Domain.Exceptions;
+using EvoEvent.Application.Services;
+using EvoEvent.Infrastructure.Persistence.DataAccess;
+using EvoEvent.Infrastructure.Persistence.Repositories;
 using EvoEvent.Web.Tests.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

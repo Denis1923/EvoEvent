@@ -24,7 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EvoEvent.Web\EvoEvent.Web.csproj" />
+    <ProjectReference Include="..\EvoEvent.Application\EvoEvent.Application.csproj" />
+    <ProjectReference Include="..\EvoEvent.Infrastructure\EvoEvent.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
