@@ -16,12 +16,15 @@ namespace EvoEvent.Domain.Entities;
 
 		public Event Event { get; set; }
 
-		public Booking(Guid eventId, BookingStatus status, DateTime сreatedAt, Guid? id = null)
+		public Guid UserId { get; set; }
+
+		public Booking(Guid eventId, BookingStatus status, DateTime сreatedAt, Guid userId, Guid? id = null)
 		{
 			Id = id ?? Guid.NewGuid();
 			EventId = eventId;
 			Status = status;
 			CreatedAt = сreatedAt;
+			UserId = userId;
 		}
 
 		// EF Core использует рефлексию для создания экземпляров сущностей при чтении данных из БД.
@@ -42,4 +45,10 @@ namespace EvoEvent.Domain.Entities;
 			Status = BookingStatus.Rejected;
 			ProcessedAt = DateTime.UtcNow.ToUniversalTime();
 		}
-	}
+
+		public void Cancelled()
+		{
+			Status = BookingStatus.Cancelled;
+			ProcessedAt = DateTime.UtcNow.ToUniversalTime();
+		}
+}

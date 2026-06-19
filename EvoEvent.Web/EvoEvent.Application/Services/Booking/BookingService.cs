@@ -38,7 +38,7 @@ namespace EvoEvent.Application.Services
 				if (!eventExp.TryReserveSeats())
 					throw new NoAvailableSeatsException("No available seats for this event");
 
-				var newBooking = new Booking(eventId, BookingStatus.Pending, DateTime.UtcNow);
+				var newBooking = new Booking(eventId, BookingStatus.Pending, DateTime.UtcNow, Guid.NewGuid());
 				await _bookingRepository.AddBookingAsync(newBooking, token);
 				await _bookingRepository.SaveChangesAsync(token);
 
@@ -49,7 +49,7 @@ namespace EvoEvent.Application.Services
 				_semaphore.Release();
 			}
 		}
-				
+
 		public async Task<Booking> GetBookingByIdAsync(Guid bookingId, CancellationToken token = default)
 		{
 			var booking = await _bookingRepository.GetBookingByIdAsync(bookingId, token);
@@ -60,5 +60,18 @@ namespace EvoEvent.Application.Services
 			return booking;
 		}
 
+		public async Task<bool> CancelledBookingAsync(Guid id, CancellationToken token = default)
+		{
+			var booking = await GetBookingByIdAsync(id, token);
+			var statusesCancelled = new BookingStatus[] { BookingStatus.Rejected, BookingStatus.Cancelled };
+
+			if (statusesCancelled.Contains(booking.Status))
+				return false;
+
+			booking.Cancelled();
+			await _bookingRepository.SaveChangesAsync(token);
+
+			return true;
+		}
 	}
 }
