@@ -2,6 +2,7 @@
 using EvoEvent.Application.Services;
 using EvoEvent.Presentation.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 
 namespace EvoEvent.Presentation.Controllers
@@ -166,7 +167,12 @@ namespace EvoEvent.Presentation.Controllers
 		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
 		public async Task<IActionResult> CreateBookingAsync(Guid id, CancellationToken token)
 		{
-			var newBooking = await _bookingService.CreateBookingAsync(id, token);
+			var userIdStr = User.Claims.FirstOrDefault()?.Subject?.Name;
+
+			if (!Guid.TryParse(userIdStr, out Guid userId))
+				throw new ValidationException("Индентификатор пользователя не найден");
+
+			var newBooking = await _bookingService.CreateBookingAsync(id, userId, token);
 
 			var response = new BookingResponseDto
 			{

@@ -9,6 +9,7 @@ namespace EvoEvent.Application.Abstractions
 		Task<Booking?> GetBookingByIdAsync(Guid bookingId, CancellationToken token = default);
 		Task<List<Booking>> GetBookingsByEventIdAsync(Guid eventId, CancellationToken token = default);
 		Task<List<Booking>> GetBookingsByStatusAsync(BookingStatus status, CancellationToken token = default);
+		Task<List<Booking>> GetBookingUserByEventIdAsync(Guid userId, Guid eventId, CancellationToken token = default);
 		void RemoveBooking(Booking booking);
 		Task SaveChangesAsync(CancellationToken token = default);
 	}

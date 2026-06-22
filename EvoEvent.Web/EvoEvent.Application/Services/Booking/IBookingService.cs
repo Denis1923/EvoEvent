@@ -6,7 +6,7 @@ namespace EvoEvent.Application.Services
 	{
 		Task<bool> CancelledBookingAsync(Guid id, CancellationToken token = default);
 
-		Task<Booking> CreateBookingAsync(Guid eventId, CancellationToken token = default);
+		Task<Booking> CreateBookingAsync(Guid eventId, Guid userId, CancellationToken token = default);
 
 		Task<Booking> GetBookingByIdAsync(Guid bookingId, CancellationToken token = default);
 	}

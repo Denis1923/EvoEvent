@@ -11,6 +11,7 @@ namespace EvoEvent.Application.Services
 		private readonly IEventService _eventService;
 		private readonly static SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 		private readonly IBookingRepository _bookingRepository;
+		private readonly int _limitBookingCount = 10;
 
 		public BookingService(
 			IEventService eventService,
@@ -21,7 +22,7 @@ namespace EvoEvent.Application.Services
 			_bookingRepository = bookingRepository;
 		}
 
-		public async Task<Booking> CreateBookingAsync(Guid eventId, CancellationToken token = default)
+		public async Task<Booking> CreateBookingAsync(Guid eventId, Guid userId, CancellationToken token = default)
 		{
 			await _semaphore.WaitAsync(token);
 
@@ -34,6 +35,17 @@ namespace EvoEvent.Application.Services
 
 				if (eventExp is null)
 					throw new NotFoundException($"Не найдено событие с таким ИД {eventId}");
+
+				var nowDate = DateTime.UtcNow;
+				var checkBookingDate = eventExp.StartAt.Date > nowDate && nowDate < eventExp.EndAt.Date;
+
+				if (!checkBookingDate)
+					throw new ValidationException("Событие уже началось, бронирование запрещено");
+
+				var bookingsUser = await _bookingRepository.GetBookingUserByEventIdAsync(userId, eventId, token);
+
+				if (bookingsUser.Count >= _limitBookingCount)
+					throw new NoAvailableSeatsException("Бронирование события запрещено, так как превышен лимит бронирования");
 
 				if (!eventExp.TryReserveSeats())
 					throw new NoAvailableSeatsException("No available seats for this event");
@@ -65,7 +77,7 @@ namespace EvoEvent.Application.Services
 			var booking = await GetBookingByIdAsync(id, token);
 			var statusesCancelled = new BookingStatus[] { BookingStatus.Rejected, BookingStatus.Cancelled };
 
-			if (statusesCancelled.Contains(booking.Status))
+			if (booking is null || statusesCancelled.Contains(booking.Status))
 				return false;
 
 			booking.Cancelled();

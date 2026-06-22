@@ -1,4 +1,6 @@
 ﻿using EvoEvent.Application.Services;
+using EvoEvent.Presentation.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,7 +19,7 @@ namespace EvoEvent.Presentation.Controllers
 		}
 
 		[HttpPut("{id:guid}")]
-		public async Task<IActionResult> CancelledBooking(Guid id, CancellationToken token)
+		public async Task<IActionResult> CancelledBookingAsync(Guid id, CancellationToken token)
 		{
 			var isCancelled = await _bookingService.CancelledBookingAsync(id, token);
 
