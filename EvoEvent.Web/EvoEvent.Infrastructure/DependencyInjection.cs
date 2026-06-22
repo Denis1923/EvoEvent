@@ -22,6 +22,9 @@ namespace EvoEvent.Infrastructure
 			services.AddScoped<IEventRepository, EventRepository>();
 			services.AddScoped<IBookingRepository, BookingRepository>();
 
+			services.AddScoped<IJwtService, JwtService>();
+			services.AddScoped<IHashService, HashService>();
+
 			services.AddHostedService<BookingBackgroundService>();
 
 			return services;
