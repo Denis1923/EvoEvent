@@ -7,5 +7,7 @@ namespace EvoEvent.Infrastructure.Services
 	public interface IHashService
 	{
 		string ConvertHashPassword(string password);
+
+		bool VerifyHashPassword(string inPassword, string hashPassword);
 	}
 }

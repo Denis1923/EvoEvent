@@ -10,5 +10,12 @@ namespace EvoEvent.Infrastructure.Services
 			var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(password));
 			return Convert.ToHexString(bytes);
 		}
+
+		public bool VerifyHashPassword(string inPassword, string hashPassword)
+		{
+			var hashInPassword = ConvertHashPassword(inPassword);
+
+			return hashInPassword.Equals(hashPassword, StringComparison.Ordinal);
+		}
 	}
 }

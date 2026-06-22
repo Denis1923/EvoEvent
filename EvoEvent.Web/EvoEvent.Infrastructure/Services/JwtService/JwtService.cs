@@ -10,7 +10,7 @@ namespace EvoEvent.Infrastructure.Services
 	{
 		public JwtService() { }
 
-		public void GeneratJwtTokena(User user, IConfiguration configuration)
+		public string GeneratJwtTokena(User user, IConfiguration configuration)
 		{
 			// 1. Claims
 			var claims = new Dictionary<string, object>
@@ -40,6 +40,8 @@ namespace EvoEvent.Infrastructure.Services
 
 			// 4. Генерация строки токена
 			var tokenString = new JsonWebTokenHandler().CreateToken(descriptor);
+
+			return tokenString;
 		}
 	}
 }
