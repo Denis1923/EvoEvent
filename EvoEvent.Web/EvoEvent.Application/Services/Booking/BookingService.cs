@@ -1,25 +1,30 @@
-﻿using EvoEvent.Application.Abstractions;
+using EvoEvent.Application.Abstractions;
 using EvoEvent.Domain.Exceptions;
 using EvoEvent.Domain.Entities;
 using EvoEvent.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
+using EvoEvent.Application.Abstractions.Repositories;
 
 namespace EvoEvent.Application.Services
 {
 	public class BookingService : IBookingService
 	{
-		private readonly IEventService _eventService;
-		private readonly static SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
-		private readonly IBookingRepository _bookingRepository;
 		private readonly int _limitBookingCount = 10;
+		private readonly BookingStatus[] _statusesCancelled = { BookingStatus.Rejected, BookingStatus.Cancelled };
+		private readonly static SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+		private readonly IEventService _eventService;
+		private readonly IBookingRepository _bookingRepository;
+		private readonly IUserRepository _userRepository;
 
 		public BookingService(
 			IEventService eventService,
-			IBookingRepository bookingRepository
+			IBookingRepository bookingRepository,
+			IUserRepository userRepository
 			)
 		{
 			_eventService = eventService;
 			_bookingRepository = bookingRepository;
+			_userRepository = userRepository;
 		}
 
 		public async Task<Booking> CreateBookingAsync(Guid eventId, Guid userId, CancellationToken token = default)
@@ -72,12 +77,28 @@ namespace EvoEvent.Application.Services
 			return booking;
 		}
 
-		public async Task<bool> CancelledBookingAsync(Guid id, CancellationToken token = default)
+		public async Task<bool> CancelledBookingAsync(Guid id, string login, CancellationToken token = default)
+		{
+			var user = await _userRepository.GetUserByLoginAsync(login, token);
+			var booking = await GetBookingByIdAsync(id, token);
+
+			if (booking?.UserId != user?.UserId && user?.Role != Roles.Admin)
+				throw new AbsenceAccessException($"У пользователя {login} нет прав на отмену брони {id}");
+
+			if (_statusesCancelled.Contains(booking!.Status))
+				return false;
+
+			booking.Cancelled();
+			await _bookingRepository.SaveChangesAsync(token);
+
+			return true;
+		}
+
+		public async Task<bool> CancelledBookingForAdminAsync(Guid id, CancellationToken token = default)
 		{
 			var booking = await GetBookingByIdAsync(id, token);
-			var statusesCancelled = new BookingStatus[] { BookingStatus.Rejected, BookingStatus.Cancelled };
 
-			if (booking is null || statusesCancelled.Contains(booking.Status))
+			if (_statusesCancelled.Contains(booking.Status))
 				return false;
 
 			booking.Cancelled();
