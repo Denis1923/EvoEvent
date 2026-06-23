@@ -61,6 +61,9 @@ namespace EvoEvent.Presentation.Middlewares
 				ValidationException validationEx => StatusCodes.Status400BadRequest,
 				NotFoundException notFoundEx => StatusCodes.Status404NotFound,
 				NoAvailableSeatsException noAvailableSeats => StatusCodes.Status409Conflict,
+				AbsenceAccessException absenceAccessException => StatusCodes.Status403Forbidden,
+				BookingPastEventException bookingPastEventException => StatusCodes.Status400BadRequest,
+				ExceedingActiveBookingLimitException exceedingActiveBookingLimitException => StatusCodes.Status409Conflict,
 				_ => StatusCodes.Status500InternalServerError
 			};
 		}
