@@ -1,6 +1,7 @@
 ﻿using EvoEvent.Application.DTOs;
 using EvoEvent.Application.Services;
 using EvoEvent.Presentation.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
@@ -96,30 +97,11 @@ namespace EvoEvent.Presentation.Controllers
 		}
 
 		/// <summary>
-		/// получить бронь по id
-		/// </summary>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		[HttpGet("~/bookings/{id:guid}", Name = "GetBookingById")]
-		public async Task<IActionResult> GetBookingByIdAsync(Guid id, CancellationToken token)
-		{
-			var booking = await _bookingService.GetBookingByIdAsync(id, token);
-
-			var response = new BookingResponseDto
-			{
-				Id = booking.Id,
-				EventId = booking.EventId,
-				Status = BookingResponseDto.MapStatus(booking.Status)
-			};
-
-			return Ok(response);
-		}
-
-		/// <summary>
 		/// создать событие
 		/// </summary>
 		/// <param name="eventDto">Модель нового события</param>
 		/// <returns></returns>
+		[Authorize(Roles = "Admin")]
 		[HttpPost]
 		public async Task<IActionResult> CreateAsync([FromBody] EventRequestDto eventDto, CancellationToken token)
 		{
@@ -156,40 +138,12 @@ namespace EvoEvent.Presentation.Controllers
 		}
 
 		/// <summary>
-		/// Создание брони
-		/// </summary>
-		/// <param name="id">Ид события</param>
-		/// <returns></returns>
-		[HttpPost("{id:guid}/book")]
-		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status201Created)]
-		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
-		public async Task<IActionResult> CreateBookingAsync(Guid id, CancellationToken token)
-		{
-			var userIdStr = User.Claims.FirstOrDefault()?.Subject?.Name;
-
-			if (!Guid.TryParse(userIdStr, out Guid userId))
-				throw new ValidationException("Индентификатор пользователя не найден");
-
-			var newBooking = await _bookingService.CreateBookingAsync(id, userId, token);
-
-			var response = new BookingResponseDto
-			{
-				Id = newBooking.Id,
-				EventId = newBooking.EventId,
-				Status = BookingResponseDto.MapStatus(newBooking.Status)
-			};
-
-			return AcceptedAtAction("GetBookingById", new { id = response.Id }, response);
-		}
-
-		/// <summary>
 		/// Обновить событие целиком
 		/// </summary>
 		/// <param name="id">Индентификатор события</param>
 		/// <param name="eventDto">Модель измененного события</param>
 		/// <returns></returns>
+		[Authorize(Roles = "Admin")]
 		[HttpPut("{id:guid}")]
 		public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] EventRequestDto eventDto, CancellationToken token)
 		{
@@ -214,6 +168,7 @@ namespace EvoEvent.Presentation.Controllers
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
+		[Authorize(Roles = "Admin")]
 		[HttpDelete("{id:guid}")]
 		public async Task<IActionResult> Delete(Guid id, CancellationToken token)
 		{

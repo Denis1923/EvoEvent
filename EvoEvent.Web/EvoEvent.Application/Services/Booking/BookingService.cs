@@ -106,5 +106,25 @@ namespace EvoEvent.Application.Services
 
 			return true;
 		}
+
+		public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default)
+		{
+			var booking = await _bookingRepository.GetBookingByIdAsync(id, token);
+
+			if (booking is null)
+				throw new NotFoundException($"Не найдена бронь с таким ИД {id}");
+
+			try
+			{
+				_bookingRepository.RemoveBooking(booking);
+				await _bookingRepository.SaveChangesAsync(token);
+			}
+			catch (Exception ex)
+			{
+				throw new Exception($"Не удалось удалить Бронь.Ид:{id}, по причине:{ex.Message}");
+			}
+
+			return true;
+		}
 	}
 }
