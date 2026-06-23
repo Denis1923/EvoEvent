@@ -43,10 +43,12 @@ namespace EvoEvent.Infrastructure.Services
 
 		public async Task RegisterUserAsync(UserDto userDto, CancellationToken token = default)
 		{
+			var hashPassword = _hashService.ConvertHashPassword(userDto.Password);
+
 			var user = new User(
 				Guid.NewGuid(),
 				userDto.Login,
-				userDto.Password,
+				hashPassword,
 				userDto.Role
 				);
 

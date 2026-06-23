@@ -224,5 +224,78 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 
 			Assert.Equal(10, distincCount);
 		}
+
+		[Theory]
+		[InlineData("a3bb4d2e-8f4d-4d6e-9f5c-3b6f7e8d9a0b")]
+		public async Task CreateBookingsByEventId_ReturnBookingPastEvent(string eventIdStr)
+		{
+			var eventId = Guid.Parse(eventIdStr);
+			var userId = Guid.NewGuid();
+
+			var eventExp = await _eventService.GetByIdAsync(eventId);
+
+			var exc = await Assert.ThrowsAsync<BookingPastEventException>(
+				async () => await _bookingService.CreateBookingAsync(eventId, userId));
+
+			Assert.Equal($"Событие уже началось, бронирование запрещено", exc?.Message);
+		}
+
+		[Theory]
+		[InlineData("b1c4a9e3-7d2f-4a6e-8b5c-9e2d1f3a4b6c")]
+		public async Task CreateBookingsByEventId_ReturnExceedingActiveBookingLimit(string eventIdStr)
+		{
+			var eventId = Guid.Parse(eventIdStr);
+			var userId = Guid.NewGuid();
+			var idsNewBooking = new List<Guid>();
+			var limitBooking = 10;
+
+			var eventExp = await _eventService.GetByIdAsync(eventId);
+
+			for (int i = 0; i < limitBooking; i++)
+			{
+				var newBooking = await _bookingService.CreateBookingAsync(eventId, userId);
+				idsNewBooking.Add(newBooking.Id);
+			}
+
+			var exc = await Assert.ThrowsAsync<ExceedingActiveBookingLimitException>(
+				async () => await _bookingService.CreateBookingAsync(eventId, userId));
+
+			Assert.Equal($"No available seats for this event", exc?.Message);
+		}
+
+		[Theory]
+		[InlineData("b1c4a9e3-7d2f-4a6e-8b5c-9e2d1f3a4b6c")]
+		public async Task CreateBookingsByEventId_ReturnSuccessBookingDiffUsers(string eventIdStr)
+		{
+			var eventId = Guid.Parse(eventIdStr);
+			var userIdOne = Guid.NewGuid();
+			var userIdTwo = Guid.NewGuid();
+			var idsNewBooking = new List<Guid>();
+			var idsNewBookingOneUser = new List<Guid>();
+			var idsNewBookingTwoUser = new List<Guid>();
+			var limitBookingForOneUser = 6;
+			var limitBookingForTwoUser = 8;
+			var allCountNewBooking = 14;
+
+			var eventExp = await _eventService.GetByIdAsync(eventId);
+
+			for (int i = 0; i < limitBookingForOneUser; i++)
+			{
+				var newBooking = await _bookingService.CreateBookingAsync(eventId, userIdOne);
+				idsNewBookingOneUser.Add(newBooking.Id);
+				idsNewBooking.Add(newBooking.Id);
+			}
+
+			for (int i = 0; i < limitBookingForTwoUser; i++)
+			{
+				var newBooking = await _bookingService.CreateBookingAsync(eventId, userIdTwo);
+				idsNewBookingTwoUser.Add(newBooking.Id);
+				idsNewBooking.Add(newBooking.Id);
+			}
+
+			Assert.Equal(idsNewBookingOneUser.Count, limitBookingForOneUser);
+			Assert.Equal(idsNewBookingTwoUser.Count, limitBookingForTwoUser);
+			Assert.Equal(idsNewBooking.Count, allCountNewBooking);
+		}
 	}
 }

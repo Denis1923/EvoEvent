@@ -32,8 +32,8 @@ namespace EvoEvent.Web.Tests.Models
 					Id = Guid.Parse("a3bb4d2e-8f4d-4d6e-9f5c-3b6f7e8d9a0b"),
 					Title = "Лекция",
 					Description = "Описание: Лекция по истории искусств",
-					StartAt = DateTime.UtcNow.AddDays(3),
-					EndAt = DateTime.UtcNow.AddDays(5),
+					StartAt = DateTime.UtcNow.AddDays(-3),
+					EndAt = DateTime.UtcNow.AddDays(-5),
 					TotalSeats = 7,
 					AvailableSeats = 7
 				},

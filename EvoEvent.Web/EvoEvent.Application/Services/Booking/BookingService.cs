@@ -41,16 +41,16 @@ namespace EvoEvent.Application.Services
 				if (eventExp is null)
 					throw new NotFoundException($"Не найдено событие с таким ИД {eventId}");
 
-				var nowDate = DateTime.UtcNow;
+				var nowDate = DateTime.Now;
 				var checkBookingDate = eventExp.StartAt.Date > nowDate && nowDate < eventExp.EndAt.Date;
 
 				if (!checkBookingDate)
-					throw new ValidationException("Событие уже началось, бронирование запрещено");
+					throw new BookingPastEventException("Событие уже началось, бронирование запрещено");
 
 				var bookingsUser = await _bookingRepository.GetBookingUserByEventIdAsync(userId, eventId, token);
 
 				if (bookingsUser.Count >= _limitBookingCount)
-					throw new NoAvailableSeatsException("Бронирование события запрещено, так как превышен лимит бронирования");
+					throw new ExceedingActiveBookingLimitException("Бронирование события запрещено, так как превышен лимит бронирования");
 
 				if (!eventExp.TryReserveSeats())
 					throw new NoAvailableSeatsException("No available seats for this event");
