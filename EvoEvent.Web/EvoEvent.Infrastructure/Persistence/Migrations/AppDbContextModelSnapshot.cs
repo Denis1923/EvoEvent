@@ -40,14 +40,9 @@ namespace EvoEvent.Web.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
                     b.HasIndex("EventId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("bookings", "catalog");
                 });
@@ -83,31 +78,6 @@ namespace EvoEvent.Web.Migrations
                     b.ToTable("events", "catalog");
                 });
 
-            modelBuilder.Entity("EvoEvent.Domain.Entities.User", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("HashPassword")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Login")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Role")
-                        .HasColumnType("integer");
-
-                    b.HasKey("UserId");
-
-                    b.HasIndex("Login")
-                        .IsUnique();
-
-                    b.ToTable("users", "catalog");
-                });
-
             modelBuilder.Entity("EvoEvent.Domain.Entities.Booking", b =>
                 {
                     b.HasOne("EvoEvent.Domain.Entities.Event", "Event")
@@ -116,23 +86,10 @@ namespace EvoEvent.Web.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EvoEvent.Domain.Entities.User", "User")
-                        .WithMany("Bookings")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Event");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EvoEvent.Domain.Entities.Event", b =>
-                {
-                    b.Navigation("Bookings");
-                });
-
-            modelBuilder.Entity("EvoEvent.Domain.Entities.User", b =>
                 {
                     b.Navigation("Bookings");
                 });
