@@ -4,7 +4,7 @@ namespace EvoEvent.Application.Services
 {
 	public interface IBookingService
 	{
-		Task<bool> CancelledBookingAsync(Guid id, string login, CancellationToken token = default);
+		Task<bool> CancelledBookingAsync(Guid id, Guid userId, CancellationToken token = default);
 
 		Task<bool> CancelledBookingForAdminAsync(Guid id, CancellationToken token = default);
 

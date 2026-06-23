@@ -74,17 +74,12 @@ namespace EvoEvent.Presentation.Controllers
 		[HttpPut("{id:guid}")]
 		public async Task<IActionResult> CancelledBookingAsync(Guid id, CancellationToken token)
 		{
-			// Получаем userId из токена аутентификации
-			var userIdClaim = User.FindFirst("userId");
-			if (userIdClaim == null)
-			{
+			var userIdStr = User.Claims.FirstOrDefault()?.Subject?.Name;
+			if (userIdStr == null)
 				return Unauthorized("Отсутствует информация о пользователе");
-			}
 
-			if (!Guid.TryParse(userIdClaim.Value, out Guid userId))
-			{
+			if (!Guid.TryParse(userIdStr, out Guid userId))
 				return Unauthorized("Неверный формат userId");
-			}
 
 			try
 			{

@@ -1,13 +1,12 @@
 ﻿using EvoEvent.Domain.Enums;
-using System.Data;
 
 namespace EvoEvent.Domain.Entities
 {
 	public class User
 	{
-		public Guid UserId { get; private set; }
+		public Guid Id { get; init; }
 
-		public string Login { get; private set; }
+		public string Login { get; init; }
 
 		public string HashPassword { get; private set; }
 
@@ -22,7 +21,7 @@ namespace EvoEvent.Domain.Entities
 
 		public User(Guid userId, string login, string password, Roles role)
 		{
-			UserId = userId;
+			Id = userId;
 			Login = login;
 			HashPassword = password;
 			Role = role;

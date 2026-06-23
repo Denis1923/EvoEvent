@@ -10,7 +10,10 @@ namespace EvoEvent.Infrastructure.Persistence.DataAccess.Configurations
 		{
 			builder.ToTable("users", "catalog");
 
-			builder.HasKey(e => e.UserId);
+			builder.HasKey(e => e.Id);
+			
+			builder.Property(e => e.Id)
+				.ValueGeneratedNever();
 
 			builder.HasIndex(e => e.Login)
 				.IsUnique();

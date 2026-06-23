@@ -18,7 +18,7 @@ namespace EvoEvent.Infrastructure.Persistence.Repositories
 			=> await _context.Users.AddAsync(user, token);
 
 		public async Task<User?> GetUserByIdAsync(Guid id, CancellationToken token = default)
-			=> await _context.Users.FirstOrDefaultAsync(u => u.UserId == id, token);
+			=> await _context.Users.FirstOrDefaultAsync(u => u.Id == id, token);
 
 		public async Task<User?> GetUserByLoginAsync(string login, CancellationToken token = default)
 			=> await _context.Users.FirstOrDefaultAsync(u => u.Login == login, token);

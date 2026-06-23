@@ -5,6 +5,7 @@ using EvoEvent.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using EvoEvent.Application.Abstractions.Repositories;
 
 namespace EvoEvent.Infrastructure
 {
@@ -21,9 +22,11 @@ namespace EvoEvent.Infrastructure
 
 			services.AddScoped<IEventRepository, EventRepository>();
 			services.AddScoped<IBookingRepository, BookingRepository>();
+			services.AddScoped<IUserRepository, UserRepository>();
 
 			services.AddScoped<IJwtService, JwtService>();
 			services.AddScoped<IHashService, HashService>();
+			services.AddScoped<IUserService, UserService>();
 
 			services.AddHostedService<BookingBackgroundService>();
 

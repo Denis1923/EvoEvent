@@ -47,6 +47,11 @@ namespace EvoEvent.Application.Services
 				if (!checkBookingDate)
 					throw new BookingPastEventException("Событие уже началось, бронирование запрещено");
 
+				var user = await _userRepository.GetUserByIdAsync(userId, token);
+
+				if (user is null)
+					throw new NotFoundException($"Не найден пользователь с таким ИД {userId}");
+
 				var bookingsUser = await _bookingRepository.GetBookingUserByEventIdAsync(userId, eventId, token);
 
 				if (bookingsUser.Count >= _limitBookingCount)
@@ -55,7 +60,7 @@ namespace EvoEvent.Application.Services
 				if (!eventExp.TryReserveSeats())
 					throw new NoAvailableSeatsException("No available seats for this event");
 
-				var newBooking = new Booking(eventId, BookingStatus.Pending, DateTime.UtcNow, Guid.NewGuid());
+				var newBooking = new Booking(eventId, BookingStatus.Pending, DateTime.UtcNow, userId);
 				await _bookingRepository.AddBookingAsync(newBooking, token);
 				await _bookingRepository.SaveChangesAsync(token);
 
@@ -77,13 +82,13 @@ namespace EvoEvent.Application.Services
 			return booking;
 		}
 
-		public async Task<bool> CancelledBookingAsync(Guid id, string login, CancellationToken token = default)
+		public async Task<bool> CancelledBookingAsync(Guid id, Guid userId, CancellationToken token = default)
 		{
-			var user = await _userRepository.GetUserByLoginAsync(login, token);
+			var user = await _userRepository.GetUserByIdAsync(userId, token);
 			var booking = await GetBookingByIdAsync(id, token);
 
-			if (booking?.UserId != user?.UserId && user?.Role != Roles.Admin)
-				throw new AbsenceAccessException($"У пользователя {login} нет прав на отмену брони {id}");
+			if (booking?.UserId != user?.Id && user?.Role != Roles.Admin)
+				throw new AbsenceAccessException($"У пользователя {user.Login} нет прав на отмену брони {id}");
 
 			if (_statusesCancelled.Contains(booking!.Status))
 				return false;
