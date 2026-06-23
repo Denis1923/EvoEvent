@@ -15,7 +15,7 @@ namespace EvoEvent.Infrastructure.Services
 			// 1. Claims
 			var claims = new Dictionary<string, object>
 			{
-				[JwtRegisteredClaimNames.Sub] = user.Id.ToString(),
+				[JwtRegisteredClaimNames.Sub] = user.UserId.ToString(),
 				["role"] = user.Role,
 				["login"] = user.Login,
 				[JwtRegisteredClaimNames.Jti] = Guid.NewGuid().ToString(),

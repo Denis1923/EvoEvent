@@ -4,7 +4,7 @@ namespace EvoEvent.Domain.Entities
 {
 	public class User
 	{
-		public Guid Id { get; init; }
+		public Guid UserId { get; init; }
 
 		public string Login { get; init; }
 
@@ -21,7 +21,7 @@ namespace EvoEvent.Domain.Entities
 
 		public User(Guid userId, string login, string password, Roles role)
 		{
-			Id = userId;
+			UserId = userId;
 			Login = login;
 			HashPassword = password;
 			Role = role;

@@ -1,4 +1,4 @@
-﻿using EvoEvent.Domain.Entities;
+using EvoEvent.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,9 +10,9 @@ namespace EvoEvent.Infrastructure.Persistence.DataAccess.Configurations
 		{
 			builder.ToTable("users", "catalog");
 
-			builder.HasKey(e => e.Id);
+			builder.HasKey(e => e.UserId);
 			
-			builder.Property(e => e.Id)
+			builder.Property(e => e.UserId)
 				.ValueGeneratedNever();
 
 			builder.HasIndex(e => e.Login)

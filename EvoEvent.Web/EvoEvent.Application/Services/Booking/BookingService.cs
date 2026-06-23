@@ -87,7 +87,7 @@ namespace EvoEvent.Application.Services
 			var user = await _userRepository.GetUserByIdAsync(userId, token);
 			var booking = await GetBookingByIdAsync(id, token);
 
-			if (booking?.UserId != user?.Id && user?.Role != Roles.Admin)
+			if (booking?.UserId != user?.UserId && user?.Role != Roles.Admin)
 				throw new AbsenceAccessException($"У пользователя {user.Login} нет прав на отмену брони {id}");
 
 			if (_statusesCancelled.Contains(booking!.Status))
