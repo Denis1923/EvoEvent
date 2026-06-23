@@ -1,6 +1,8 @@
 ﻿using EvoEvent.Application.Abstractions.Repositories;
+using EvoEvent.Application.DTOs.User;
 using EvoEvent.Domain.Entities;
 using Microsoft.Extensions.Configuration;
+using System.ComponentModel.DataAnnotations;
 
 namespace EvoEvent.Infrastructure.Services
 {
@@ -24,23 +26,30 @@ namespace EvoEvent.Infrastructure.Services
 			_configuration = configuration;
 		}
 
-		public async Task<string> LoginUserAsync(User user, CancellationToken token = default)
+		public async Task<string> LoginUserAsync(UserDto userDto, CancellationToken token = default)
 		{
-			var userExp = await _userRepository.GetUserByLoginAsync(user.Login, token);
+			var userExp = await _userRepository.GetUserByLoginAsync(userDto.Login, token);
 
 			if (userExp is null)
-				throw new Exception("todo: заменить exc");
+				throw new ValidationException($"Пользователя с таким логином {userDto.Login} нет в системе");
 
-			var verifyUser = _hashService.VerifyHashPassword(user.HashPassword, userExp.HashPassword);
+			var verifyUser = _hashService.VerifyHashPassword(userDto.Password, userExp.HashPassword);
 			
 			if (!verifyUser)
-				throw new Exception("todo: заменить exc");
+				throw new ValidationException("Введен не верный пароль");
 
-			return _jwtService.GeneratJwtTokena(user, _configuration);
+			return _jwtService.GeneratJwtTokena(userExp, _configuration);
 		}
 
-		public async Task RegisterUserAsync(User user, CancellationToken token = default)
+		public async Task RegisterUserAsync(UserDto userDto, CancellationToken token = default)
 		{
+			var user = new User(
+				Guid.NewGuid(),
+				userDto.Login,
+				userDto.Password,
+				userDto.Role
+				);
+
 			await _userRepository.CreateUserAsync(user, token);
 			await _userRepository.SaveChangesAsync(token);
 		}
