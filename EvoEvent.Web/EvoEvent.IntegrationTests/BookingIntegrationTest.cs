@@ -1,4 +1,4 @@
-﻿using EvoEvent.Domain.Entities;
+using EvoEvent.Domain.Entities;
 using EvoEvent.Domain.Enums;
 using EvoEvent.Infrastructure.Persistence.DataAccess;
 using EvoEvent.Infrastructure.Persistence.Repositories;
@@ -20,8 +20,8 @@ namespace EvoEvent.IntegrationTests
 		private async Task<AppDbContext> CreateContext()
 		{
 			var options = new DbContextOptionsBuilder<AppDbContext>()
-								.UseNpgsql(_postgres.GetConnectionString())
-								.Options;
+										.UseNpgsql(_postgres.GetConnectionString())
+										.Options;
 
 
 			var context = new AppDbContext(options);
@@ -53,7 +53,7 @@ namespace EvoEvent.IntegrationTests
 			await eventRepository.AddEventAsync(newEvent);
 			await eventRepository.SaveChangesAsync();
 
-			var newBoooking = new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow);
+			var newBoooking = new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow, Guid.NewGuid());
 
 			// Act
 			await bookingRepository.AddBookingAsync(newBoooking);
@@ -86,7 +86,7 @@ namespace EvoEvent.IntegrationTests
 			await eventRepository.AddEventAsync(newEvent);
 			await eventRepository.SaveChangesAsync();
 
-			var newBoooking = new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow);
+			var newBoooking = new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow, Guid.NewGuid());
 			await bookingRepository.AddBookingAsync(newBoooking);
 			await bookingRepository.SaveChangesAsync();
 
@@ -117,10 +117,10 @@ namespace EvoEvent.IntegrationTests
 
 			var newBoookings = new List<Booking>
 			{
-				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow),
-				new Booking(newEvent.Id, BookingStatus.Rejected, DateTime.UtcNow),
-				new Booking(newEvent.Id, BookingStatus.Confirmed, DateTime.UtcNow),
-				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow)
+				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow, Guid.NewGuid()),
+				new Booking(newEvent.Id, BookingStatus.Rejected, DateTime.UtcNow, Guid.NewGuid()),
+				new Booking(newEvent.Id, BookingStatus.Confirmed, DateTime.UtcNow, Guid.NewGuid()),
+				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow, Guid.NewGuid())
 			};
 
 			foreach (var booking in newBoookings)
@@ -157,10 +157,10 @@ namespace EvoEvent.IntegrationTests
 
 			var newBoookings = new List<Booking>
 			{
-				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow),
-				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow),
-				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow),
-				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow)
+				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow, Guid.NewGuid()),
+				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow, Guid.NewGuid()),
+				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow, Guid.NewGuid()),
+				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow, Guid.NewGuid())
 			};
 
 			foreach (var booking in newBoookings)
@@ -206,10 +206,10 @@ namespace EvoEvent.IntegrationTests
 
 			var newBoookings = new List<Booking>
 			{
-				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow),
-				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow),
-				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow),
-				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow)
+				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow, Guid.NewGuid()),
+				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow, Guid.NewGuid()),
+				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow, Guid.NewGuid()),
+				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow, Guid.NewGuid())
 			};
 
 			foreach (var booking in newBoookings)

@@ -1,4 +1,4 @@
-﻿using EvoEvent.Application.Abstractions;
+using EvoEvent.Application.Abstractions;
 using EvoEvent.Domain.Exceptions;
 using EvoEvent.Application.Services;
 using EvoEvent.Domain.Enums;
@@ -49,9 +49,10 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 		public async Task Get_BookingId_ReturnBooking(string eventIdStr)
 		{
 			var eventId = Guid.Parse(eventIdStr);
+			var userId = Guid.NewGuid();
 			var status = BookingStatus.Pending;
 
-			var newBooking = await _bookingService.CreateBookingAsync(eventId);
+			var newBooking = await _bookingService.CreateBookingAsync(eventId, userId);
 			var booking = await _bookingService.GetBookingByIdAsync(newBooking.Id);
 
 			Assert.True(booking.Id != Guid.Empty);

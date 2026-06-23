@@ -1,4 +1,4 @@
-﻿using EvoEvent.Application.Abstractions;
+using EvoEvent.Application.Abstractions;
 using EvoEvent.Application.Services;
 using EvoEvent.Domain.Enums;
 using EvoEvent.Infrastructure.Persistence.DataAccess;
@@ -48,9 +48,10 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 		public async Task Confirm_BookingId_ReturnBooking(string eventIdstr)
 		{
 			var eventId = Guid.Parse(eventIdstr);
+			var userId = Guid.NewGuid();
 			var status = BookingStatus.Confirmed;
 
-			var newBooking = await _bookingService.CreateBookingAsync(eventId);
+			var newBooking = await _bookingService.CreateBookingAsync(eventId, userId);
 			var booking = await _bookingService.GetBookingByIdAsync(newBooking.Id);
 			booking.Confirm();
 
@@ -63,13 +64,14 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 		public async Task Reject_BookingId_ReturnBooking(string eventIdstr)
 		{
 			var eventId = Guid.Parse(eventIdstr);
+			var userId = Guid.NewGuid();
 			var statusR = BookingStatus.Rejected;
 			var statusP = BookingStatus.Pending;
 
 			var evetnExp = await _eventService.GetByIdAsync(eventId);
-			var newBooking = await _bookingService.CreateBookingAsync(eventId);
+			var newBooking = await _bookingService.CreateBookingAsync(eventId, userId);
 			newBooking.Reject();
-			var newBooking2 = await _bookingService.CreateBookingAsync(eventId);
+			var newBooking2 = await _bookingService.CreateBookingAsync(eventId, userId);
 
 			Assert.True(newBooking.Status == statusR);
 			Assert.True(newBooking2.Status == statusP);
