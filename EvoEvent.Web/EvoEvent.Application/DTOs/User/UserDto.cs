@@ -1,6 +1,6 @@
 ﻿using EvoEvent.Domain.Enums;
 
-namespace EvoEvent.Application.DTOs.User
+namespace EvoEvent.Application.DTOs
 {
 	public class UserDto
 	{

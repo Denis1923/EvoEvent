@@ -1,5 +1,5 @@
 ﻿using EvoEvent.Application.Abstractions.Repositories;
-using EvoEvent.Application.DTOs.User;
+using EvoEvent.Application.DTOs;
 using EvoEvent.Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using System.ComponentModel.DataAnnotations;
@@ -46,7 +46,7 @@ namespace EvoEvent.Infrastructure.Services
 			var hashPassword = _hashService.ConvertHashPassword(userDto.Password);
 
 			var user = new User(
-				Guid.NewGuid(),
+				userDto.UserId,
 				userDto.Login,
 				hashPassword,
 				userDto.Role

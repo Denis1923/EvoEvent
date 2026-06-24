@@ -1,4 +1,4 @@
-﻿using EvoEvent.Application.DTOs.User;
+﻿using EvoEvent.Application.DTOs;
 using EvoEvent.Domain.Entities;
 
 namespace EvoEvent.Infrastructure.Services

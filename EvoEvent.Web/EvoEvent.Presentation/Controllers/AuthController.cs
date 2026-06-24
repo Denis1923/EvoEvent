@@ -1,4 +1,4 @@
-﻿using EvoEvent.Application.DTOs.User;
+﻿using EvoEvent.Application.DTOs;
 using EvoEvent.Infrastructure.Services;
 using EvoEvent.Presentation.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -22,6 +22,7 @@ namespace EvoEvent.Presentation.Controllers
 		{
 			var userDto = new UserDto
 			{
+				UserId = Guid.NewGuid(),
 				Login = registerRequest.Login,
 				Password = registerRequest.Password,
 				Role = registerRequest.Role.Value

@@ -1,11 +1,14 @@
 using EvoEvent.Application.Abstractions;
-using EvoEvent.Domain.Exceptions;
+using EvoEvent.Application.Abstractions.Repositories;
 using EvoEvent.Application.Services;
 using EvoEvent.Domain.Enums;
+using EvoEvent.Domain.Exceptions;
 using EvoEvent.Infrastructure.Persistence.DataAccess;
 using EvoEvent.Infrastructure.Persistence.Repositories;
+using EvoEvent.Infrastructure.Services;
 using EvoEvent.Web.Tests.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EvoEvent.Web.Tests.BookingServiceTests
@@ -17,6 +20,7 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 		private readonly IServiceScope _scope;
 		private readonly IBookingService _bookingService;
 		private readonly IEventService _eventService;
+		private readonly IUserService _userService;
 
 		public BookingServiceTestsGet()
 		{
@@ -28,14 +32,27 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 			services.AddScoped<IBookingService, BookingService>();
 			services.AddScoped<IEventRepository, EventRepository>();
 			services.AddScoped<IBookingRepository, BookingRepository>();
+			services.AddScoped<IUserRepository, UserRepository>();
+			services.AddScoped<IUserService, UserService>();
+			services.AddScoped<IHashService, HashService>();
+			services.AddScoped<IJwtService,  JwtService>();
+
+			var configuration = new ConfigurationBuilder()
+			   .AddInMemoryCollection(new Dictionary<string, string>())
+			   .Build();
+					services.AddSingleton<IConfiguration>(configuration);
 
 			_serviceProvider = services.BuildServiceProvider();
 			_scope = _serviceProvider.CreateScope();
 			_bookingService = _scope.ServiceProvider.GetRequiredService<IBookingService>();
 			_eventService = _scope.ServiceProvider.GetRequiredService<IEventService>();
+			_userService = _scope.ServiceProvider.GetRequiredService<IUserService>();
 
 			var events = ModelEventServiceTests.GetEvents();
 			events.ForEach(evt => _eventService.AddEventAsync(evt));
+
+			var users = ModelUserServiceTest.GetUsers();
+			users.ForEach(user => _userService.RegisterUserAsync(user));
 		}
 
 		public void Dispose()
@@ -49,7 +66,7 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 		public async Task Get_BookingId_ReturnBooking(string eventIdStr)
 		{
 			var eventId = Guid.Parse(eventIdStr);
-			var userId = Guid.NewGuid();
+			var userId = Guid.Parse("347ac10b-58cc-4372-a567-0e02b2c3d479");
 			var status = BookingStatus.Pending;
 
 			var newBooking = await _bookingService.CreateBookingAsync(eventId, userId);
