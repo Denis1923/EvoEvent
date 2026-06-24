@@ -1,12 +1,12 @@
 ﻿using EvoEvent.Application.DTOs.User;
 using EvoEvent.Infrastructure.Services;
 using EvoEvent.Presentation.Models;
-using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EvoEvent.Presentation.Controllers
 {
-	[Route("[controller]")]
+	[Route("auth")]
 	[ApiController]
 	public class AuthController : ControllerBase
 	{
@@ -29,7 +29,7 @@ namespace EvoEvent.Presentation.Controllers
 
 			await _userService.RegisterUserAsync(userDto, token);
 
-			return Ok();
+			return NoContent();
 		}
 
 		[HttpPost("login")]

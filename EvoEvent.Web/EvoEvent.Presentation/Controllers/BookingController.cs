@@ -46,20 +46,20 @@ namespace EvoEvent.Presentation.Controllers
 		/// <param name="id">Ид события</param>
 		/// <returns></returns>
 		[Authorize]
-		[HttpPost("events/{id:guid}/book")]
+		[HttpPost("~/events/{id:guid}/book")]
 		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status201Created)]
 		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
 		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
 		public async Task<IActionResult> CreateBookingAsync(Guid id, CancellationToken token)
 		{
-			var userIdStr = User.Claims.FirstOrDefault()?.Subject?.Name;
+			var userIdStr = User.Claims.FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
 
 			if (!Guid.TryParse(userIdStr, out Guid userId))
 				throw new ValidationException("Индентификатор пользователя не найден");
 
 			var newBooking = await _bookingService.CreateBookingAsync(id, userId, token);
-
+			
 			var response = new BookingResponseDto
 			{
 				Id = newBooking.Id,
@@ -71,49 +71,16 @@ namespace EvoEvent.Presentation.Controllers
 		}
 
 		[Authorize]
-		[HttpPut("{id:guid}")]
+		[HttpDelete("{id:guid}")]
 		public async Task<IActionResult> CancelledBookingAsync(Guid id, CancellationToken token)
 		{
-			var userIdStr = User.Claims.FirstOrDefault()?.Subject?.Name;
-			if (userIdStr == null)
-				return Unauthorized("Отсутствует информация о пользователе");
-
+			var userIdStr = User.Claims.FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
 			if (!Guid.TryParse(userIdStr, out Guid userId))
 				return Unauthorized("Неверный формат userId");
 
-			try
-			{
-				var isCancelled = await _bookingService.CancelledBookingAsync(id, userId, token);
+			var isCancelled = await _bookingService.CancelledBookingAsync(id, userId, token);
 
-				return isCancelled ? Ok() : BadRequest("Бронь уже отменена или не найдена");
-			}
-			catch (AbsenceAccessException ex)
-			{
-				// 403 Forbidden - пользователь пытается отменить чужую бронь
-				return Forbid(ex.Message);
-			}
-		}
-
-		[Authorize(Roles = "Admin")]
-		[HttpPut("{id:guid}/admin")]
-		public async Task<IActionResult> CancelledBookingAsyncForAdmin(Guid id, CancellationToken token)
-		{
-			var isCancelled = await _bookingService.CancelledBookingForAdminAsync(id, token);
-
-			return isCancelled ? Ok() : BadRequest("Бронь уже отменена или не найдена");
-		}
-
-		/// <summary>
-		/// Удалить бронь
-		/// </summary>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		[Authorize]
-		[HttpDelete("{id:guid}")]
-		public async Task<IActionResult> Delete(Guid id, CancellationToken token)
-		{
-			await _bookingService.DeleteByIdAsync(id, token);
-			return NoContent();
+			return isCancelled ? Created() : BadRequest("Бронь уже отменена или не найдена");
 		}
 	}
 }

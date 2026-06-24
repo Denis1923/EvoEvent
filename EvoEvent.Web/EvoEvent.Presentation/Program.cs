@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -50,6 +51,8 @@ builder.Services.AddAuthentication(options =>
 {
 	options.TokenValidationParameters = new TokenValidationParameters
 	{
+		RoleClaimType = ClaimTypes.Role,
+
 		ValidateIssuer = true,
 		ValidIssuer = builder.Configuration["Jwt:Issuer"],
 
@@ -60,7 +63,7 @@ builder.Services.AddAuthentication(options =>
 
 		ValidateIssuerSigningKey = true,
 		IssuerSigningKey = new SymmetricSecurityKey(
-			Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)) 
+			Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
 	};
 });
 

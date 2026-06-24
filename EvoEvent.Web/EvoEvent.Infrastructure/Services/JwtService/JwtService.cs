@@ -12,21 +12,18 @@ namespace EvoEvent.Infrastructure.Services
 
 		public string GeneratJwtTokena(User user, IConfiguration configuration)
 		{
-			// 1. Claims
 			var claims = new Dictionary<string, object>
 			{
 				[JwtRegisteredClaimNames.Sub] = user.UserId.ToString(),
-				["role"] = user.Role,
+				["role"] = user.Role.ToString(),
 				["login"] = user.Login,
 				[JwtRegisteredClaimNames.Jti] = Guid.NewGuid().ToString(),
 			};
 
-			// 2. Ключ и алгоритм подписи
 			var key = new SymmetricSecurityKey(
 				Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!));
 			var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-			// 3. Описание токена
 			var descriptor = new SecurityTokenDescriptor
 			{
 				Issuer = configuration["Jwt:Issuer"],
@@ -38,7 +35,6 @@ namespace EvoEvent.Infrastructure.Services
 				SigningCredentials = creds
 			};
 
-			// 4. Генерация строки токена
 			var tokenString = new JsonWebTokenHandler().CreateToken(descriptor);
 
 			return tokenString;

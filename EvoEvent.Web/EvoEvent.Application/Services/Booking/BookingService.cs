@@ -99,19 +99,6 @@ namespace EvoEvent.Application.Services
 			return true;
 		}
 
-		public async Task<bool> CancelledBookingForAdminAsync(Guid id, CancellationToken token = default)
-		{
-			var booking = await GetBookingByIdAsync(id, token);
-
-			if (_statusesCancelled.Contains(booking.Status))
-				return false;
-
-			booking.Cancelled();
-			await _bookingRepository.SaveChangesAsync(token);
-
-			return true;
-		}
-
 		public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default)
 		{
 			var booking = await _bookingRepository.GetBookingByIdAsync(id, token);
