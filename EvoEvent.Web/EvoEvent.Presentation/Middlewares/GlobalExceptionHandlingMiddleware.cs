@@ -64,6 +64,7 @@ namespace EvoEvent.Presentation.Middlewares
 				AbsenceAccessException absenceAccessException => StatusCodes.Status403Forbidden,
 				BookingPastEventException bookingPastEventException => StatusCodes.Status400BadRequest,
 				ExceedingActiveBookingLimitException exceedingActiveBookingLimitException => StatusCodes.Status409Conflict,
+				InvalidOperationException InvalidOperationException => StatusCodes.Status404NotFound,
 				_ => StatusCodes.Status500InternalServerError
 			};
 		}

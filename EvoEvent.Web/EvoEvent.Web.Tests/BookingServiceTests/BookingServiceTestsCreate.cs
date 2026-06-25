@@ -1,6 +1,7 @@
 using EvoEvent.Application.Abstractions;
 using EvoEvent.Application.Abstractions.Repositories;
 using EvoEvent.Application.Services;
+using EvoEvent.Domain.Entities;
 using EvoEvent.Domain.Enums;
 using EvoEvent.Domain.Exceptions;
 using EvoEvent.Infrastructure.Persistence.DataAccess;
@@ -314,6 +315,22 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 			Assert.Equal(idsNewBookingOneUser.Count, limitBookingForOneUser);
 			Assert.Equal(idsNewBookingTwoUser.Count, limitBookingForTwoUser);
 			Assert.Equal(idsNewBooking.Count, allCountNewBooking);
+		}
+
+
+		[Theory]
+		[InlineData("b1c4a9e3-7d2f-4a6e-8b5c-9e2d1f3a4b6c")]
+		public async Task CreateBookingsByEventId_ReturnAbsenceAccessException(string eventIdStr)
+		{
+			var eventId = Guid.Parse(eventIdStr);
+			var userIdOne = Guid.Parse("347ac10b-58cc-4372-a567-0e02b2c3d479");
+			var userTwo = new { UserId = Guid.Parse("547ac10b-58cc-4372-a567-0e02b2c3d479"), Login = "User2" };
+			var booking = await _bookingService.CreateBookingAsync(eventId, userIdOne);
+
+			var exc = await Assert.ThrowsAsync<AbsenceAccessException>(
+				async () => await _bookingService.CancelledBookingAsync(booking.Id, userTwo.UserId));
+
+			Assert.Equal($"У пользователя {userTwo.Login} нет прав на отмену брони {booking.Id}", exc?.Message);
 		}
 	}
 }

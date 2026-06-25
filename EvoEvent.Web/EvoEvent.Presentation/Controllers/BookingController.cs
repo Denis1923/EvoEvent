@@ -53,7 +53,7 @@ namespace EvoEvent.Presentation.Controllers
 		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
 		public async Task<IActionResult> CreateBookingAsync(Guid id, CancellationToken token)
 		{
-			var userIdStr = User.Claims.FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
+			var userIdStr = User.FindFirst("sub")?.Value;
 
 			if (!Guid.TryParse(userIdStr, out Guid userId))
 				throw new ValidationException("Индентификатор пользователя не найден");
@@ -74,13 +74,14 @@ namespace EvoEvent.Presentation.Controllers
 		[HttpDelete("{id:guid}")]
 		public async Task<IActionResult> CancelledBookingAsync(Guid id, CancellationToken token)
 		{
-			var userIdStr = User.Claims.FirstOrDefault(c => c.Type.Contains("nameidentifier"))?.Value;
+			var userIdStr = User.FindFirst("sub")?.Value;
+
 			if (!Guid.TryParse(userIdStr, out Guid userId))
 				return Unauthorized("Неверный формат userId");
 
 			var isCancelled = await _bookingService.CancelledBookingAsync(id, userId, token);
 
-			return isCancelled ? Created() : BadRequest("Бронь уже отменена или не найдена");
+			return isCancelled ? NoContent() : BadRequest("Бронь уже отменена или не найдена");
 		}
 	}
 }

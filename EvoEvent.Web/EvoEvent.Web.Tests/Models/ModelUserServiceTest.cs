@@ -11,7 +11,14 @@ namespace EvoEvent.Web.Tests.Models
 				new UserDto
 				{
 					UserId = Guid.Parse("347ac10b-58cc-4372-a567-0e02b2c3d479"),
-					Login = "User",
+					Login = "User1",
+					Password = "1234",
+					Role = Roles.User
+				},
+				new UserDto
+				{
+					UserId = Guid.Parse("547ac10b-58cc-4372-a567-0e02b2c3d479"),
+					Login = "User2",
 					Password = "1234",
 					Role = Roles.User
 				},

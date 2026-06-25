@@ -42,9 +42,9 @@ namespace EvoEvent.Application.Services
 					throw new NotFoundException($"Не найдено событие с таким ИД {eventId}");
 
 				var nowDate = DateTime.Now;
-				var checkBookingDate = eventExp.StartAt.Date > nowDate && nowDate < eventExp.EndAt.Date;
+				var checkBookingDate = eventExp.StartAt >= nowDate && nowDate < eventExp.EndAt;
 
-				if (!checkBookingDate)
+				if (checkBookingDate)
 					throw new BookingPastEventException("Событие уже началось, бронирование запрещено");
 
 				var user = await _userRepository.GetUserByIdAsync(userId, token);
@@ -52,7 +52,7 @@ namespace EvoEvent.Application.Services
 				if (user is null)
 					throw new NotFoundException($"Не найден пользователь с таким ИД {userId}");
 
-				var bookingsUser = await _bookingRepository.GetBookingUserByEventIdAsync(userId, eventId, token);
+				var bookingsUser = await _bookingRepository.GetBookingUserAsync(userId, token);
 
 				if (bookingsUser.Count >= _limitBookingCount)
 					throw new ExceedingActiveBookingLimitException("Бронирование события запрещено, так как превышен лимит бронирования");

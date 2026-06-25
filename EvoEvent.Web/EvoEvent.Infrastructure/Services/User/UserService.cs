@@ -1,8 +1,8 @@
 ﻿using EvoEvent.Application.Abstractions.Repositories;
 using EvoEvent.Application.DTOs;
 using EvoEvent.Domain.Entities;
+using EvoEvent.Domain.Exceptions;
 using Microsoft.Extensions.Configuration;
-using System.ComponentModel.DataAnnotations;
 
 namespace EvoEvent.Infrastructure.Services
 {
@@ -31,12 +31,12 @@ namespace EvoEvent.Infrastructure.Services
 			var userExp = await _userRepository.GetUserByLoginAsync(userDto.Login, token);
 
 			if (userExp is null)
-				throw new ValidationException($"Пользователя с таким логином {userDto.Login} нет в системе");
+				throw new NotFoundException($"Пользователя с таким логином {userDto.Login} нет в системе");
 
 			var verifyUser = _hashService.VerifyHashPassword(userDto.Password, userExp.HashPassword);
 			
 			if (!verifyUser)
-				throw new ValidationException("Введен не верный пароль");
+				throw new InvalidOperationException("Введен не верный пароль");
 
 			return _jwtService.GeneratJwtTokena(userExp, _configuration);
 		}
