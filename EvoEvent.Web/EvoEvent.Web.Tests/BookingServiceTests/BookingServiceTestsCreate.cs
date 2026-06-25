@@ -273,6 +273,7 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 			for (int i = 0; i < limitBooking; i++)
 			{
 				var newBooking = await _bookingService.CreateBookingAsync(eventId, userId);
+				newBooking.Confirm();
 				idsNewBooking.Add(newBooking.Id);
 			}
 

@@ -44,7 +44,12 @@ namespace EvoEvent.Presentation.Controllers
 
 			var jwtToken = await _userService.LoginUserAsync(userDto, token);
 
-			return Ok(new { Token = jwtToken });
+			var response = new LoginResponseDto
+			{
+				Token = jwtToken
+			};
+
+			return Ok(response);
 		}
 	}
 }

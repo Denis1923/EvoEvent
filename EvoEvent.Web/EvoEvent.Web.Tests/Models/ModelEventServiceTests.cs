@@ -33,7 +33,7 @@ namespace EvoEvent.Web.Tests.Models
 					Title = "Лекция",
 					Description = "Описание: Лекция по истории искусств",
 					StartAt = DateTime.UtcNow.AddDays(-5),
-					EndAt = DateTime.UtcNow.AddDays(-3),
+					EndAt = DateTime.UtcNow.AddDays(2),
 					TotalSeats = 7,
 					AvailableSeats = 7
 				},

@@ -20,6 +20,12 @@ namespace EvoEvent.Infrastructure.Services
 				[JwtRegisteredClaimNames.Jti] = Guid.NewGuid().ToString(),
 			};
 
+			var expiresStr = configuration["Jwt:Expires"];
+			var expiresMin = 15;
+
+			if (int.TryParse(expiresStr, out int expiresMinOut)) 
+				expiresMin = expiresMinOut;
+
 			var key = new SymmetricSecurityKey(
 				Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!));
 			var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -30,7 +36,7 @@ namespace EvoEvent.Infrastructure.Services
 				Audience = configuration["Jwt:Audience"],
 				Claims = claims,
 				NotBefore = DateTime.UtcNow,
-				Expires = DateTime.UtcNow.AddMinutes(30),
+				Expires = DateTime.Now.AddMinutes(expiresMin),
 				IssuedAt = DateTime.UtcNow,
 				SigningCredentials = creds
 			};
