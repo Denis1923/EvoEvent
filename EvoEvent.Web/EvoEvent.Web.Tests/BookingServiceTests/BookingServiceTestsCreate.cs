@@ -1,11 +1,15 @@
-﻿using EvoEvent.Application.Abstractions;
-using EvoEvent.Domain.Exceptions;
+using EvoEvent.Application.Abstractions;
+using EvoEvent.Application.Abstractions.Repositories;
 using EvoEvent.Application.Services;
+using EvoEvent.Domain.Entities;
 using EvoEvent.Domain.Enums;
+using EvoEvent.Domain.Exceptions;
 using EvoEvent.Infrastructure.Persistence.DataAccess;
 using EvoEvent.Infrastructure.Persistence.Repositories;
+using EvoEvent.Infrastructure.Services;
 using EvoEvent.Web.Tests.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
@@ -18,6 +22,7 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 		private readonly IServiceScope _scope;
 		private readonly IEventService _eventService;
 		private readonly IBookingService _bookingService;
+		private readonly IUserService _userService;
 
 		public BookingServiceTestsCreate()
 		{
@@ -29,14 +34,28 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 			services.AddScoped<IBookingService, BookingService>();
 			services.AddScoped<IEventRepository, EventRepository>();
 			services.AddScoped<IBookingRepository, BookingRepository>();
+			services.AddScoped<IUserRepository, UserRepository>();
+			services.AddScoped<IUserRepository, UserRepository>();
+			services.AddScoped<IUserService, UserService>();
+			services.AddScoped<IHashService, HashService>();
+			services.AddScoped<IJwtService, JwtService>();
+
+			var configuration = new ConfigurationBuilder()
+			   .AddInMemoryCollection(new Dictionary<string, string>())
+			   .Build();
+			services.AddSingleton<IConfiguration>(configuration);
 
 			_serviceProvider = services.BuildServiceProvider();
 			_scope = _serviceProvider.CreateScope();
-			_eventService = _scope.ServiceProvider.GetRequiredService<IEventService>();
 			_bookingService = _scope.ServiceProvider.GetRequiredService<IBookingService>();
+			_eventService = _scope.ServiceProvider.GetRequiredService<IEventService>();
+			_userService = _scope.ServiceProvider.GetRequiredService<IUserService>();
 
 			var events = ModelEventServiceTests.GetEvents();
 			events.ForEach(evt => _eventService.AddEventAsync(evt));
+
+			var users = ModelUserServiceTest.GetUsers();
+			users.ForEach(user => _userService.RegisterUserAsync(user));
 		}
 
 		public void Dispose()
@@ -50,9 +69,10 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 		public async Task CreateBookingByEventId_ReturnIsStatusPending(string eventIdStr)
 		{
 			var eventId = Guid.Parse(eventIdStr);
+			var userId = Guid.Parse("347ac10b-58cc-4372-a567-0e02b2c3d479");
 
 			var eventExp = await _eventService.GetByIdAsync(eventId);
-			var newBooking = await _bookingService.CreateBookingAsync(eventId);
+			var newBooking = await _bookingService.CreateBookingAsync(eventId, userId);
 
 			Assert.NotNull(newBooking);
 			Assert.True(newBooking.Status == BookingStatus.Pending);
@@ -64,13 +84,14 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 		public async Task CreateBookingsByEventId_ReturnIsSuccess(string eventIdStr)
 		{
 			var eventId = Guid.Parse(eventIdStr);
+			var userId = Guid.Parse("347ac10b-58cc-4372-a567-0e02b2c3d479");
 			var idsNewBooking = new List<Guid>();
 
 			var eventExp = await _eventService.GetByIdAsync(eventId);
 
 			for (int i = 0; i < eventExp.TotalSeats; i++)
 			{
-				var newBooking = await _bookingService.CreateBookingAsync(eventId);
+				var newBooking = await _bookingService.CreateBookingAsync(eventId, userId);
 				idsNewBooking.Add(newBooking.Id);
 			}
 
@@ -79,22 +100,23 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 		}
 
 		[Theory]
-		[InlineData("b1c4a9e3-7d2f-4a6e-8b5c-9e2d1f3a4b6c")]
+		[InlineData("123e4567-e89b-12d3-a456-426614174000")]
 		public async Task CreateBookingsByEventId_ReturnNoAvailableSeats(string eventIdStr)
 		{
 			var eventId = Guid.Parse(eventIdStr);
+			var userId = Guid.Parse("347ac10b-58cc-4372-a567-0e02b2c3d479");
 			var idsNewBooking = new List<Guid>();
 
 			var eventExp = await _eventService.GetByIdAsync(eventId);
 
 			for (int i = 0; i < eventExp.TotalSeats; i++)
 			{
-				var newBooking = await _bookingService.CreateBookingAsync(eventId);
+				var newBooking = await _bookingService.CreateBookingAsync(eventId, userId);
 				idsNewBooking.Add(newBooking.Id);
 			}
 
 			var exc = await Assert.ThrowsAsync<NoAvailableSeatsException>(
-				async () => await _bookingService.CreateBookingAsync(eventId));
+				async () => await _bookingService.CreateBookingAsync(eventId, userId));
 
 			Assert.Equal($"No available seats for this event", exc?.Message);
 			Assert.Equal(eventExp.TotalSeats, idsNewBooking.Distinct().Count());
@@ -104,9 +126,10 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 		public async Task Add_NewBooking_ReturnValidationException()
 		{
 			var eventId = Guid.Empty;
+			var userId = Guid.Parse("347ac10b-58cc-4372-a567-0e02b2c3d479");
 
 			var exc = await Assert.ThrowsAsync<ValidationException>(
-				async () => await _bookingService.CreateBookingAsync(eventId));
+				async () => await _bookingService.CreateBookingAsync(eventId, userId));
 
 			Assert.Equal($"Передан не валидный параметр eventId = {eventId}", exc?.Message);
 		}
@@ -116,9 +139,10 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 		public async Task Add_NewBooking_ReturnNotFoundEvent(string eventIdStr)
 		{
 			var eventId = Guid.Parse(eventIdStr);
+			var userId = Guid.Parse("347ac10b-58cc-4372-a567-0e02b2c3d479");
 
 			var exc = await Assert.ThrowsAsync<NotFoundException>(
-				async () => await _bookingService.CreateBookingAsync(eventId));
+				async () => await _bookingService.CreateBookingAsync(eventId, userId));
 
 			Assert.Equal($"Не найдено событие с таким ИД {eventId}", exc?.Message);
 		}
@@ -128,9 +152,10 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 		public async Task Add_NewBooking_ReturnNotFoundDeleteEvent(string eventIdStr)
 		{
 			var eventId = Guid.Parse(eventIdStr);
+			var userId = Guid.Parse("347ac10b-58cc-4372-a567-0e02b2c3d479");
 
 			var exc = await Assert.ThrowsAsync<NotFoundException>(
-				async () => await _bookingService.CreateBookingAsync(eventId));
+				async () => await _bookingService.CreateBookingAsync(eventId, userId));
 
 			Assert.Equal($"Не найдено событие с таким ИД {eventId}", exc?.Message);
 		}
@@ -140,9 +165,10 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 		public async Task Add_NewBooking_ReturnNoAvailableSeats(string eventIdStr)
 		{
 			var eventId = Guid.Parse(eventIdStr);
+			var userId = Guid.Parse("347ac10b-58cc-4372-a567-0e02b2c3d479");
 
 			var exc = await Assert.ThrowsAsync<NoAvailableSeatsException>(
-				async () => await _bookingService.CreateBookingAsync(eventId));
+				async () => await _bookingService.CreateBookingAsync(eventId, userId));
 
 			Assert.Equal($"No available seats for this event", exc?.Message);
 		}
@@ -152,6 +178,7 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 		public async Task AddParralelBooking_ReturnBookings(string eventIdStr)
 		{
 			var eventId = Guid.Parse(eventIdStr);
+			var userId = Guid.Parse("347ac10b-58cc-4372-a567-0e02b2c3d479");
 			var idsNewBooking = new List<Guid>();
 			var results = new ConcurrentBag<(bool Success, NoAvailableSeatsException Exception)>();
 
@@ -168,7 +195,7 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 				{
 					using var scope = _serviceProvider.CreateScope();
 					var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
-					await bookingService.CreateBookingAsync(eventExp.Id);
+					await bookingService.CreateBookingAsync(eventExp.Id, userId);
 
 					results.Add((true, null));
 				}
@@ -192,6 +219,7 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 		public async Task AddParralelBooking_ReturnDistinctBookings(string eventIdStr)
 		{
 			var eventId = Guid.Parse(eventIdStr);
+			var userId = Guid.Parse("347ac10b-58cc-4372-a567-0e02b2c3d479");
 			var idsNewBooking = new List<Guid>();
 			var results = new ConcurrentBag<Guid>();
 
@@ -206,7 +234,7 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 			{
 				using var scope = _serviceProvider.CreateScope();
 				var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
-				var newBooking = await bookingService.CreateBookingAsync(eventId);
+				var newBooking = await bookingService.CreateBookingAsync(eventId, userId);
 				results.Add(newBooking.Id);
 			});
 
@@ -214,6 +242,96 @@ namespace EvoEvent.Web.Tests.BookingServiceTests
 			var distincCount = results.Distinct().Count();
 
 			Assert.Equal(10, distincCount);
+		}
+
+		[Theory]
+		[InlineData("8c9e6679-7425-40de-944b-e07fc1f90ae8")]
+		public async Task CreateBookingsByEventId_ReturnBookingPastEvent(string eventIdStr)
+		{
+			var eventId = Guid.Parse(eventIdStr);
+			var userId = Guid.Parse("347ac10b-58cc-4372-a567-0e02b2c3d479");
+
+			var eventExp = await _eventService.GetByIdAsync(eventId);
+
+			var exc = await Assert.ThrowsAsync<BookingPastEventException>(
+				async () => await _bookingService.CreateBookingAsync(eventId, userId));
+
+			Assert.Equal($"Событие уже началось, бронирование запрещено", exc?.Message);
+		}
+
+		[Theory]
+		[InlineData("b1c4a9e3-7d2f-4a6e-8b5c-9e2d1f3a4b6c")]
+		public async Task CreateBookingsByEventId_ReturnExceedingActiveBookingLimit(string eventIdStr)
+		{
+			var eventId = Guid.Parse(eventIdStr);
+			var userId = Guid.Parse("347ac10b-58cc-4372-a567-0e02b2c3d479");
+			var idsNewBooking = new List<Guid>();
+			var limitBooking = 10;
+
+			var eventExp = await _eventService.GetByIdAsync(eventId);
+
+			for (int i = 0; i < limitBooking; i++)
+			{
+				var newBooking = await _bookingService.CreateBookingAsync(eventId, userId);
+				newBooking.Confirm();
+				idsNewBooking.Add(newBooking.Id);
+			}
+
+			var exc = await Assert.ThrowsAsync<ExceedingActiveBookingLimitException>(
+				async () => await _bookingService.CreateBookingAsync(eventId, userId));
+
+			Assert.Equal($"Бронирование события запрещено, так как превышен лимит бронирования", exc?.Message);
+		}
+
+		[Theory]
+		[InlineData("b1c4a9e3-7d2f-4a6e-8b5c-9e2d1f3a4b6c")]
+		public async Task CreateBookingsByEventId_ReturnSuccessBookingDiffUsers(string eventIdStr)
+		{
+			var eventId = Guid.Parse(eventIdStr);
+			var userIdOne = Guid.Parse("347ac10b-58cc-4372-a567-0e02b2c3d479");
+			var userIdTwo = Guid.Parse("417dc10b-58cc-5172-a567-0e02b2c3d489");
+			var idsNewBooking = new List<Guid>();
+			var idsNewBookingOneUser = new List<Guid>();
+			var idsNewBookingTwoUser = new List<Guid>();
+			var limitBookingForOneUser = 6;
+			var limitBookingForTwoUser = 8;
+			var allCountNewBooking = 14;
+
+			var eventExp = await _eventService.GetByIdAsync(eventId);
+
+			for (int i = 0; i < limitBookingForOneUser; i++)
+			{
+				var newBooking = await _bookingService.CreateBookingAsync(eventId, userIdOne);
+				idsNewBookingOneUser.Add(newBooking.Id);
+				idsNewBooking.Add(newBooking.Id);
+			}
+
+			for (int i = 0; i < limitBookingForTwoUser; i++)
+			{
+				var newBooking = await _bookingService.CreateBookingAsync(eventId, userIdTwo);
+				idsNewBookingTwoUser.Add(newBooking.Id);
+				idsNewBooking.Add(newBooking.Id);
+			}
+
+			Assert.Equal(idsNewBookingOneUser.Count, limitBookingForOneUser);
+			Assert.Equal(idsNewBookingTwoUser.Count, limitBookingForTwoUser);
+			Assert.Equal(idsNewBooking.Count, allCountNewBooking);
+		}
+
+
+		[Theory]
+		[InlineData("b1c4a9e3-7d2f-4a6e-8b5c-9e2d1f3a4b6c")]
+		public async Task CreateBookingsByEventId_ReturnAbsenceAccessException(string eventIdStr)
+		{
+			var eventId = Guid.Parse(eventIdStr);
+			var userIdOne = Guid.Parse("347ac10b-58cc-4372-a567-0e02b2c3d479");
+			var userTwo = new { UserId = Guid.Parse("547ac10b-58cc-4372-a567-0e02b2c3d479"), Login = "User2" };
+			var booking = await _bookingService.CreateBookingAsync(eventId, userIdOne);
+
+			var exc = await Assert.ThrowsAsync<AbsenceAccessException>(
+				async () => await _bookingService.CancelledBookingAsync(booking.Id, userTwo.UserId));
+
+			Assert.Equal($"У пользователя {userTwo.Login} нет прав на отмену брони {booking.Id}", exc?.Message);
 		}
 	}
 }

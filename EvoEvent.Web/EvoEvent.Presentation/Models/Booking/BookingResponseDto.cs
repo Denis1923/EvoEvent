@@ -16,6 +16,7 @@ namespace EvoEvent.Presentation.Models
 				BookingStatus.Pending => "Pending",
 				BookingStatus.Confirmed => "Confirmed",
 				BookingStatus.Rejected => "Rejected",
+				BookingStatus.Cancelled => "Cancelled",
 				_ => ""
 			};
 		

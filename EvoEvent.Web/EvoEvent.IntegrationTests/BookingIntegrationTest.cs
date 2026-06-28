@@ -1,7 +1,8 @@
-﻿using EvoEvent.Domain.Entities;
+using EvoEvent.Domain.Entities;
 using EvoEvent.Domain.Enums;
 using EvoEvent.Infrastructure.Persistence.DataAccess;
 using EvoEvent.Infrastructure.Persistence.Repositories;
+using EvoEvent.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Testcontainers.PostgreSql;
@@ -20,8 +21,8 @@ namespace EvoEvent.IntegrationTests
 		private async Task<AppDbContext> CreateContext()
 		{
 			var options = new DbContextOptionsBuilder<AppDbContext>()
-								.UseNpgsql(_postgres.GetConnectionString())
-								.Options;
+										.UseNpgsql(_postgres.GetConnectionString())
+										.Options;
 
 
 			var context = new AppDbContext(options);
@@ -48,12 +49,19 @@ namespace EvoEvent.IntegrationTests
 			await using var context = await CreateContext();
 			var eventRepository = new EventRepository(context);
 			var bookingRepository = new BookingRepository(context);
-			
+			var userRepository = new UserRepository(context);
+			var hashService = new HashService();
+
+			var hashPassword = hashService.ConvertHashPassword("password1!");
+			var newUser = new User(Guid.NewGuid(), "UserOne", hashPassword, Roles.User);
+			await userRepository.CreateUserAsync(newUser);
+			await userRepository.SaveChangesAsync();
+
 			var newEvent = new Event(Guid.NewGuid(), "Концерт", "Описание: Рок-концерт", DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(3), 10);
 			await eventRepository.AddEventAsync(newEvent);
 			await eventRepository.SaveChangesAsync();
 
-			var newBoooking = new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow);
+			var newBoooking = new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow, newUser.UserId, Guid.NewGuid());
 
 			// Act
 			await bookingRepository.AddBookingAsync(newBoooking);
@@ -81,12 +89,19 @@ namespace EvoEvent.IntegrationTests
 			await using var context = await CreateContext();
 			var eventRepository = new EventRepository(context);
 			var bookingRepository = new BookingRepository(context);
+			var userRepository = new UserRepository(context);
+			var hashService = new HashService();
+
+			var hashPassword = hashService.ConvertHashPassword("password1!");
+			var newUser = new User(Guid.NewGuid(), "UserOne", hashPassword, Roles.User);
+			await userRepository.CreateUserAsync(newUser);
+			await userRepository.SaveChangesAsync();
 
 			var newEvent = new Event(Guid.NewGuid(), "Концерт", "Описание: Pop-концерт", DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(3), 190);
 			await eventRepository.AddEventAsync(newEvent);
 			await eventRepository.SaveChangesAsync();
 
-			var newBoooking = new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow);
+			var newBoooking = new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow, newUser.UserId, Guid.NewGuid());
 			await bookingRepository.AddBookingAsync(newBoooking);
 			await bookingRepository.SaveChangesAsync();
 
@@ -110,6 +125,13 @@ namespace EvoEvent.IntegrationTests
 			await using var context = await CreateContext();
 			var eventRepository = new EventRepository(context);
 			var bookingRepository = new BookingRepository(context);
+			var userRepository = new UserRepository(context);
+			var hashService = new HashService();
+
+			var hashPassword = hashService.ConvertHashPassword("password1!");
+			var newUser = new User(Guid.NewGuid(), "UserOne", hashPassword, Roles.User);
+			await userRepository.CreateUserAsync(newUser);
+			await userRepository.SaveChangesAsync();
 
 			var newEvent = new Event(Guid.NewGuid(), "Концерт", "Описание: Pop-концерт", DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(3), 190);
 			await eventRepository.AddEventAsync(newEvent);
@@ -117,10 +139,10 @@ namespace EvoEvent.IntegrationTests
 
 			var newBoookings = new List<Booking>
 			{
-				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow),
-				new Booking(newEvent.Id, BookingStatus.Rejected, DateTime.UtcNow),
-				new Booking(newEvent.Id, BookingStatus.Confirmed, DateTime.UtcNow),
-				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow)
+				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow, newUser.UserId, Guid.NewGuid()),
+				new Booking(newEvent.Id, BookingStatus.Rejected, DateTime.UtcNow, newUser.UserId, Guid.NewGuid()),
+				new Booking(newEvent.Id, BookingStatus.Confirmed, DateTime.UtcNow, newUser.UserId, Guid.NewGuid()),
+				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow, newUser.UserId, Guid.NewGuid())
 			};
 
 			foreach (var booking in newBoookings)
@@ -150,6 +172,13 @@ namespace EvoEvent.IntegrationTests
 			await using var context = await CreateContext();
 			var eventRepository = new EventRepository(context);
 			var bookingRepository = new BookingRepository(context);
+			var userRepository = new UserRepository(context);
+			var hashService = new HashService();
+
+			var hashPassword = hashService.ConvertHashPassword("password1!");
+			var newUser = new User(Guid.NewGuid(), "UserOne", hashPassword, Roles.User);
+			await userRepository.CreateUserAsync(newUser);
+			await userRepository.SaveChangesAsync();
 
 			var newEvent = new Event(Guid.NewGuid(), "Концерт", "Описание: Pop-концерт", DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(3), 190);
 			await eventRepository.AddEventAsync(newEvent);
@@ -157,10 +186,10 @@ namespace EvoEvent.IntegrationTests
 
 			var newBoookings = new List<Booking>
 			{
-				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow),
-				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow),
-				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow),
-				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow)
+				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow, newUser.UserId, Guid.NewGuid()),
+				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow, newUser.UserId, Guid.NewGuid()),
+				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow, newUser.UserId, Guid.NewGuid()),
+				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow, newUser.UserId, Guid.NewGuid())
 			};
 
 			foreach (var booking in newBoookings)
@@ -199,6 +228,13 @@ namespace EvoEvent.IntegrationTests
 			await using var context = await CreateContext();
 			var eventRepository = new EventRepository(context);
 			var bookingRepository = new BookingRepository(context);
+			var userRepository = new UserRepository(context);
+			var hashService = new HashService();
+
+			var hashPassword = hashService.ConvertHashPassword("password1!");
+			var newUser = new User(Guid.NewGuid(), "UserOne", hashPassword, Roles.User);
+			await userRepository.CreateUserAsync(newUser);
+			await userRepository.SaveChangesAsync();
 
 			var newEvent = new Event(Guid.NewGuid(), "Концерт", "Описание: Hous-концерт", DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(3), 90);
 			await eventRepository.AddEventAsync(newEvent);
@@ -206,10 +242,10 @@ namespace EvoEvent.IntegrationTests
 
 			var newBoookings = new List<Booking>
 			{
-				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow),
-				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow),
-				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow),
-				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow)
+				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow, newUser.UserId, Guid.NewGuid()),
+				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow, newUser.UserId, Guid.NewGuid()),
+				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow, newUser.UserId, Guid.NewGuid()),
+				new Booking(newEvent.Id, BookingStatus.Pending, DateTime.UtcNow, newUser.UserId, Guid.NewGuid())
 			};
 
 			foreach (var booking in newBoookings)

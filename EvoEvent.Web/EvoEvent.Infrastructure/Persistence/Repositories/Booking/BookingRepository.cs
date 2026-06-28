@@ -27,6 +27,9 @@ namespace EvoEvent.Infrastructure.Persistence.Repositories
 		public async Task<List<Booking>> GetBookingsByStatusAsync(BookingStatus status, CancellationToken token = default)
 			=> await _context.Bookings.Where(b => b.Status == status).ToListAsync(token);
 
+		public async Task<List<Booking>> GetConfirmedBookingUserAsync(Guid userId, CancellationToken token = default)
+			=> await _context.Bookings.Where(b => b.UserId == userId && (b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.Pending)).ToListAsync(token);
+
 		public void RemoveBooking(Booking booking)
 			=> _context.Bookings.Remove(booking);
 

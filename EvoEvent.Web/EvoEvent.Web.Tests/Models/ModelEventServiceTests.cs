@@ -29,11 +29,11 @@ namespace EvoEvent.Web.Tests.Models
 				},
 				new EventDto
 				{
-					Id = Guid.Parse("a3bb4d2e-8f4d-4d6e-9f5c-3b6f7e8d9a0b"),
+					Id = Guid.Parse("8c9e6679-7425-40de-944b-e07fc1f90ae8"),
 					Title = "Лекция",
 					Description = "Описание: Лекция по истории искусств",
-					StartAt = DateTime.UtcNow.AddDays(3),
-					EndAt = DateTime.UtcNow.AddDays(5),
+					StartAt = DateTime.UtcNow.AddDays(-5),
+					EndAt = DateTime.UtcNow.AddDays(2),
 					TotalSeats = 7,
 					AvailableSeats = 7
 				},
@@ -74,8 +74,8 @@ namespace EvoEvent.Web.Tests.Models
 					Description = "Описание: Научная конференция",
 					StartAt = DateTime.UtcNow.AddDays(7),
 					EndAt = DateTime.UtcNow.AddDays(9),
-					TotalSeats = 12,
-					AvailableSeats = 10
+					TotalSeats = 6,
+					AvailableSeats = 6
 				},
 				new EventDto
 				{

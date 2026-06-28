@@ -3,9 +3,12 @@ using EvoEvent.Infrastructure;
 using EvoEvent.Infrastructure.Persistence.DataAccess;
 using EvoEvent.Presentation.Middlewares;
 using EvoEvent.Presentation.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Net;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +41,32 @@ builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddAuthentication(options =>
+{
+	options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+	options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+{
+	options.TokenValidationParameters = new TokenValidationParameters
+	{
+		RoleClaimType = "role",
+		NameClaimType = "sub",
+
+		ValidateIssuer = true,
+		ValidIssuer = builder.Configuration["Jwt:Issuer"],
+
+		ValidateAudience = true,
+		ValidAudience = builder.Configuration["Jwt:Audience"],
+
+		ValidateLifetime = true,
+
+		ValidateIssuerSigningKey = true,
+		IssuerSigningKey = new SymmetricSecurityKey(
+			Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+	};
+	options.MapInboundClaims = false;
+});
 
 var app = builder.Build();
 
@@ -49,9 +78,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 app.MapControllers();
+
 using (var scope = app.Services.CreateScope())
 {
 	var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
