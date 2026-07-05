@@ -20,6 +20,12 @@
   <Folder Name="/_Common/">
     <Project Path="CommonLibrary/CommonLibrary.csproj" Id="455fad45-a5ad-4d7d-9c5f-43a3d1378554" />
   </Folder>
+  <Folder Name="/_monolit/">
+    <Project Path="EvoEvent.Application/EvoEvent.Application.csproj" Id="e9860304-9df2-48ca-83e5-d8849f5f809a" />
+    <Project Path="EvoEvent.Domain/EvoEvent.Domain.csproj" Id="dff19220-949a-477c-b5e1-032c740d14d2" />
+    <Project Path="EvoEvent.Infrastructure/EvoEvent.Infrastructure.csproj" Id="715f61d4-a761-4d40-91e2-cd82f064cc55" />
+    <Project Path="EvoEvent.Presentation/EvoEvent.Presentation.csproj" />
+  </Folder>
   <Folder Name="/_Tests/">
     <Project Path="EvoEvent.IntegrationTests/EvoEvent.IntegrationTests.csproj" Id="05833e91-dbcc-4bbd-a4c3-e1f5dec41bf4" />
     <Project Path="EvoEvent.TestE2E/EvoEvent.TestE2E.csproj" Id="d13226dc-00a8-452b-b0a7-fbcd71009212" />
@@ -28,8 +34,4 @@
   <Folder Name="/Элементы решения/">
     <File Path="../README.md" />
   </Folder>
-  <Project Path="EvoEvent.Application/EvoEvent.Application.csproj" Id="e9860304-9df2-48ca-83e5-d8849f5f809a" />
-  <Project Path="EvoEvent.Domain/EvoEvent.Domain.csproj" Id="dff19220-949a-477c-b5e1-032c740d14d2" />
-  <Project Path="EvoEvent.Infrastructure/EvoEvent.Infrastructure.csproj" Id="715f61d4-a761-4d40-91e2-cd82f064cc55" />
-  <Project Path="EvoEvent.Presentation/EvoEvent.Presentation.csproj" />
 </Solution>
