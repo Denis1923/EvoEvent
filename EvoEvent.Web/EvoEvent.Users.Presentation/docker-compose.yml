@@ -1,0 +1,23 @@
+# PostgreSQL для EvoEvent — совпадает с ConnectionStrings:DefaultConnection в appsettings.json
+# Запуск из корня репозитория: docker compose up -d
+# Остановка: docker compose down
+# Данные сохраняются в именованном томе evoevent_pgdata
+
+services:
+  users-db:
+    image: postgres:16
+    container_name: eventapi-users-db
+    environment:
+      POSTGRES_DB: users
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - users-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  users-db-data:
