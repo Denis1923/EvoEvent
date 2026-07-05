@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CommonLibrary\CommonLibrary.csproj" />
     <ProjectReference Include="..\EvoEvent.Users.Application\EvoEvent.Users.Application.csproj" />
     <ProjectReference Include="..\EvoEvent.Users.Domain\EvoEvent.Users.Domain.csproj" />
   </ItemGroup>

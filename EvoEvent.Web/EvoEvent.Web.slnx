@@ -32,6 +32,7 @@
     <Project Path="EvoEvent.Web.Tests/EvoEvent.Web.Tests.csproj" Id="fcb14367-6d67-44a7-af54-ecee7658c4aa" />
   </Folder>
   <Folder Name="/Элементы решения/">
+    <File Path="../../../../Загрузки/docker-compose.yml" />
     <File Path="../README.md" />
   </Folder>
 </Solution>

@@ -1,4 +1,4 @@
-﻿using EvoEvent.Events.Application.Abstractions;
+﻿using EvoEvent.Events.Application.Abstractions.Repositories;
 using EvoEvent.Events.Domain.Entities;
 using EvoEvent.Events.Infrastructure.Persistence.DataAccess;
 using Microsoft.EntityFrameworkCore;

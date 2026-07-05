@@ -1,8 +1,8 @@
-﻿using EvoEvent.Users.Application.Repositories;
-using EvoEvent.Users.Application.DTOs;
+﻿using EvoEvent.Users.Application.DTOs;
 using EvoEvent.Users.Domain.Entities;
-using EvoEvent.Users.Domain.Exceptions;
 using Microsoft.Extensions.Configuration;
+using EvoEvent.Users.Application.Abstractions.Repositories;
+using CommonLibrary.Exceptions;
 
 namespace EvoEvent.Users.Infrastructure.Services
 {

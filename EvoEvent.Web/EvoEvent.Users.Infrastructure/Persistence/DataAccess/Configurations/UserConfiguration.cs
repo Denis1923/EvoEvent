@@ -18,9 +18,9 @@ namespace EvoEvent.Users.Infrastructure.Persistence.DataAccess.Configurations
 			builder.HasIndex(e => e.Login)
 				.IsUnique();
 
-			builder.HasMany(e => e.Bookings)
-				.WithOne(b => b.User)
-				.HasForeignKey(b => b.UserId);
+			//builder.HasMany(e => e.Bookings)
+			//	.WithOne(b => b.User)
+			//	.HasForeignKey(b => b.UserId);
 		}
 	}
 }

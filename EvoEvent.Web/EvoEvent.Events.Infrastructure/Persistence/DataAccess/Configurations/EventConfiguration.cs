@@ -30,9 +30,9 @@ namespace EvoEvent.Events.Infrastructure.Persistence.DataAccess.Configurations
 			builder.Property(e => e.TotalSeats)
 				.IsRequired();
 
-			builder.HasMany(e => e.Bookings)
-				.WithOne(b => b.Event)
-				.HasForeignKey(b => b.EventId);
+			//builder.HasMany(e => e.Bookings)
+			//	.WithOne(b => b.Event)
+			//	.HasForeignKey(b => b.EventId);
 		}
 	}
 }

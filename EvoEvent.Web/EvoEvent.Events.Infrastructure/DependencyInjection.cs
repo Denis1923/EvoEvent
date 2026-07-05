@@ -1,4 +1,5 @@
-﻿using EvoEvent.Application.Abstractions;
+﻿using EvoEvent.Application.Abstractions.Repositories;
+using EvoEvent.Events.Application.Abstractions.Repositories;
 using EvoEvent.Events.Infrastructure.Persistence.DataAccess;
 using EvoEvent.Events.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,7 @@ namespace EvoEvent.Events.Infrastructure
 			{
 				options.UseNpgsql(connectionStr);
 			});
-
+			
 			services.AddScoped<IEventRepository, EventRepository>();
 
 			return services;

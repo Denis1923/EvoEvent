@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CommonLibrary\CommonLibrary.csproj" />
     <ProjectReference Include="..\EvoEvent.Booking.Domain\EvoEvent.Booking.Domain.csproj" />
   </ItemGroup>
 

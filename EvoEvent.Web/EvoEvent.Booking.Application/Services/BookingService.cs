@@ -1,5 +1,6 @@
+using CommonLibrary.Exceptions;
 using EvoEvent.Booking.Application.Abstractions;
-using EvoEvent.Booking.Domain.Exceptions;
+using EvoEvent.Booking.Application.Abstractions.Repositories;
 using EvoEvent.Booking.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 using BookingEnt = EvoEvent.Booking.Domain.Entities.Booking;

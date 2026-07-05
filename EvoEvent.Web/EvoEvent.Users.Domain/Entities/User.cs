@@ -12,7 +12,7 @@ namespace EvoEvent.Users.Domain.Entities
 
 		public Roles Role { get; set; }
 
-		public IEnumerable<Booking> Bookings { get; set; }
+		//public IEnumerable<Booking> Bookings { get; set; }
 
 		public User()
 		{

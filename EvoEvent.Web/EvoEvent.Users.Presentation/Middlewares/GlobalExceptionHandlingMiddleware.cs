@@ -1,5 +1,5 @@
-﻿using CommonLibrary.Models.ResponseDto;
-using EvoEvent.Users.Domain.Exceptions;
+﻿using CommonLibrary.Exceptions;
+using CommonLibrary.Models.ResponseDto;
 using EvoEvent.Users.Presentation.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Net;

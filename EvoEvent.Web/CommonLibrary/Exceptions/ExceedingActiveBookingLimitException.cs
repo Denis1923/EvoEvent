@@ -1,4 +1,4 @@
-﻿namespace EvoEvent.Booking.Domain.Exceptions;
+﻿namespace CommonLibrary.Exceptions;
 public class ExceedingActiveBookingLimitException : Exception
 {
 	public ExceedingActiveBookingLimitException()

@@ -1,4 +1,4 @@
-﻿namespace EvoEvent.Events.Domain.Exceptions;
+﻿namespace CommonLibrary.Exceptions;
 public class BookingPastEventException : Exception
 {
 	public BookingPastEventException()

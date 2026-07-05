@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CommonLibrary\CommonLibrary.csproj" />
     <ProjectReference Include="..\EvoEvent.Events.Domain\EvoEvent.Events.Domain.csproj" />
   </ItemGroup>
 

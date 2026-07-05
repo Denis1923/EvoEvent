@@ -1,7 +1,7 @@
-﻿using EvoEvent.Events.Application.Abstractions.Repositories;
+﻿using CommonLibrary.Exceptions;
+using EvoEvent.Events.Application.Abstractions.Repositories;
 using EvoEvent.Events.Application.DTOs;
 using EvoEvent.Events.Domain.Entities;
-using EvoEvent.Events.Domain.Exceptions;
 using EvoEvent.Events.Services;
 using System.ComponentModel.DataAnnotations;
 

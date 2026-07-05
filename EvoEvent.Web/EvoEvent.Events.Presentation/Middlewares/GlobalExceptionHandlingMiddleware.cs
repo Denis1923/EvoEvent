@@ -1,5 +1,5 @@
 ﻿using CommonLibrary.Models.ResponseDto;
-using EvoEvent.Events.Domain.Exceptions;
+using EvoEvent.Domain.Exceptions;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 

@@ -1,9 +1,10 @@
-﻿using EvoEvent.Application.DTOs;
+﻿using CommonLibrary.Models.ResponseDto;
+using EvoEvent.Application.DTOs;
 using EvoEvent.Application.Services;
+using EvoEvent.Events.Presentation.Models.Response;
 using EvoEvent.Presentation.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 using System.Net;
 
 namespace EvoEvent.Presentation.Controllers
@@ -55,7 +56,7 @@ namespace EvoEvent.Presentation.Controllers
 				Events = evtResponse
 			};
 
-			var response = new ResultResponse<PaginatedResultEvent>()
+			var response = new ResultResponseDto<PaginatedResultEvent>()
 			{
 				IsSuccess = true,
 				StatusCode = HttpStatusCode.OK,
@@ -86,7 +87,7 @@ namespace EvoEvent.Presentation.Controllers
 				AvailableSeats = expEvent.AvailableSeats
 			};
 
-			var response = new ResultResponse<EventResponseDto>()
+			var response = new ResultResponseDto<EventResponseDto>()
 			{
 				IsSuccess = true,
 				StatusCode = HttpStatusCode.OK,
@@ -127,7 +128,7 @@ namespace EvoEvent.Presentation.Controllers
 				AvailableSeats = newEvent.AvailableSeats
 			};
 
-			var response = new ResultResponse<EventResponseDto>
+			var response = new ResultResponseDto<EventResponseDto>
 			{
 				IsSuccess = true,
 				StatusCode= HttpStatusCode.Created,
