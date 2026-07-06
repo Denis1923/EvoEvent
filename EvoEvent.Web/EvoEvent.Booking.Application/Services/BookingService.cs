@@ -1,0 +1,125 @@
+using CommonLibrary.Exceptions;
+using EvoEvent.Booking.Application.Abstractions;
+using EvoEvent.Booking.Application.Abstractions.Repositories;
+using EvoEvent.Booking.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
+using BookingEnt = EvoEvent.Booking.Domain.Entities.Booking;
+
+namespace EvoEvent.Booking.Application.Services
+{
+	public class BookingService : IBookingService
+	{
+		private readonly int _limitBookingCount = 10;
+		private readonly BookingStatus[] _statusesCancelled = { BookingStatus.Rejected, BookingStatus.Cancelled };
+		private readonly static SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+		private readonly IEventService _eventService;
+		private readonly IBookingRepository _bookingRepository;
+		private readonly IUserRepository _userRepository;
+
+		public BookingService(
+			IEventService eventService,
+			IBookingRepository bookingRepository,
+			IUserRepository userRepository
+			)
+		{
+			_eventService = eventService;
+			_bookingRepository = bookingRepository;
+			_userRepository = userRepository;
+		}
+
+		public async Task<BookingEnt> CreateBookingAsync(Guid eventId, Guid userId, CancellationToken token = default)
+		{
+			await _semaphore.WaitAsync(token);
+
+			try
+			{
+				if (eventId == Guid.Empty)
+					throw new ValidationException($"Передан не валидный параметр eventId = {eventId}");
+
+				var eventExp = await _eventService.GetByIdAsync(eventId, token);
+
+				if (eventExp is null)
+					throw new NotFoundException($"Не найдено событие с таким ИД {eventId}");
+
+				var nowDate = DateTime.Now;
+				var checkBookingDate = eventExp.StartAt <= nowDate && nowDate <= eventExp.EndAt;
+
+				if (checkBookingDate)
+					throw new BookingPastEventException("Событие уже началось, бронирование запрещено");
+
+				if (nowDate > eventExp.EndAt)
+					throw new BookingPastEventException("Событие уже завершенно, бронирование запрещено");
+
+				var user = await _userRepository.GetUserByIdAsync(userId, token);
+
+				if (user is null)
+					throw new NotFoundException($"Не найден пользователь с таким ИД {userId}");
+
+				var bookingsUser = await _bookingRepository.GetConfirmedBookingUserAsync(userId, token);
+
+				if (bookingsUser.Count >= _limitBookingCount)
+					throw new ExceedingActiveBookingLimitException("Бронирование события запрещено, так как превышен лимит бронирования");
+
+				if (!eventExp.TryReserveSeats())
+					throw new NoAvailableSeatsException("No available seats for this event");
+
+				var newBooking = new BookingEnt(eventId, BookingStatus.Pending, DateTime.UtcNow, userId);
+				await _bookingRepository.AddBookingAsync(newBooking, token);
+				await _bookingRepository.SaveChangesAsync(token);
+
+				return newBooking;
+			}
+			finally
+			{
+				_semaphore.Release();
+			}
+		}
+
+		public async Task<BookingEnt> GetBookingByIdAsync(Guid bookingId, CancellationToken token = default)
+		{
+			var booking = await _bookingRepository.GetBookingByIdAsync(bookingId, token);
+
+			if (booking == null)
+				throw new NotFoundException($"Не найдена бронь с таким ИД {bookingId}");
+
+			return booking;
+		}
+
+		public async Task<bool> CancelledBookingAsync(Guid id, Guid userId, CancellationToken token = default)
+		{
+			var user = await _userRepository.GetUserByIdAsync(userId, token);
+			var booking = await GetBookingByIdAsync(id, token);
+
+			if (booking?.UserId != user?.UserId && user?.Role != Roles.Admin)
+				throw new AbsenceAccessException($"У пользователя {user.Login} нет прав на отмену брони {id}");
+
+			if (_statusesCancelled.Contains(booking!.Status))
+				return false;
+
+			booking.Cancelled();
+			await _bookingRepository.SaveChangesAsync(token);
+
+			return true;
+		}
+
+		public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default)
+		{
+			var booking = await _bookingRepository.GetBookingByIdAsync(id, token);
+
+			if (booking is null)
+				throw new NotFoundException($"Не найдена бронь с таким ИД {id}");
+
+			try
+			{
+				_bookingRepository.RemoveBooking(booking);
+				await _bookingRepository.SaveChangesAsync(token);
+			}
+			catch (Exception ex)
+			{
+				throw new Exception($"Не удалось удалить Бронь.Ид:{id}, по причине:{ex.Message}");
+			}
+
+			return true;
+		}
+	}
+}

@@ -1,9 +1,38 @@
 <Solution>
-  <Project Path="EvoEvent.Application/EvoEvent.Application.csproj" Id="e9860304-9df2-48ca-83e5-d8849f5f809a" />
-  <Project Path="EvoEvent.Domain/EvoEvent.Domain.csproj" Id="dff19220-949a-477c-b5e1-032c740d14d2" />
-  <Project Path="EvoEvent.Infrastructure/EvoEvent.Infrastructure.csproj" Id="715f61d4-a761-4d40-91e2-cd82f064cc55" />
-  <Project Path="EvoEvent.IntegrationTests/EvoEvent.IntegrationTests.csproj" Id="05833e91-dbcc-4bbd-a4c3-e1f5dec41bf4" />
-  <Project Path="EvoEvent.Presentation/EvoEvent.Presentation.csproj" />
-  <Project Path="EvoEvent.TestE2E/EvoEvent.TestE2E.csproj" Id="d13226dc-00a8-452b-b0a7-fbcd71009212" />
-  <Project Path="EvoEvent.Web.Tests/EvoEvent.Web.Tests.csproj" Id="fcb14367-6d67-44a7-af54-ecee7658c4aa" />
+  <Folder Name="/EvoEvent.Booking/">
+    <Project Path="EvoEvent.Booking.Application/EvoEvent.Booking.Application.csproj" Id="d49369b2-5f7a-4e33-b77a-e98507235f53" />
+    <Project Path="EvoEvent.Booking.Domain/EvoEvent.Booking.Domain.csproj" Id="6066cc74-ab5b-4569-b46e-0dbc40bbc5ea" />
+    <Project Path="EvoEvent.Booking.Infrastructure/EvoEvent.Booking.Infrastructure.csproj" Id="d62505db-69e6-4dbc-9033-d86b5f401157" />
+    <Project Path="EvoEvent.Booking.Presentation/EvoEvent.Booking.Presentation.csproj" Id="9152c9ca-4075-405d-bc48-447483c1f088" />
+  </Folder>
+  <Folder Name="/EvoEvent.Events/">
+    <Project Path="EvoEvent.Events.Application/EvoEvent.Events.Application.csproj" Id="997eb80d-baee-4df0-8bbf-fef30293534e" />
+    <Project Path="EvoEvent.Events.Domain/EvoEvent.Events.Domain.csproj" Id="4755af93-c359-4f70-a457-1399de6fd868" />
+    <Project Path="EvoEvent.Events.Infrastructure/EvoEvent.Events.Infrastructure.csproj" Id="4791ffdf-9cdc-404b-b24a-530e20b273ce" />
+    <Project Path="EvoEvent.Events.Presentation/EvoEvent.Events.Presentation.csproj" Id="58175f55-3683-453b-ae4c-9bc8f8252790" />
+  </Folder>
+  <Folder Name="/EvoEvent.Users/">
+    <Project Path="EvoEvent.Users.Application/EvoEvent.Users.Application.csproj" Id="09aa204e-d6ae-4c6c-b871-49fe394bd730" />
+    <Project Path="EvoEvent.Users.Domain/EvoEvent.Users.Domain.csproj" Id="13bcdeed-8690-4fc8-b452-8fa92de93324" />
+    <Project Path="EvoEvent.Users.Infrastructure/EvoEvent.Users.Infrastructure.csproj" Id="c38ac43a-4109-4ee9-a8e4-886f6e8007ae" />
+    <Project Path="EvoEvent.Users.Presentation/EvoEvent.Users.Presentation.csproj" Id="d4586f92-14e9-48fd-9ff1-41011244b3d9" />
+  </Folder>
+  <Folder Name="/_Common/">
+    <Project Path="CommonLibrary/CommonLibrary.csproj" Id="455fad45-a5ad-4d7d-9c5f-43a3d1378554" />
+  </Folder>
+  <Folder Name="/_monolit/">
+    <Project Path="EvoEvent.Application/EvoEvent.Application.csproj" Id="e9860304-9df2-48ca-83e5-d8849f5f809a" />
+    <Project Path="EvoEvent.Domain/EvoEvent.Domain.csproj" Id="dff19220-949a-477c-b5e1-032c740d14d2" />
+    <Project Path="EvoEvent.Infrastructure/EvoEvent.Infrastructure.csproj" Id="715f61d4-a761-4d40-91e2-cd82f064cc55" />
+    <Project Path="EvoEvent.Presentation/EvoEvent.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/_Tests/">
+    <Project Path="EvoEvent.IntegrationTests/EvoEvent.IntegrationTests.csproj" Id="05833e91-dbcc-4bbd-a4c3-e1f5dec41bf4" />
+    <Project Path="EvoEvent.TestE2E/EvoEvent.TestE2E.csproj" Id="d13226dc-00a8-452b-b0a7-fbcd71009212" />
+    <Project Path="EvoEvent.Web.Tests/EvoEvent.Web.Tests.csproj" Id="fcb14367-6d67-44a7-af54-ecee7658c4aa" />
+  </Folder>
+  <Folder Name="/Элементы решения/">
+    <File Path="../../../../Загрузки/docker-compose.yml" />
+    <File Path="../README.md" />
+  </Folder>
 </Solution>

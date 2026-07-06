@@ -1,0 +1,42 @@
+﻿using EvoEvent.Presentation.Validation;
+using System.ComponentModel.DataAnnotations;
+
+namespace EvoEvent.Events.Presentation.Models.Response;
+
+/// <summary>
+/// Выходная модель сущности "Событие"
+/// </summary>
+public class EventResponseDto
+{
+	public Guid Id { get; set; }
+
+	/// <summary>
+	/// Наименование события
+	/// </summary>
+	public string Title { get; set; }
+
+	/// <summary>
+	/// Описание события
+	/// </summary>
+	public string? Description { get; set; }
+
+	/// <summary>
+	/// Стартовая дата события 
+	/// </summary>
+	public DateTime StartAt { get; set; }
+
+	/// <summary>
+	/// Дата окончания события
+	/// </summary>
+	public DateTime EndAt { get; set; }
+
+	/// <summary>
+	/// Общее кол-во мест
+	/// </summary>
+	public int TotalSeats { get; set; }
+
+	/// <summary>
+	/// кол-во свободных мест
+	/// </summary>
+	public int AvailableSeats { get; set; }
+}
